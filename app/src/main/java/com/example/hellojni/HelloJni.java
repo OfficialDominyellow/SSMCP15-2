@@ -16,34 +16,43 @@
 package com.example.hellojni;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.os.Bundle;
+import android.view.View.OnClickListener;
 
-
-public class HelloJni extends Activity
+public class HelloJni extends Activity implements OnClickListener
 {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        /* Create a TextView and set its content.
-         * the text is retrieved by calling a native
-         * function.
-         */
-        TextView  tv = new TextView(this);
+        setContentView(R.layout.main);
+        findViewById(R.id.start).setOnClickListener(this);		//시작버튼
+        findViewById(R.id.end).setOnClickListener(this);			//중시버튼
+        /*TextView  tv = new TextView(this);
         tv.setText( stringFromJNI() );
         setContentView(tv);
-        stringFromJNI();
+        stringFromJNI();*/
     }
-
+    public void onClick(View v) {
+        int view = v.getId();
+        if(view == R.id.start) {
+            Log.e("service", "startService");
+            startService(new Intent(this, PointingStickService.class));    //서비스 시작
+        }
+        else{Log.e("service","endService");
+            stopService(new Intent(this, PointingStickService.class));	//서비스 종료
+        }
+    }
     /* A native method that is implemented by the
      * 'hello-jni' native library, which is packaged
      * with this application.
      */
     public native String  stringFromJNI();
-
     /* This is another native method declaration that is *not*
      * implemented by 'hello-jni'. This is simply to show that
      * you can declare as many native methods in your Java code
@@ -54,7 +63,7 @@ public class HelloJni extends Activity
      * Trying to call this function will result in a
      * java.lang.UnsatisfiedLinkError exception !
      */
-    public native String  unimplementedStringFromJNI();
+    //public native String  unimplementedStringFromJNI();
 
     /* this is used to load the 'hello-jni' library on application
      * startup. The library has already been unpacked into

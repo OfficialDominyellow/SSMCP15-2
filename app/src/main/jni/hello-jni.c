@@ -36,8 +36,97 @@
         exit(EXIT_FAILURE); \
     } while(0)
 
-jstring Java_com_example_hellojni_HelloJni_stringFromJNI( JNIEnv* env,
-                                                  jobject thiz )
+int fd;
+struct uinput_user_dev uidev;
+struct input_event ev;
+int dx,dy;
+JNIEXPORT void Java_com_example_hellojni_PointingStickService_removeMouseDriver(JNIEnv* env, jobject thiz)
+{
+    if(ioctl(fd, UI_DEV_DESTROY) < 0)
+        die("error: ioctl");
+    close(fd);
+}
+jint Java_com_example_hellojni_PointingStickService_moveMouse(JNIEnv * a,jobject b,jint x,jint y)
+{
+    int dx,dy;
+    int i,j;
+    dx=x,dy=y;
+
+    //for(i = 0; i < 20; i++) {
+        memset(&ev, 0, sizeof(struct input_event));
+        ev.type = EV_REL;
+        ev.code = REL_X;
+        ev.value = dx;
+        if(write(fd, &ev, sizeof(struct input_event)) < 0)
+            die("error: write");
+
+        memset(&ev, 0, sizeof(struct input_event));
+        ev.type = EV_REL;
+        ev.code = REL_Y;
+        ev.value = dy;
+        if(write(fd, &ev, sizeof(struct input_event)) < 0)
+            die("error: write");
+
+        memset(&ev, 0, sizeof(struct input_event));
+        ev.type = EV_SYN;
+        ev.code = 0;
+        ev.value = 0;
+        if(write(fd, &ev, sizeof(struct input_event)) < 0)
+            die("error: write");
+
+     //   usleep(15000);
+   // }
+    return 0;
+}
+jint Java_com_example_hellojni_PointingStickService_initMouseDriver(JNIEnv* env, jobject thiz)
+{
+    int i,j;
+    fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
+    if(fd < 0) {
+        die("error: open");
+        return -1;
+    }
+    if(ioctl(fd, UI_SET_EVBIT, EV_KEY) < 0) {
+        die("error: ioctl");
+        return -1;
+    }
+    if(ioctl(fd, UI_SET_KEYBIT, BTN_LEFT) < 0) {
+        die("error: ioctl");
+        return -1;
+    }
+
+    if(ioctl(fd, UI_SET_EVBIT, EV_REL) < 0) {
+        die("error: ioctl");
+        return -1;
+    }
+    if(ioctl(fd, UI_SET_RELBIT, REL_X) < 0) {
+        die("error: ioctl");
+        return -1;
+    }
+    if(ioctl(fd, UI_SET_RELBIT, REL_Y) < 0) {
+        die("error: ioctl");
+        return -1;
+    }
+
+    memset(&uidev, 0, sizeof(uidev));
+    snprintf(uidev.name, UINPUT_MAX_NAME_SIZE, "uinput-sample");
+    uidev.id.bustype = BUS_USB;
+    uidev.id.vendor  = 0x1;
+    uidev.id.product = 0x1;
+    uidev.id.version = 1;
+
+    if(write(fd, &uidev, sizeof(uidev)) < 0) {
+        die("error: write");
+        return -1;
+    }
+    if(ioctl(fd, UI_DEV_CREATE) < 0) {
+        die("error: ioctl");
+        return -1;
+    }
+    return 1;//success
+}
+
+jstring Java_com_example_hellojni_HelloJni_stringFromJNI( JNIEnv* env, jobject thiz )
 {
 #if defined(__arm__)
   #if defined(__ARM_ARCH_7A__)

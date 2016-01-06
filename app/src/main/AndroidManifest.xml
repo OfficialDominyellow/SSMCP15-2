@@ -3,6 +3,9 @@
           package="com.example.hellojni"
           android:versionCode="1"
           android:versionName="1.0">
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+
   <application
       android:allowBackup="false"
       android:fullBackupContent="false"
@@ -15,5 +18,12 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+
+      <service
+          android:name=".PointingStickService"
+          android:enabled="true"
+          android:exported="false"> <!-- 퍼미션 중요 -->
+      </service>
+
   </application>
 </manifest>
