@@ -46,7 +46,7 @@ JNIEXPORT void Java_com_example_hellojni_PointingStickService_removeMouseDriver(
         die("error: ioctl");
     close(fd);
 }
-jint Java_com_example_hellojni_PointingStickService_moveMouse(JNIEnv * a,jobject b,jint x,jint y)
+jint Java_com_example_hellojni_VirtualMouseDriverController_moveMouse(JNIEnv * a,jobject b,jint x,jint y)
 {
     int dx,dy;
     int i,j;

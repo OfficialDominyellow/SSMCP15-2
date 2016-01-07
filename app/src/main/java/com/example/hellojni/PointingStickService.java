@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -18,6 +19,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Handler;
 
 /**
  * Created by SECMEM-DY on 2016-01-06.
@@ -28,13 +30,21 @@ public class PointingStickService extends Service{
     private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
     private WindowManager mWindowManager;
     private SeekBar mSeekBar;//투명도 조절
+    private static VirtualMouseDriverController virtualMouseDriverController;
 
     private float START_X,START_Y;
     private int PREV_X,PREV_Y;
     private int MAX_X=-1,MAX_Y=-1;
+    /* 포인터가 움직이는 중이면 true, 아니면 false */
+    private boolean isMoving=false;
+    //private Handler mHandler;
+    //final VirtualMouseDriverController.MoveMousePointerThread MMPT = new VirtualMouseDriverController.MoveMousePointerThread(true);
+    //private final VirtualMouseDriverController.MyHandler mHandler = new VirtualMouseDriverController.MyHandler();
+
 
     private OnTouchListener mViewTouchListener = new OnTouchListener() {
         @Override public boolean onTouch(View v, MotionEvent event) {
+            //virtualMouseDriverController.myThread.pauseThread();
             switch(event.getAction()) {
                 case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
                     if(MAX_X == -1)
@@ -45,6 +55,7 @@ public class PointingStickService extends Service{
                     PREV_Y = mParams.y;							//뷰의 시작 점
                     break;
                 case MotionEvent.ACTION_MOVE:
+
                     int x = (int)(event.getRawX() - START_X);	//이동한 거리
                     int y = (int)(event.getRawY() - START_Y);	//이동한 거리
 
@@ -52,8 +63,23 @@ public class PointingStickService extends Service{
                     mParams.x = PREV_X + x;
                     mParams.y = PREV_Y + y;
 
-                    optimizePosition();		//뷰의 위치 최적화
                     mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
+                    virtualMouseDriverController.myThread.setDifference(x, y);
+                    if(virtualMouseDriverController.myThread.getmPause()) {
+                        virtualMouseDriverController.myThread.onResume();
+                    } else {
+
+                    }
+                    break;
+                /* reset position */
+                case MotionEvent.ACTION_UP:
+                    virtualMouseDriverController.myThread.interrupt();
+                    virtualMouseDriverController.myThread.onPause();
+                    isMoving=false;
+                    //MMPT.stopThread();
+                    mParams.x=400;
+                    mParams.y=400;
+                    mWindowManager.updateViewLayout(pointingStick, mParams);
                     break;
             }
             return true;
@@ -69,10 +95,10 @@ public class PointingStickService extends Service{
             Toast.makeText(getApplicationContext(), "Fail to load Vmouse.", Toast.LENGTH_LONG).show();
             return;
         }
-        pointingStick = new TextView(this);																//뷰 생성
-        pointingStick.setText("Pointing\nStick");	//텍스트 설정
-        pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);								//텍스트 크기 18sp
-        pointingStick.setTextColor(Color.BLUE);															//글자 색상
+        pointingStick = new TextView(this);                                                                //뷰 생성
+        pointingStick.setText("Pointing\nStick");    //텍스트 설정
+        pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
+        pointingStick.setTextColor(Color.BLUE);                                                            //글자 색상
         pointingStick.setBackgroundColor(Color.argb(127, 0, 255, 255));								//텍스트뷰 배경 색
 
         pointingStick.setOnTouchListener(mViewTouchListener);										//팝업뷰에 터치 리스너 등록
@@ -87,10 +113,15 @@ public class PointingStickService extends Service{
                 PixelFormat.TRANSLUCENT);										//투명
         mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
 
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);	//윈도우 매니저 불러옴.
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);    //윈도우 매니저 불러옴.
         mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
 
         addOpacityController();		//팝업 뷰의 투명도 조절하는 컨트롤러 추가
+        virtualMouseDriverController = new VirtualMouseDriverController();
+        virtualMouseDriverController.myThread.start();
+        virtualMouseDriverController.myThread.onPause();
+        //virtualMouseDriverController.myHandler.post(virtualMouseDriverController.myThread);
+        //virtualMouseDriverController.myThread.pauseThread();
     }
     /**
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다
@@ -103,22 +134,6 @@ public class PointingStickService extends Service{
         MAX_Y = matrix.heightPixels - pointingStick.getHeight();			//y 최대값 설정
     }
 
-    /**
-     * 뷰의 위치가 화면 안에 있게 하기 위해서 검사하고 수정한다.
-     */
-    private void optimizePosition() {
-        //최대값 넘어가지 않게 설정
-        moveMouse(mParams.x,mParams.y);
-        if(mParams.x > MAX_X)
-            mParams.x = MAX_X;
-        if(mParams.y > MAX_Y)
-            mParams.y = MAX_Y;
-        if(mParams.x < 0)
-            mParams.x = 0;
-        if(mParams.y < 0)
-            mParams.y = 0;
-
-    }
 
     /**
      * 알파값 조절하는 컨트롤러를 추가한다
@@ -156,7 +171,7 @@ public class PointingStickService extends Service{
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         setMaxPosition();		//최대값 다시 설정
-        optimizePosition();		//뷰 위치 최적화
+        //optimizePosition();		//뷰 위치 최적화
     }
 
     @Override
@@ -173,7 +188,6 @@ public class PointingStickService extends Service{
         System.loadLibrary("hello-jni");
     }
     public native int initMouseDriver();
-    public native int moveMouse(int x, int y);
     public native void removeMouseDriver();
 
 }
