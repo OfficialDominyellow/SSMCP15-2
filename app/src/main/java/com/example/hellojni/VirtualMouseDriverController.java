@@ -7,7 +7,7 @@ import android.os.Message;
  * Created by chu on 1/7/16.
  */
 public class VirtualMouseDriverController {
-        public native int moveMouse(int x, int y);
+        public native void moveMouse(int x, int y);
         public static MyHandler myHandler = new MyHandler();
         public static MyThread myThread = new MyThread();
 
@@ -49,7 +49,6 @@ public class VirtualMouseDriverController {
         private Object mPauseLock;
         private boolean mPaused;
         private boolean mFinished;
-
 
         VirtualMouseDriverController virtualMouseDriverController = new VirtualMouseDriverController();
         int dx=0;

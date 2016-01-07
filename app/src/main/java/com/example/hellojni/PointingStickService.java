@@ -43,7 +43,8 @@ public class PointingStickService extends Service{
 
 
     private OnTouchListener mViewTouchListener = new OnTouchListener() {
-        @Override public boolean onTouch(View v, MotionEvent event) {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
             //virtualMouseDriverController.myThread.pauseThread();
             switch(event.getAction()) {
                 case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
@@ -52,7 +53,7 @@ public class PointingStickService extends Service{
                     START_X = event.getRawX();					//터치 시작 점
                     START_Y = event.getRawY();					//터치 시작 점
                     PREV_X = mParams.x;							//뷰의 시작 점
-                    PREV_Y = mParams.y;							//뷰의 시작 점
+                    PREV_Y = mParams.y;							//뷰의 시작
                     break;
                 case MotionEvent.ACTION_MOVE:
 
@@ -64,6 +65,8 @@ public class PointingStickService extends Service{
                     mParams.y = PREV_Y + y;
 
                     mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
+                    optimizePosition();
+
                     virtualMouseDriverController.myThread.setDifference(x, y);
                     if(virtualMouseDriverController.myThread.getmPause()) {
                         virtualMouseDriverController.myThread.onResume();
@@ -73,6 +76,8 @@ public class PointingStickService extends Service{
                     break;
                 /* reset position */
                 case MotionEvent.ACTION_UP:
+                    clickLeftMouse();
+                    Log.e("Service", "left mouse cli");
                     virtualMouseDriverController.myThread.interrupt();
                     virtualMouseDriverController.myThread.onPause();
                     isMoving=false;
@@ -80,6 +85,11 @@ public class PointingStickService extends Service{
                     mParams.x=400;
                     mParams.y=400;
                     mWindowManager.updateViewLayout(pointingStick, mParams);
+                    break;
+
+                case MotionEvent.ACTION_BUTTON_PRESS:
+                    clickLeftMouse();
+                    Log.e("Service", "left mouse cli");
                     break;
             }
             return true;
@@ -134,7 +144,18 @@ public class PointingStickService extends Service{
         MAX_Y = matrix.heightPixels - pointingStick.getHeight();			//y 최대값 설정
     }
 
+    private void optimizePosition() {
+        //최대값 넘어가지 않게 설정
+        if(mParams.x > MAX_X)
+            mParams.x = MAX_X;
+        if(mParams.y > MAX_Y)
+            mParams.y = MAX_Y;
+        if(mParams.x < 0)
+            mParams.x = 0;
+        if(mParams.y < 0)
+            mParams.y = 0;
 
+    }
     /**
      * 알파값 조절하는 컨트롤러를 추가한다
      */
@@ -189,5 +210,6 @@ public class PointingStickService extends Service{
     }
     public native int initMouseDriver();
     public native void removeMouseDriver();
+    public native void clickLeftMouse();
 
 }
