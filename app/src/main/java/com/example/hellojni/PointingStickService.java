@@ -1,8 +1,10 @@
 package com.example.hellojni;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
@@ -113,6 +115,13 @@ public class PointingStickService extends Service{
     return false 를 반환
     이벤트 호출 순서 onTouch -> onLongClick -> onClick .*/
 
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return dp;
+    }
+
     private OnTouchListener mViewTouchListener = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -132,8 +141,19 @@ public class PointingStickService extends Service{
                     Log.e("Service","ACTION_DOWN");
                     break;
                 case MotionEvent.ACTION_MOVE:
+                     final int MAXdp = 63;
+
                     xdiff = (int)(event.getRawX() - START_X);	//이동한 거리
                     ydiff = (int)(event.getRawY() - START_Y);	//이동한 거리
+
+                    double distance = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
+                    float dpDistance = convertPixelsToDp((float)distance,getApplicationContext());
+                    if (dpDistance>MAXdp) {
+                        xdiff=(int)(xdiff/dpDistance*MAXdp);
+                        ydiff=(int)(ydiff/dpDistance*MAXdp);
+                    }
+
+
                     //터치해서 이동한 만큼 이동 시킨다
                     mParams.x = PREV_X + xdiff;
                     mParams.y = PREV_Y + ydiff;
@@ -241,7 +261,7 @@ public class PointingStickService extends Service{
 
         addOpacityController();		//팝업 뷰의 투명도 조절하는 컨트롤러 추가
 
-        virtualMouseDriverController = virtualMouseDriverController.getInstance();
+        virtualMouseDriverController = virtualMouseDriverController.getInstance(getApplicationContext());
         if (virtualMouseDriverController.getState()==Thread.State.NEW) {
             virtualMouseDriverController.start();
             virtualMouseDriverController.onPause();

@@ -1,7 +1,10 @@
 package com.example.hellojni;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 /**
@@ -17,6 +20,9 @@ public class VirtualMouseDriverController extends Thread {
     private boolean mPaused;
     private boolean mFinished;
     private int mMouseSpeed=5;
+    private static int MAXMOVE;
+    private static int INTERVAL;
+    private Context context;
 
     private native void moveMouse(int x, int y);
 
@@ -24,11 +30,15 @@ public class VirtualMouseDriverController extends Thread {
         mPauseLock = new Object();
         mPaused = false;
         mFinished = false;
+
+
     }
 
-    public static synchronized VirtualMouseDriverController getInstance() {
+    public static synchronized VirtualMouseDriverController getInstance(Context context) {
         if (uniqueInstance == null) {
             uniqueInstance = new VirtualMouseDriverController();
+            MAXMOVE=(int)convertDpToPixel(63,context.getApplicationContext());
+            INTERVAL=(int)convertDpToPixel(50,context.getApplicationContext());
         }
         return uniqueInstance;
     }
@@ -65,6 +75,13 @@ public class VirtualMouseDriverController extends Thread {
         }
     }
 
+    public static float convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return px;
+    }
+
     @Override
     public void run() {
         int x=0;
@@ -72,11 +89,7 @@ public class VirtualMouseDriverController extends Thread {
         while (!mFinished) {
             while (!mPaused) {
                 try {
-                    Thread.sleep(5);
-
-                    final int MAXMOVE=200;
-                    final int INTERVAL=100;
-
+                    Thread.sleep(10);
                     for (int i=0;i<INTERVAL;i++) {
                         if(Math.abs(dx)<=MAXMOVE/INTERVAL*i) {
                             x=(dx<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
