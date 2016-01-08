@@ -146,12 +146,10 @@ public class PointingStickService extends Service{
                 /* reset position */
                 case MotionEvent.ACTION_UP:
                     if(!isMouseMove)
-
                     {
                         clickLeftMouse();
                         Log.e("Service", "left mouse clicked");
                     }
-
                     //virtualMouseDriverController.myThread.interrupt();
                     virtualMouseDriverController.onPause();
                     isMouseMove=false;

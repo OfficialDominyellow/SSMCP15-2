@@ -108,6 +108,7 @@ void Java_com_example_hellojni_VirtualMouseDriverController_moveMouse(JNIEnv * a
 jint Java_com_example_hellojni_PointingStickService_initMouseDriver(JNIEnv* env, jobject thiz)
 {
     struct uinput_user_dev uidev;
+
     int i,j;
     fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if(fd < 0) {

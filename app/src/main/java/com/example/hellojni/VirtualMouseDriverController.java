@@ -91,8 +91,10 @@ public class VirtualMouseDriverController extends Thread {
                     }
 
                     Log.e("Service", ""+x+" "+y);
-
-                    moveMouse(x, y);
+                    if(mPaused)
+                        continue;
+                    else
+                        moveMouse(x, y);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
