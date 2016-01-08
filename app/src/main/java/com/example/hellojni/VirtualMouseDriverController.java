@@ -8,7 +8,6 @@ import android.os.Message;
  */
 public class VirtualMouseDriverController {
         public native void moveMouse(int x, int y);
-        public static MyHandler myHandler = new MyHandler();
         public static MyThread myThread = new MyThread();
 
         public VirtualMouseDriverController() {
@@ -19,30 +18,6 @@ public class VirtualMouseDriverController {
             System.out.println("" + dx + " " + dy);
             moveMouse((int) (dx / 10), (int) (dy / 10));
         }
-
-    public static class MyHandler extends Handler {
-        VirtualMouseDriverController virtualMouseDriverController = new VirtualMouseDriverController();
-
-        public MyHandler() {
-
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-                System.out.println(""+msg);
-
-                switch (msg.what) {
-                    case 0:
-                        virtualMouseDriverController.moveMouse((int) (msg.arg1 / 10), 0);
-                        break;
-                    case 1:
-                        virtualMouseDriverController.moveMouse(0, (int) (msg.arg1 / 10));
-                        break;
-                    default:
-                        break;
-                }
-        }
-    }
 
 
     public static class MyThread extends Thread {
@@ -110,6 +85,7 @@ public class VirtualMouseDriverController {
                             e.printStackTrace();
                         }
                     }
+                /*
                 synchronized (mPauseLock) {
                     try {
                         mPauseLock.wait();
@@ -117,6 +93,7 @@ public class VirtualMouseDriverController {
                         e.printStackTrace();
                     }
                 }
+                */
             }
 
 /*

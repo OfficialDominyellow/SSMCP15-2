@@ -116,7 +116,7 @@ public class PointingStickService extends Service{
                 /* reset position */
                 case MotionEvent.ACTION_UP:
 
-                    virtualMouseDriverController.myThread.interrupt();
+                    //
                     virtualMouseDriverController.myThread.onPause();
                     isMoving=false;
                     //MMPT.stopThread();
@@ -283,6 +283,8 @@ public class PointingStickService extends Service{
 
     @Override
     public void onDestroy() {
+        virtualMouseDriverController.myThread.interrupt();
+
         if(mWindowManager != null) {		//서비스 종료시 뷰 제거. *중요 : 뷰를 꼭 제거 해야함.
             if(pointingStick != null) mWindowManager.removeView(pointingStick);
             if(mSeekBar != null) mWindowManager.removeView(mSeekBar);
