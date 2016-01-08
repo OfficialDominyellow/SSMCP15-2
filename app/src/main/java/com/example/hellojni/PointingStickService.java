@@ -136,9 +136,9 @@ public class PointingStickService extends Service{
                     isMouseMove=true;
 
                     Log.e("Service","ACTION_MOVE");
-                    virtualMouseDriverController.myThread.setDifference(xdiff,ydiff);
-                    if(virtualMouseDriverController.myThread.getmPause()) {
-                        virtualMouseDriverController.myThread.onResume();
+                    virtualMouseDriverController.setDifference(xdiff,ydiff);
+                    if(virtualMouseDriverController.getmPause()) {
+                        virtualMouseDriverController.onResume();
                     } else {
 
                     }
@@ -146,12 +146,14 @@ public class PointingStickService extends Service{
                 /* reset position */
                 case MotionEvent.ACTION_UP:
                     if(!isMouseMove)
+
                     {
                         clickLeftMouse();
                         Log.e("Service", "left mouse clicked");
                     }
-                    virtualMouseDriverController.myThread.interrupt();
-                    virtualMouseDriverController.myThread.onPause();
+
+                    //virtualMouseDriverController.myThread.interrupt();
+                    virtualMouseDriverController.onPause();
                     isMouseMove=false;
                     //MMPT.stopThread();
                     Log.e("Service","ACTION_UP");
@@ -229,9 +231,12 @@ public class PointingStickService extends Service{
         mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
 
         addOpacityController();		//팝업 뷰의 투명도 조절하는 컨트롤러 추가
-        virtualMouseDriverController = new VirtualMouseDriverController();
-        virtualMouseDriverController.myThread.start();
-        virtualMouseDriverController.myThread.onPause();
+
+        virtualMouseDriverController = virtualMouseDriverController.getInstance();
+        if (virtualMouseDriverController.getState()==Thread.State.NEW) {
+            virtualMouseDriverController.start();
+            virtualMouseDriverController.onPause();
+        }
     }
     /**
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다
@@ -304,6 +309,8 @@ public class PointingStickService extends Service{
 
     @Override
     public void onDestroy() {
+        virtualMouseDriverController.interrupt();
+
         if(mWindowManager != null) {		//서비스 종료시 뷰 제거. *중요 : 뷰를 꼭 제거 해야함.
             if(pointingStick != null) mWindowManager.removeView(pointingStick);
             if(mSeekBar != null) mWindowManager.removeView(mSeekBar);
