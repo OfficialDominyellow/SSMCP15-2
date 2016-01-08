@@ -127,7 +127,7 @@ public class PointingStickService extends Service{
                         clickLeftMouse();
                         Log.e("Service", "left mouse clicked");
                     }
-                    
+
                     //virtualMouseDriverController.myThread.interrupt();
                     virtualMouseDriverController.myThread.onPause();
                     isMove=false;
