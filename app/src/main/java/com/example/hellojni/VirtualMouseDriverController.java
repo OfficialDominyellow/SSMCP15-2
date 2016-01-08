@@ -2,129 +2,113 @@ package com.example.hellojni;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 /**
  * Created by chu on 1/7/16.
  */
-public class VirtualMouseDriverController {
-        public native void moveMouse(int x, int y);
-        public static MyThread myThread = new MyThread();
 
-        public VirtualMouseDriverController() {
+public class VirtualMouseDriverController extends Thread {
+    private volatile static VirtualMouseDriverController uniqueInstance;
 
+    private int dx = 0;
+    private int dy = 0;
+    private Object mPauseLock;
+    private boolean mPaused;
+    private boolean mFinished;
+    private int mMouseSpeed=5;
+
+    private native void moveMouse(int x, int y);
+
+    private VirtualMouseDriverController() {
+        mPauseLock = new Object();
+        mPaused = false;
+        mFinished = false;
+    }
+
+    public static synchronized VirtualMouseDriverController getInstance() {
+        if (uniqueInstance == null) {
+            uniqueInstance = new VirtualMouseDriverController();
         }
+        return uniqueInstance;
+    }
 
-        public void optimizePosition(int dx, int dy) {
-            System.out.println("" + dx + " " + dy);
-            moveMouse((int) (dx / 10), (int) (dy / 10));
+    public void setDifference(int dx, int dy) {
+        this.dx = dx;
+        this.dy = dy;
+    }
+
+    public boolean getmPause() {
+        return this.mPaused;
+    }
+
+    public void setmMouseSpeed(int speed) {
+        this.mMouseSpeed = speed;
+    }
+
+    /**
+     * Call this on pause.
+     */
+    public void onPause() {
+        synchronized (mPauseLock) {
+            mPaused = true;
         }
+    }
 
-
-    public static class MyThread extends Thread {
-        public Object mPauseLock;
-        private boolean mPaused;
-        private boolean mFinished;
-
-        VirtualMouseDriverController virtualMouseDriverController = new VirtualMouseDriverController();
-        int dx=0;
-        int dy=0;
-        boolean isRun=false;
-
-        public MyThread() {
-            mPauseLock = new Object();
+    /**
+     * Call this on resume.
+     */
+    public void onResume() {
+        synchronized (mPauseLock) {
             mPaused = false;
-            mFinished = false;
+            mPauseLock.notifyAll();
         }
+    }
 
-        public void setDifference(int dx, int dy) {
-            this.dx = dx;
-            this.dy = dy;
-        }
+    @Override
+    public void run() {
+        int x=0;
+        int y=0;
+        while (!mFinished) {
+            while (!mPaused) {
+                try {
+                    Thread.sleep(5);
 
-        public void startThread() {
-            this.isRun = true;
-        }
+                    final int MAXMOVE=200;
+                    final int INTERVAL=100;
 
-        public void stopThread() {
-            this.isRun = false;
-        }
-
-        public boolean getmPause() {
-            return this.mPaused;
-        }
-
-
-
-        /**
-         * Call this on pause.
-         */
-        public void onPause() {
-            synchronized (mPauseLock) {
-                mPaused = true;
-            }
-        }
-
-        /**
-         * Call this on resume.
-         */
-        public void onResume() {
-            synchronized (mPauseLock) {
-                mPaused = false;
-                mPauseLock.notifyAll();
-            }
-        }
-
-        @Override
-        public void run() {
-            while (!mFinished) {
-                    while (!mPaused) {
-                        try {
-                            Thread.sleep(5);
-                            virtualMouseDriverController.moveMouse((int) (dx / 100), (int) (dy / 100));
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                    for (int i=0;i<INTERVAL;i++) {
+                        if(Math.abs(dx)<=MAXMOVE/INTERVAL*i) {
+                            x=(dx<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            break;
                         }
                     }
-                /*
-                synchronized (mPauseLock) {
-                    try {
-                        mPauseLock.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    for (int i=0;i<INTERVAL;i++) {
+                        if(Math.abs(dy)<=MAXMOVE/INTERVAL*i) {
+                            y=(dy<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            break;
+                        }
                     }
+
+                    Log.e("Service", ""+x+" "+y);
+
+                    moveMouse(x, y);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                */
             }
 
-/*
-            this.isRun = true;
-            Message msg = new Message();
-            Message msg2 = new Message();
-
-
-            try {
-                while (true) {
-                    Thread.sleep(5);
-                    virtualMouseDriverController.moveMouse((int) (dx / 100), (int) (dy / 100));
+            synchronized (mPauseLock) {
+                try {
+                    mPauseLock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-
             }
-            isRun = false;
-            System.out.println("stopped");
-
-
-            msg.what=0;
-            msg.arg1=dx;
-            msg2.what=1;
-            msg2.arg1=dy;
-
-            myHandler.sendMessage(msg);
-            myHandler.sendMessage(msg2);
-*/
 
         }
+        
+
     }
 
 }
