@@ -46,7 +46,7 @@ public class VirtualMouseDriverController {
 
 
     public static class MyThread extends Thread {
-        private Object mPauseLock;
+        public Object mPauseLock;
         private boolean mPaused;
         private boolean mFinished;
 
@@ -148,7 +148,6 @@ public class VirtualMouseDriverController {
 */
 
         }
-
     }
 
 }
