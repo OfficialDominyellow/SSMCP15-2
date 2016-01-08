@@ -48,7 +48,8 @@ public class PointingStickService extends Service{
     //final VirtualMouseDriverController.MoveMousePointerThread MMPT = new VirtualMouseDriverController.MoveMousePointerThread(true);
     //private final VirtualMouseDriverController.MyHandler mHandler = new VirtualMouseDriverController.MyHandler();
 
-    private GestureDetector mGestureDetector=new GestureDetector(new GestureDetector.OnGestureListener() {
+    private GestureDetector mGestureDetector=new GestureDetector(new GestureDetector.SimpleOnGestureListener()
+    {
         @Override
         public boolean onDown(MotionEvent e) {
             return false;
@@ -66,6 +67,7 @@ public class PointingStickService extends Service{
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            Log.e("TEST", " Movve");
             return false;
         }
 
@@ -78,12 +80,34 @@ public class PointingStickService extends Service{
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             return false;
         }
+        public boolean onDoubleTapEvent(MotionEvent ev) {
+            Log.e("TEST", "onDoubleTapEvent Movve");
+            return true;
+        }
+
 
     });
+    private View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            if(!isMouseMove){
+                Log.e("Service","LONG CLICK");
+                return true;
+            }
+            return false;
+        }
+    };
+    private View.OnClickListener mClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    };
 
     private OnTouchListener mViewTouchListener = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+           // return mGestureDetector.onTouchEvent(event);
             int xdiff=0;
             int ydiff=0;
             //virtualMouseDriverController.myThread.pauseThread();
@@ -136,11 +160,12 @@ public class PointingStickService extends Service{
                     mWindowManager.updateViewLayout(pointingStick, mParams);
                     break;
             }
-            return true;
+            return false;
         }
     };
     @Override
     public IBinder onBind(Intent arg0) { return null; }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -168,6 +193,8 @@ public class PointingStickService extends Service{
         pointingStick.setBackgroundColor(Color.argb(127, 0, 255, 255));								//텍스트뷰 배경 색
 
         pointingStick.setOnTouchListener(mViewTouchListener);
+        pointingStick.setOnLongClickListener(mLongClickListener);//롱 클릭
+//        pointingStick.setOnTouchListener(mViewTouchListener);
 
         //최상위 윈도우에 넣기 위한 설정
         mParams = new WindowManager.LayoutParams(
@@ -178,8 +205,6 @@ public class PointingStickService extends Service{
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
         //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
-
-
 
 
         mParams2 = new WindowManager.LayoutParams(
