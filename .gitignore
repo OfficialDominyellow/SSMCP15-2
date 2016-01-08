@@ -144,6 +144,8 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# local.properties
+local.properties
 
 ### Gradle ###
 .gradle
