@@ -83,6 +83,9 @@ public class PointingStickService extends Service{
     private OnTouchListener mViewTouchListener = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+            int xdiff=0;
+            int ydiff=0;
+            boolean isMove=false;
             //virtualMouseDriverController.myThread.pauseThread();
             switch(event.getAction()) {
                 case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
@@ -92,21 +95,24 @@ public class PointingStickService extends Service{
                     START_Y = event.getRawY();					//터치 시작 점
                     PREV_X = mParams.x;							//뷰의 시작 점
                     PREV_Y = mParams.y;							//뷰의 시작
+                    isMove=false;
+                    Log.e("Service","ACTION_DOWN");
                     break;
                 case MotionEvent.ACTION_MOVE:
 
-                    int x = (int)(event.getRawX() - START_X);	//이동한 거리
-                    int y = (int)(event.getRawY() - START_Y);	//이동한 거리
+                    xdiff = (int)(event.getRawX() - START_X);	//이동한 거리
+                    ydiff = (int)(event.getRawY() - START_Y);	//이동한 거리
 
                     //터치해서 이동한 만큼 이동 시킨다
-                    mParams.x = PREV_X + x;
-                    mParams.y = PREV_Y + y;
-                    Log.e("Service","set ACTION_MOVE X:"+ mParams.x+"Y:"+mParams.y);
+                    mParams.x = PREV_X + xdiff;
+                    mParams.y = PREV_Y + ydiff;
 
                     mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
                     optimizePosition();
+                    isMove=true;
 
-                    virtualMouseDriverController.myThread.setDifference(x, y);
+                    Log.e("Service","ACTION_MOVE");
+                    virtualMouseDriverController.myThread.setDifference(xdiff,ydiff);
                     if(virtualMouseDriverController.myThread.getmPause()) {
                         virtualMouseDriverController.myThread.onResume();
                     } else {
@@ -116,29 +122,25 @@ public class PointingStickService extends Service{
                 /* reset position */
                 case MotionEvent.ACTION_UP:
 
-                    //
+                    if(!isMove)
+                    {
+                        clickLeftMouse();
+                        Log.e("Service", "left mouse clicked");
+                    }
+                    
+                    //virtualMouseDriverController.myThread.interrupt();
                     virtualMouseDriverController.myThread.onPause();
-                    isMoving=false;
+                    isMove=false;
                     //MMPT.stopThread();
+                    Log.e("Service","ACTION_UP");
                     mParams.x=pxWidth;
                     mParams.y=pxHeight;//상대적으로 좌표 설정 ,원위치로 변경
-
-                    Log.e("Service","set ACTION_UP X:"+pxWidth+"Y:"+pxHeight);
                     mWindowManager.updateViewLayout(pointingStick, mParams);
                     break;
             }
             return true;
         }
     };
-    private View.OnClickListener button1ClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View arg0) {
-            clickLeftMouse();
-            Log.e("Service", "left mouse clicked");
-        }
-    };
-
-
     @Override
     public IBinder onBind(Intent arg0) { return null; }
     @Override
@@ -157,7 +159,7 @@ public class PointingStickService extends Service{
         moveableStick.setBackgroundColor(Color.argb(255, 255, 255, 255));								//텍스트뷰 배경 색
 
         moveableStick.setOnTouchListener(mViewTouchListener);										//팝업뷰에 터치 리스너 등록
-        moveableStick.setOnClickListener(button1ClickListener);
+        //moveableStick.setOnClickListener(button1ClickListener);
 
 
 
@@ -167,8 +169,7 @@ public class PointingStickService extends Service{
         pointingStick.setTextColor(Color.BLUE);                                                            //글자 색상
         pointingStick.setBackgroundColor(Color.argb(127, 0, 255, 255));								//텍스트뷰 배경 색
 
-        pointingStick.setOnTouchListener(mViewTouchListener);										//팝업뷰에 터치 리스너 등록
-        pointingStick.setOnClickListener(button1ClickListener);
+        pointingStick.setOnTouchListener(mViewTouchListener);
 
         //최상위 윈도우에 넣기 위한 설정
         mParams = new WindowManager.LayoutParams(
@@ -229,7 +230,6 @@ public class PointingStickService extends Service{
     }
 
     private void optimizePosition() {
-        Log.e("Service","optimize ");
         //최대값 넘어가지 않게 설정
         if(mParams.x > MAX_X)
             mParams.x = pxWidth;
@@ -259,17 +259,16 @@ public class PointingStickService extends Service{
         });
 
         //최상위 윈도우에 넣기 위한 설정
-        /*WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,					//항상 최 상위에 있게. status bar 밑에 있음. 터치 이벤트 받을 수 있음.
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,		//이 속성을 안주면 터치 & 키 이벤트도 먹게 된다.
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
-        //params.gravity = Gravity.LEFT | Gravity.TOP;							//왼쪽 상단에 위치하게 함.
+        params.gravity = Gravity.LEFT | Gravity.TOP;							//왼쪽 상단에 위치하게 함.
 
         mWindowManager.addView(mSeekBar, params);//pointing Stick;
-        */
     }
 
     /**
