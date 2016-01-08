@@ -43,6 +43,7 @@ public class PointingStickService extends Service{
     private int pxWidth=1,pxHeight=-1;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
     private boolean isMoving=false;
+    private boolean isMouseMove=false;
     //private Handler mHandler;
     //final VirtualMouseDriverController.MoveMousePointerThread MMPT = new VirtualMouseDriverController.MoveMousePointerThread(true);
     //private final VirtualMouseDriverController.MyHandler mHandler = new VirtualMouseDriverController.MyHandler();
@@ -85,7 +86,6 @@ public class PointingStickService extends Service{
         public boolean onTouch(View v, MotionEvent event) {
             int xdiff=0;
             int ydiff=0;
-            boolean isMove=false;
             //virtualMouseDriverController.myThread.pauseThread();
             switch(event.getAction()) {
                 case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
@@ -95,7 +95,7 @@ public class PointingStickService extends Service{
                     START_Y = event.getRawY();					//터치 시작 점
                     PREV_X = mParams.x;							//뷰의 시작 점
                     PREV_Y = mParams.y;							//뷰의 시작
-                    isMove=false;
+                    isMouseMove=false;
                     Log.e("Service","ACTION_DOWN");
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -109,7 +109,7 @@ public class PointingStickService extends Service{
 
                     mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
                     optimizePosition();
-                    isMove=true;
+                    isMouseMove=true;
 
                     Log.e("Service","ACTION_MOVE");
                     virtualMouseDriverController.myThread.setDifference(xdiff,ydiff);
@@ -121,8 +121,8 @@ public class PointingStickService extends Service{
                     break;
                 /* reset position */
                 case MotionEvent.ACTION_UP:
+                    if(!isMouseMove)
 
-                    if(!isMove)
                     {
                         clickLeftMouse();
                         Log.e("Service", "left mouse clicked");
@@ -130,7 +130,7 @@ public class PointingStickService extends Service{
 
                     //virtualMouseDriverController.myThread.interrupt();
                     virtualMouseDriverController.myThread.onPause();
-                    isMove=false;
+                    isMouseMove=false;
                     //MMPT.stopThread();
                     Log.e("Service","ACTION_UP");
                     mParams.x=pxWidth;
@@ -267,7 +267,6 @@ public class PointingStickService extends Service{
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
         params.gravity = Gravity.LEFT | Gravity.TOP;							//왼쪽 상단에 위치하게 함.
-
         mWindowManager.addView(mSeekBar, params);//pointing Stick;
     }
 
