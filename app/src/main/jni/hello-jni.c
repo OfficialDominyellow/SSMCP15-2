@@ -38,7 +38,43 @@
 
 int fd;
 int dx,dy;
+void Java_com_example_hellojni_PointingStickService_dragMouse(JNIEnv * a,jobject b)
+{
+    struct input_event evMouseLeftKey;
+    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
+    evMouseLeftKey.type = EV_KEY;
+    evMouseLeftKey.code = BTN_LEFT;
+    evMouseLeftKey.value = 1;
+    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
+        die("error: write");
 
+    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
+    evMouseLeftKey.type = EV_SYN;
+    evMouseLeftKey.code = 0;
+    evMouseLeftKey.value = 0;
+    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+
+}
+void Java_com_example_hellojni_PointingStickService_releaseMouse(JNIEnv * a,jobject b)
+{
+    struct input_event evMouseLeftKey;
+
+    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
+    evMouseLeftKey.type = EV_KEY;
+    evMouseLeftKey.code = BTN_LEFT;
+    evMouseLeftKey.value = 0;
+    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
+    evMouseLeftKey.type = EV_SYN;
+    evMouseLeftKey.code = 0;
+    evMouseLeftKey.value = 0;
+    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
+        die("error: write");
+}
 void Java_com_example_hellojni_PointingStickService_clickLeftMouse(JNIEnv * a,jobject b)
 {
     struct input_event evMouseLeftKey;

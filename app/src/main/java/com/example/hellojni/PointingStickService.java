@@ -44,6 +44,8 @@ public class PointingStickService extends Service{
     /* 포인터가 움직이는 중이면 true, 아니면 false */
     private boolean isMoving=false;
     private boolean isMouseMove=false;
+    private boolean isDragMouse=false;
+    private boolean isLongMouseClick=false;
     //private Handler mHandler;
     //final VirtualMouseDriverController.MoveMousePointerThread MMPT = new VirtualMouseDriverController.MoveMousePointerThread(true);
     //private final VirtualMouseDriverController.MyHandler mHandler = new VirtualMouseDriverController.MyHandler();
@@ -91,7 +93,8 @@ public class PointingStickService extends Service{
         @Override
         public boolean onLongClick(View v) {
             if(!isMouseMove){
-                Log.e("Service","LONG CLICK");
+                Log.e("Service", "LONG CLICK");
+                isLongMouseClick=true;
                 return true;
             }
             return false;
@@ -103,6 +106,12 @@ public class PointingStickService extends Service{
 
         }
     };
+    /*onTouch 에서
+    return true 를 반환하면 이후 비슷한 이벤트는 더이상 진행되지 않음
+    만일 onTouch 에서 특정한 플래그 값만 변경하고,
+    이후 click, longclick 이벤트가 계속 수행되길 원하시면 필요한 작업 후
+    return false 를 반환
+    이벤트 호출 순서 onTouch -> onLongClick -> onClick .*/
 
     private OnTouchListener mViewTouchListener = new OnTouchListener() {
         @Override
@@ -123,10 +132,8 @@ public class PointingStickService extends Service{
                     Log.e("Service","ACTION_DOWN");
                     break;
                 case MotionEvent.ACTION_MOVE:
-
                     xdiff = (int)(event.getRawX() - START_X);	//이동한 거리
                     ydiff = (int)(event.getRawY() - START_Y);	//이동한 거리
-
                     //터치해서 이동한 만큼 이동 시킨다
                     mParams.x = PREV_X + xdiff;
                     mParams.y = PREV_Y + ydiff;
@@ -145,7 +152,11 @@ public class PointingStickService extends Service{
                     break;
                 /* reset position */
                 case MotionEvent.ACTION_UP:
-                    if(!isMouseMove)
+                    if(isLongMouseClick)
+                    {
+                        isLongMouseClick=false;
+                    }//롱클릭이 우선순위가 기본 클릭보다 높게 둠
+                    else if(!isMouseMove)
                     {
                         clickLeftMouse();
                         Log.e("Service", "left mouse clicked");
@@ -323,5 +334,6 @@ public class PointingStickService extends Service{
     public native int initMouseDriver();
     public native void removeMouseDriver();
     public native void clickLeftMouse();
-
+    public native void dragMouse();
+    public native void releaseMouse();
 }
