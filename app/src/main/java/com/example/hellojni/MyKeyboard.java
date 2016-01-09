@@ -4,6 +4,7 @@ import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.AudioManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
@@ -26,6 +27,9 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         keyboard = new Keyboard(this, R.xml.qwerty);
         kv.setKeyboard(keyboard);
         kv.setOnKeyboardActionListener(this);
+
+        Log.e("Keyboard","onCreate");
+
         return kv;
     }
 
@@ -48,17 +52,18 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public void onPress(int primaryCode) {
+        Log.e("Keyboard","onPress");
 
     }
 
     @Override
     public void onRelease(int primaryCode) {
-
+        Log.e("Keyboard","onRelease");
     }
 
     @Override
     public void onKey(int primaryCode, int[] keyCodes) {
-
+        Log.e("Keyboard","onKey");
         InputConnection ic = getCurrentInputConnection();
         playClick(primaryCode);
         switch(primaryCode){
@@ -84,26 +89,26 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public void onText(CharSequence text) {
-
+        Log.e("Keyboard","onText");
     }
 
     @Override
     public void swipeLeft() {
-
+        Log.e("Keyboard","swipeLeft");
     }
 
     @Override
     public void swipeRight() {
-
+        Log.e("Keyboard","swipeRight");
     }
 
     @Override
     public void swipeDown() {
-
+        Log.e("Keyboard","swipeDown");
     }
 
     @Override
     public void swipeUp() {
-
+        Log.e("Keyboard","swipeUp");
     }
 }
