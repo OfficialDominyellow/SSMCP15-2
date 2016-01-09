@@ -23,13 +23,10 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
-#include <time.h>
 
 #define die(str, args...) do { \
         perror(str); \
@@ -148,8 +145,11 @@ jint Java_com_example_hellojni_PointingStickService_initMouseDriver(JNIEnv* env,
     int i,j;
     fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if(fd < 0) {
-        die("error: open");
-        return -1;
+        fd=open("/dev/input/uinput",O_WRONLY|O_NONBLOCK);
+        if(fd<0){
+            die("error: open");
+            return -1;
+        }
     }
     if(ioctl(fd, UI_SET_EVBIT, EV_KEY) < 0) {
         die("error: ioctl");
