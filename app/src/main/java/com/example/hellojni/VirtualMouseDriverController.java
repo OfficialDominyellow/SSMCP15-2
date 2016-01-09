@@ -21,7 +21,6 @@ public class VirtualMouseDriverController extends Thread {
     private int mMouseSpeed=5;
     private static int MAXMOVE;
     private static int INTERVAL;
-    private Context context;
 
     private native void moveMouse(int x, int y);
 
@@ -120,8 +119,5 @@ public class VirtualMouseDriverController extends Thread {
             }
 
         }
-        
-
     }
-
 }

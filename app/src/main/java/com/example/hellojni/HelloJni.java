@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.os.Bundle;
 import android.view.View.OnClickListener;
 
@@ -39,6 +38,7 @@ public class HelloJni extends Activity implements OnClickListener
         if(view == R.id.start) {
             Log.e("service", "startService");
             startService(new Intent(this, PointingStickService.class));    //서비스 시작
+
         }
         else{Log.e("service","endService");
             stopService(new Intent(this, PointingStickService.class));	//서비스 종료
