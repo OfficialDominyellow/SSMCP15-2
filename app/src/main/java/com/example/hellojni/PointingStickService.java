@@ -17,7 +17,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListPopupWindow;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
@@ -29,14 +31,14 @@ import android.widget.Toast;
 
 public class PointingStickService extends Service{
     private Button pointingStick;
-    private Button moveableStick;
-    //private TextView pointingStick;//추후 이미지로 변경해야함
     private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
     private WindowManager.LayoutParams mParams2; //Layout params객체, 뷰의 위치 크기 지정
 
-
     private WindowManager mWindowManager;
     private SeekBar mSeekBar;//투명도 조절
+    private ListPopupWindow mList;//옵션 제공 (롱클릭시);
+    private String[] Options={"1","2","3"};//test
+
     private static VirtualMouseDriverController virtualMouseDriverController;
 
     private float START_X,START_Y;
@@ -96,6 +98,7 @@ public class PointingStickService extends Service{
         public boolean onLongClick(View v) {
             if(!isMouseMove){
                 Log.e("Service", "LONG CLICK");
+                mList.show();
                 isLongMouseClick=true;
                 return true;
             }
@@ -138,6 +141,7 @@ public class PointingStickService extends Service{
                     PREV_X = mParams.x;							//뷰의 시작 점
                     PREV_Y = mParams.y;							//뷰의 시작
                     isMouseMove=false;
+                    mList.dismiss();//리스트 숨김
                     Log.e("Service","ACTION_DOWN");
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -152,7 +156,6 @@ public class PointingStickService extends Service{
                         xdiff=(int)(xdiff/dpDistance*MAXdp);
                         ydiff=(int)(ydiff/dpDistance*MAXdp);
                     }
-
 
                     //터치해서 이동한 만큼 이동 시킨다
                     mParams.x = PREV_X + xdiff;
@@ -206,17 +209,6 @@ public class PointingStickService extends Service{
             return;
         }
 
-        moveableStick = new Button(this);                                                                //뷰 생성
-        moveableStick.setText("Movealbe");    //텍스트 설정
-        moveableStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);                                //텍스트 크기 18sp
-        moveableStick.setTextColor(Color.BLACK);                                                            //글자 색상
-        moveableStick.setBackgroundColor(Color.argb(255, 255, 255, 255));								//텍스트뷰 배경 색
-
-        moveableStick.setOnTouchListener(mViewTouchListener);										//팝업뷰에 터치 리스너 등록
-        //moveableStick.setOnClickListener(button1ClickListener);
-
-
-
         pointingStick = new Button(this);                                                                //뷰 생성
         pointingStick.setText("Pointing\nStick");    //텍스트 설정
         pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
@@ -225,6 +217,16 @@ public class PointingStickService extends Service{
 
         pointingStick.setOnTouchListener(mViewTouchListener);
         pointingStick.setOnLongClickListener(mLongClickListener);//롱 클릭
+
+
+        mList=new ListPopupWindow(this);
+        mList.setWidth(300);
+        mList.setHeight(300);
+        mList.setAnchorView(pointingStick);//리스트 팝업 윈도우 등록
+        mList.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                Options));
+        mList.setModal(true);
 //        pointingStick.setOnTouchListener(mViewTouchListener);
 
         //최상위 윈도우에 넣기 위한 설정
