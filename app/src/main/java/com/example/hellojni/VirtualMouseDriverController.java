@@ -22,23 +22,24 @@ public class VirtualMouseDriverController extends Thread {
     private int mMouseSpeed=5;
     private static int MAXMOVE;
     private static int INTERVAL;
-    private Context context;
+    private static Context context;
 
     private native void moveMouse(int x, int y);
 
-    private VirtualMouseDriverController() {
+    private VirtualMouseDriverController(Context context) {
         mPauseLock = new Object();
         mPaused = false;
         mFinished = false;
-
-
+        this.context = context;
     }
 
     public static synchronized VirtualMouseDriverController getInstance(Context context) {
         if (uniqueInstance == null) {
-            uniqueInstance = new VirtualMouseDriverController();
+            uniqueInstance = new VirtualMouseDriverController(context);
             MAXMOVE=(int)convertDpToPixel(63,context.getApplicationContext());
-            INTERVAL=(int)convertDpToPixel(50,context.getApplicationContext());
+            Log.e("MAXMOVE", ""+MAXMOVE);
+            INTERVAL=(int)convertDpToPixel(5,context.getApplicationContext());
+            Log.e("INTERVAL", ""+INTERVAL);
         }
         return uniqueInstance;
     }
@@ -86,19 +87,33 @@ public class VirtualMouseDriverController extends Thread {
     public void run() {
         int x=0;
         int y=0;
+        int sleepTime=10;
         while (!mFinished) {
             while (!mPaused) {
                 try {
-                    Thread.sleep(10);
+                    if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(10,this.context.getApplicationContext())) {
+                        sleepTime=25;
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(12,this.context.getApplicationContext())) {
+                        sleepTime=20;
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(25,this.context.getApplicationContext())) {
+                        sleepTime=13;
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(50,this.context.getApplicationContext())) {
+                        sleepTime=11;
+                    } else {
+                        sleepTime=8;
+                    }
+                    Thread.sleep(sleepTime);
                     for (int i=0;i<INTERVAL;i++) {
                         if(Math.abs(dx)<=MAXMOVE/INTERVAL*i) {
-                            x=(dx<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            //x=(dx<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            x=(dx<0)?(int)(0-i):(int)(i);
                             break;
                         }
                     }
                     for (int i=0;i<INTERVAL;i++) {
                         if(Math.abs(dy)<=MAXMOVE/INTERVAL*i) {
-                            y=(dy<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            //y=(dy<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            y=(dy<0)?(int)(0-i):(int)(i);
                             break;
                         }
                     }
