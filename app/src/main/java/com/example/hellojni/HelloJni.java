@@ -33,10 +33,6 @@ public class HelloJni extends Activity implements OnClickListener
         setContentView(R.layout.main);
         findViewById(R.id.start).setOnClickListener(this);		//시작버튼
         findViewById(R.id.end).setOnClickListener(this);			//중시버튼
-        /*TextView  tv = new TextView(this);
-        tv.setText( stringFromJNI() );
-        setContentView(tv);
-        stringFromJNI();*/
     }
     public void onClick(View v) {
         int view = v.getId();

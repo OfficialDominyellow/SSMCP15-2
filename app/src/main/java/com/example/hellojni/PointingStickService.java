@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListPopupWindow;
@@ -36,7 +37,7 @@ public class PointingStickService extends Service{
     private WindowManager mWindowManager;
     private SeekBar mSeekBar;//투명도 조절
     private ListPopupWindow mList;//옵션 제공 (롱클릭시);
-    private String[] Options={"1","2","3"};//test
+    private String[] Options={"Move","Hide","Tap"};//test
 
     private static VirtualMouseDriverController virtualMouseDriverController;
 
@@ -49,6 +50,7 @@ public class PointingStickService extends Service{
     private boolean isMouseMove=false;
     private boolean isDragMouse=false;
     private boolean isLongMouseClick=false;
+    private boolean moveMode=false;
     //private Handler mHandler;
     //final VirtualMouseDriverController.MoveMousePointerThread MMPT = new VirtualMouseDriverController.MoveMousePointerThread(true);
     //private final VirtualMouseDriverController.MyHandler mHandler = new VirtualMouseDriverController.MyHandler();
@@ -89,8 +91,6 @@ public class PointingStickService extends Service{
             Log.e("TEST", "onDoubleTapEvent Movve");
             return true;
         }
-
-
     });
     private View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
         @Override
@@ -124,6 +124,33 @@ public class PointingStickService extends Service{
         return dp;
     }
 
+    private AdapterView.OnItemClickListener mListItemClickListener = new AdapterView.OnItemClickListener(){
+        public void onItemClick(AdapterView<?>parent,View view,int position,long id) {
+            switch(position)
+            {
+                case 0://move pointing Stick
+                    if(moveMode==false) {
+                        moveMode = true;
+                        Options[0]="Fix";
+                    }
+                    else
+                    {
+                        moveMode=false;
+                        Options[0]="Move";
+                    }
+                    mList.dismiss();
+                    break;
+                case 1:
+
+                    mList.dismiss();
+                    break;
+                case 2:
+
+                    mList.dismiss();
+                    break;
+            }
+        }
+    };
     private OnTouchListener mViewTouchListener = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -151,7 +178,7 @@ public class PointingStickService extends Service{
 
                     double distance = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
                     float dpDistance = convertPixelsToDp((float)distance,getApplicationContext());
-                    if (dpDistance>MAXdp) {
+                    if (dpDistance>MAXdp && !moveMode) {
                         xdiff=(int)(xdiff/dpDistance*MAXdp);
                         ydiff=(int)(ydiff/dpDistance*MAXdp);
                     }
@@ -159,14 +186,18 @@ public class PointingStickService extends Service{
                     //터치해서 이동한 만큼 이동 시킨다
                     mParams.x = PREV_X + xdiff;
                     mParams.y = PREV_Y + ydiff;
-
+                    if(moveMode)
+                    {
+                        pxWidth=mParams.x;
+                        pxHeight=mParams.y;
+                    }
                     mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
-                    optimizePosition();
+                    //optimizePosition();
                     isMouseMove=true;
 
                     Log.e("Service","ACTION_MOVE");
                     virtualMouseDriverController.setDifference(xdiff,ydiff);
-                    if(virtualMouseDriverController.getmPause()) {
+                    if(virtualMouseDriverController.getmPause() &&!moveMode) {
                         virtualMouseDriverController.onResume();
                     } else {
 
@@ -184,13 +215,16 @@ public class PointingStickService extends Service{
                         Log.e("Service", "left mouse clicked");
                     }
                     //virtualMouseDriverController.myThread.interrupt();
-                    virtualMouseDriverController.onPause();
+                    //virtualMouseDriverController.onPause();
                     isMouseMove=false;
-                    //MMPT.stopThread();
-                    Log.e("Service","ACTION_UP");
-                    mParams.x=pxWidth;
-                    mParams.y=pxHeight;//상대적으로 좌표 설정 ,원위치로 변경
-                    mWindowManager.updateViewLayout(pointingStick, mParams);
+                    Log.e("Service", "ACTION_UP");
+                    if(!moveMode) {
+                        virtualMouseDriverController.onPause();
+                        mParams.x = pxWidth;
+                        mParams.y = pxHeight;//상대적으로 좌표 설정 ,원위치로 변경
+                        mWindowManager.updateViewLayout(pointingStick, mParams);
+                    }
+
                     break;
             }
             return false;
@@ -226,6 +260,7 @@ public class PointingStickService extends Service{
                 android.R.layout.simple_list_item_1,
                 Options));
         mList.setModal(true);
+        mList.setOnItemClickListener(mListItemClickListener);
 //        pointingStick.setOnTouchListener(mViewTouchListener);
 
         //최상위 윈도우에 넣기 위한 설정
@@ -237,12 +272,10 @@ public class PointingStickService extends Service{
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
         //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
-
-
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         setMaxPosition();
         mParams.x=pxWidth;
         mParams.y=pxHeight;//상대적으로 좌표 설정
-
         mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
 
         addOpacityController();		//팝업 뷰의 투명도 조절하는 컨트롤러 추가
