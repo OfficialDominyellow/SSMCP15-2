@@ -12,7 +12,7 @@
         <Key android:codes="52" android:keyLabel="4"/>
         <Key android:codes="53" android:keyLabel="5"/>
         <Key android:codes="54" android:keyLabel="6"/>
-        <Key android:codes="55" android:keyLabel="7"/>
+        <Key android:codes="55" android:keyIcon="@drawable/popimg"/>
         <Key android:codes="56" android:keyLabel="8"/>
         <Key android:codes="57" android:keyLabel="9"/>
         <Key android:codes="48" android:keyLabel="0" android:keyEdgeFlags="right"/>
@@ -29,6 +29,7 @@
         <Key android:codes="63,33,58" android:keyLabel="\? ! :" android:keyEdgeFlags="right"/>
     </Row>
     <Row android:rowEdgeFlags="bottom">
+        <Key android:codes="-101" android:keyLabel="CHG" android:keyWidth="10%p"/>
         <Key android:codes="32" android:keyLabel="SPACE" android:keyWidth="40%p"/>
         <Key android:codes="-5" android:keyLabel="DEL" android:keyWidth="20%p"/>
         <Key android:codes="-4" android:keyLabel="DONE" android:keyWidth="20%p" android:keyEdgeFlags="right"/>

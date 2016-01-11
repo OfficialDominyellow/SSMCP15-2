@@ -1,12 +1,18 @@
 package com.example.hellojni;
 
+import android.content.Context;
+import android.content.Intent;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.AudioManager;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.hellojni.R;
 
@@ -15,17 +21,56 @@ import com.example.hellojni.R;
  */
 public class MyKeyboard extends InputMethodService implements KeyboardView.OnKeyboardActionListener{
 
+    private final String TAG = "MyKeyboard";
+
     private KeyboardView kv;
     private Keyboard keyboard;
 
     private boolean caps = false;
 
+    private double xPositionStart;
+    private double yPositionStart;
+
+    private double xPositionEnd;
+    private double yPositionEnd;
+
+    private int downKeycode;
+
+    private static Intent mService;
+
     @Override
     public View onCreateInputView(){
         kv = (KeyboardView) getLayoutInflater().inflate(R.layout.keyboard, null);
         keyboard = new Keyboard(this, R.xml.qwerty);
+
         kv.setKeyboard(keyboard);
+        kv.setPopupOffset(250, 150);
+
+        kv.setPreviewEnabled(false);
+
         kv.setOnKeyboardActionListener(this);
+
+        mService = new Intent(this, KeyboardPopupService.class);
+
+        kv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    xPositionStart = event.getX();
+                    yPositionStart = event.getY();
+                    //Toast.makeText(getApplicationContext(), "X start : " + xPositionStart + " Y start : " + yPositionStart, Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "X start : " + xPositionStart + " Y start : " + yPositionStart);
+                } else if(event.getAction() == MotionEvent.ACTION_UP){
+                    xPositionEnd = event.getX();
+                    yPositionEnd = event.getY();
+                    //Toast.makeText(getApplicationContext(), "X END : " + xPositionEnd + " Y END : " + yPositionEnd, Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "X END : " + xPositionEnd + " Y END : " + yPositionEnd);
+                }
+                return false;
+            }
+
+
+        });
         return kv;
     }
 
@@ -47,9 +92,37 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     }
 
     @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        Log.i(TAG, "onKeyLongPress start : " + keyCode);
+
+        switch(keyCode){
+            case 32:
+                Toast.makeText(getApplicationContext(), "space Long click", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
     public void onPress(int primaryCode) {
+        Log.i(TAG, "onPress start : " + primaryCode);
+        downKeycode = primaryCode;
+        kv.setPopupOffset(-(int) xPositionStart, -(int) yPositionStart);
+
+        Log.i(TAG, "POPUP");
+        popupStart(primaryCode);
 
     }
+
+    /*
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.i(TAG, "onKeyUp start : " + keyCode);
+        return super.onKeyUp(keyCode, event);
+    }
+    */
 
     @Override
     public void onRelease(int primaryCode) {
@@ -58,6 +131,13 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public void onKey(int primaryCode, int[] keyCodes) {
+        popupEnd();
+
+        primaryCode = downKeycode;
+        Log.i(TAG, "onKey start : " + primaryCode);
+
+        //primaryCode + 시작좌표 마지막좌표 판단해서 left right up down cen 판단해서 알맞는 키 입력되도록
+
 
         InputConnection ic = getCurrentInputConnection();
         playClick(primaryCode);
@@ -105,5 +185,17 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     @Override
     public void swipeUp() {
 
+    }
+
+    public void popupStart(int primaryCode){
+
+        //Intent service = new Intent(this, KeyboardPopupService.class);
+        mService.putExtra("primaryCode", primaryCode+"");
+        startService(mService);
+    }
+
+    public void popupEnd(){
+        //Intent service = new Intent(this, KeyboardPopupService.class);
+        stopService(mService);
     }
 }
