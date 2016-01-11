@@ -14,10 +14,10 @@ import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListPopupWindow;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
@@ -28,86 +28,21 @@ import android.widget.Toast;
  */
 
 public class PointingStickService extends Service{
+    private PointingStickController mPointingStickController;
+    private StickLongClickListener mStickLongClickListener;
+    private ModeItemClickListener mModeItemClickListener;
+    private StickTouchListenenr mStickTouchListenenr;
+
     private Button pointingStick;
-    private Button moveableStick;
-    //private TextView pointingStick;//추후 이미지로 변경해야함
     private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
-    private WindowManager.LayoutParams mParams2; //Layout params객체, 뷰의 위치 크기 지정
-
-
     private WindowManager mWindowManager;
     private SeekBar mSeekBar;//투명도 조절
-    private static VirtualMouseDriverController virtualMouseDriverController;
+    private ListPopupWindow mList;//옵션 제공 (롱클릭시);
+    private String[] Options={"Move","Hide","Tap"};//test
 
-    private float START_X,START_Y;
-    private int PREV_X,PREV_Y;
-    private int MAX_X=-1,MAX_Y=-1;
-    private int pxWidth=1,pxHeight=-1;
+    public static VirtualMouseDriverController virtualMouseDriverController;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
-    private boolean isMoving=false;
-    private boolean isMouseMove=false;
-    private boolean isDragMouse=false;
-    private boolean isLongMouseClick=false;
-    //private Handler mHandler;
-    //final VirtualMouseDriverController.MoveMousePointerThread MMPT = new VirtualMouseDriverController.MoveMousePointerThread(true);
-    //private final VirtualMouseDriverController.MyHandler mHandler = new VirtualMouseDriverController.MyHandler();
 
-    private GestureDetector mGestureDetector=new GestureDetector(new GestureDetector.SimpleOnGestureListener()
-    {
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return false;
-        }
-
-        @Override
-        public void onShowPress(MotionEvent e) {
-
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            return false;
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            Log.e("TEST", " Movve");
-            return false;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            return false;
-        }
-        public boolean onDoubleTapEvent(MotionEvent ev) {
-            Log.e("TEST", "onDoubleTapEvent Movve");
-            return true;
-        }
-
-
-    });
-    private View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            if(!isMouseMove){
-                Log.e("Service", "LONG CLICK");
-                isLongMouseClick=true;
-                return true;
-            }
-            return false;
-        }
-    };
-    private View.OnClickListener mClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
     /*onTouch 에서
     return true 를 반환하면 이후 비슷한 이벤트는 더이상 진행되지 않음
     만일 onTouch 에서 특정한 플래그 값만 변경하고,
@@ -115,85 +50,6 @@ public class PointingStickService extends Service{
     return false 를 반환
     이벤트 호출 순서 onTouch -> onLongClick -> onClick .*/
 
-    public static float convertPixelsToDp(float px, Context context){
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = px / (metrics.densityDpi / 160f);
-        return dp;
-    }
-
-    private OnTouchListener mViewTouchListener = new OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-           // return mGestureDetector.onTouchEvent(event);
-            int xdiff=0;
-            int ydiff=0;
-            //virtualMouseDriverController.myThread.pauseThread();
-            switch(event.getAction()) {
-                case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
-                    if(MAX_X == -1)
-                        setMaxPosition();
-                    START_X = event.getRawX();					//터치 시작 점
-                    START_Y = event.getRawY();					//터치 시작 점
-                    PREV_X = mParams.x;							//뷰의 시작 점
-                    PREV_Y = mParams.y;							//뷰의 시작
-                    isMouseMove=false;
-                    Log.e("Service","ACTION_DOWN");
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                     final int MAXdp = 63;
-
-                    xdiff = (int)(event.getRawX() - START_X);	//이동한 거리
-                    ydiff = (int)(event.getRawY() - START_Y);	//이동한 거리
-
-                    double distance = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
-                    float dpDistance = convertPixelsToDp((float)distance,getApplicationContext());
-                    if (dpDistance>MAXdp) {
-                        xdiff=(int)(xdiff/dpDistance*MAXdp);
-                        ydiff=(int)(ydiff/dpDistance*MAXdp);
-                    }
-
-
-                    //터치해서 이동한 만큼 이동 시킨다
-                    mParams.x = PREV_X + xdiff;
-                    mParams.y = PREV_Y + ydiff;
-
-                    mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
-                    optimizePosition();
-                    isMouseMove=true;
-
-                    Log.e("Service","ACTION_MOVE");
-                    virtualMouseDriverController.setDifference(xdiff,ydiff);
-                    if(virtualMouseDriverController.getmPause()) {
-                        virtualMouseDriverController.onResume();
-                    } else {
-
-                    }
-                    break;
-                /* reset position */
-                case MotionEvent.ACTION_UP:
-                    if(isLongMouseClick)
-                    {
-                        isLongMouseClick=false;
-                    }//롱클릭이 우선순위가 기본 클릭보다 높게 둠
-                    else if(!isMouseMove)
-                    {
-                        clickLeftMouse();
-                        Log.e("Service", "left mouse clicked");
-                    }
-                    //virtualMouseDriverController.myThread.interrupt();
-                    virtualMouseDriverController.onPause();
-                    isMouseMove=false;
-                    //MMPT.stopThread();
-                    Log.e("Service","ACTION_UP");
-                    mParams.x=pxWidth;
-                    mParams.y=pxHeight;//상대적으로 좌표 설정 ,원위치로 변경
-                    mWindowManager.updateViewLayout(pointingStick, mParams);
-                    break;
-            }
-            return false;
-        }
-    };
     @Override
     public IBinder onBind(Intent arg0) { return null; }
 
@@ -205,27 +61,23 @@ public class PointingStickService extends Service{
             Toast.makeText(getApplicationContext(), "Fail to load Vmouse.", Toast.LENGTH_LONG).show();
             return;
         }
+        mPointingStickController=new PointingStickController(Options);
+        pointingStick = new Button(this);
+        //pointingStick=mPointingStickController.getPointingStick();                                                         //뷰 생성
 
-        moveableStick = new Button(this);                                                                //뷰 생성
-        moveableStick.setText("Movealbe");    //텍스트 설정
-        moveableStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);                                //텍스트 크기 18sp
-        moveableStick.setTextColor(Color.BLACK);                                                            //글자 색상
-        moveableStick.setBackgroundColor(Color.argb(255, 255, 255, 255));								//텍스트뷰 배경 색
-
-        moveableStick.setOnTouchListener(mViewTouchListener);										//팝업뷰에 터치 리스너 등록
-        //moveableStick.setOnClickListener(button1ClickListener);
-
-
-
-        pointingStick = new Button(this);                                                                //뷰 생성
         pointingStick.setText("Pointing\nStick");    //텍스트 설정
         pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
         pointingStick.setTextColor(Color.BLUE);                                                            //글자 색상
         pointingStick.setBackgroundColor(Color.argb(127, 0, 255, 255));								//텍스트뷰 배경 색
 
-        pointingStick.setOnTouchListener(mViewTouchListener);
-        pointingStick.setOnLongClickListener(mLongClickListener);//롱 클릭
-//        pointingStick.setOnTouchListener(mViewTouchListener);
+        mList=new ListPopupWindow(this);
+        mList.setWidth(300);
+        mList.setHeight(300);
+        mList.setAnchorView(pointingStick);//리스트 팝업 윈도우 등록
+        mList.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                Options));
+        mList.setModal(true);
 
         //최상위 윈도우에 넣기 위한 설정
         mParams = new WindowManager.LayoutParams(
@@ -236,27 +88,10 @@ public class PointingStickService extends Service{
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
         //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
 
-        mParams2 = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,					//항상 최 상위에 있게. status bar 밑에 있음. 터치 이벤트 받을 수 있음.
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,		//이 속성을 안주면 터치 & 키 이벤트도 먹게 된다.
-                //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
-                PixelFormat.TRANSLUCENT);										//투명
-        //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
-
-        mParams2.x=pxWidth;
-        mParams2.y=pxHeight;//상대적으로 좌표 설정
-
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);    //윈도우 매니저 불러옴.
-        //mWindowManager.addView(moveableStick, mParams2);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
-
-        setMaxPosition();
-        mParams.x=pxWidth;
-        mParams.y=pxHeight;//상대적으로 좌표 설정
-
+        initPosition();
         mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
 
         addOpacityController();		//팝업 뷰의 투명도 조절하는 컨트롤러 추가
@@ -266,36 +101,42 @@ public class PointingStickService extends Service{
             virtualMouseDriverController.start();
             virtualMouseDriverController.onPause();
         }
+        setAllListener();
     }
+    public void setAllListener()
+    {
+        mStickLongClickListener=new StickLongClickListener(mPointingStickController,mList);
+        pointingStick.setOnLongClickListener(mStickLongClickListener);
+
+        mStickTouchListenenr=new StickTouchListenenr(mPointingStickController,mParams, mList, mWindowManager,  pointingStick,
+                 this);
+        pointingStick.setOnTouchListener(mStickTouchListenenr);
+
+        mModeItemClickListener=new ModeItemClickListener(mPointingStickController,mList);
+        mList.setOnItemClickListener(mModeItemClickListener);
+
+    }
+
     /**
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다
      */
-    private void setMaxPosition() {
+    private void initPosition() {
         DisplayMetrics matrix = new DisplayMetrics();
         mWindowManager.getDefaultDisplay().getMetrics(matrix);		//화면 정보를 가져와서
 
-        pxWidth=matrix.widthPixels;
-        pxHeight=matrix.heightPixels;
+        mPointingStickController.setPxWidth(matrix.widthPixels);
+        mPointingStickController.setPxHeight(matrix.heightPixels);
 
-        MAX_X = pxWidth - pointingStick.getWidth();            //x 최대값 설정
-        MAX_Y = pxHeight - pointingStick.getHeight();			//y 최대값 설정
+        //x 최대값 설정
+        mPointingStickController.setMAX_X(mPointingStickController.getPxWidth() - pointingStick.getWidth());
+        //y 최대값 설정
+        mPointingStickController.setMAX_Y(mPointingStickController.getPxHeight() - pointingStick.getHeight());
 
-        Log.e("Service","setMaxPosition X:"+pxWidth+"Y:"+pxHeight);
-        pxWidth=pxWidth/5;
-        pxHeight=pxHeight/3;
-        Log.e("Service","setMaxPosition2 X:"+pxWidth+"Y:"+pxHeight);
-    }
+        mPointingStickController.setPxWidth(mPointingStickController.getPxWidth()/5);
+        mPointingStickController.setPxHeight(mPointingStickController.getPxHeight() / 5);
 
-    private void optimizePosition() {
-        //최대값 넘어가지 않게 설정
-        if(mParams.x > MAX_X)
-            mParams.x = pxWidth;
-        if(mParams.y > MAX_Y)
-            mParams.y = pxHeight;
-        if(mParams.x < 0)
-            mParams.x = 0;
-        if(mParams.y < 0)
-            mParams.y = 0;
+        mParams.x= mPointingStickController.getPxWidth();
+        mParams.y=mPointingStickController.getPxHeight();//x,y 위치 초기화
     }
 
     /**
@@ -332,8 +173,7 @@ public class PointingStickService extends Service{
      */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        setMaxPosition();		//최대값 다시 설정
-        optimizePosition();		//뷰 위치 최적화
+        initPosition();
     }// 화면 roatate시에 발생
 
     @Override
@@ -353,7 +193,4 @@ public class PointingStickService extends Service{
     }
     public native int initMouseDriver();
     public native void removeMouseDriver();
-    public native void clickLeftMouse();
-    public native void dragMouse();
-    public native void releaseMouse();
 }

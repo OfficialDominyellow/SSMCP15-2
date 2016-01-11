@@ -50,6 +50,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
         kv.setOnKeyboardActionListener(this);
 
+<<<<<<< HEAD
         mService = new Intent(this, KeyboardPopupService.class);
 
         kv.setOnTouchListener(new View.OnTouchListener() {
@@ -71,6 +72,10 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
 
         });
+=======
+        Log.e("Keyboard","onCreate");
+
+>>>>>>> 71506fda9384e80a6cdc547a1dafab47172bdcfa
         return kv;
     }
 
@@ -107,9 +112,13 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public void onPress(int primaryCode) {
+<<<<<<< HEAD
         Log.i(TAG, "onPress start : " + primaryCode);
         downKeycode = primaryCode;
         kv.setPopupOffset(-(int) xPositionStart, -(int) yPositionStart);
+=======
+        Log.e("Keyboard","onPress");
+>>>>>>> 71506fda9384e80a6cdc547a1dafab47172bdcfa
 
         Log.i(TAG, "POPUP");
         popupStart(primaryCode);
@@ -126,11 +135,12 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public void onRelease(int primaryCode) {
-
+        Log.e("Keyboard","onRelease");
     }
 
     @Override
     public void onKey(int primaryCode, int[] keyCodes) {
+<<<<<<< HEAD
         popupEnd();
 
         primaryCode = downKeycode;
@@ -139,6 +149,9 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         //primaryCode + 시작좌표 마지막좌표 판단해서 left right up down cen 판단해서 알맞는 키 입력되도록
 
 
+=======
+        Log.e("Keyboard","onKey");
+>>>>>>> 71506fda9384e80a6cdc547a1dafab47172bdcfa
         InputConnection ic = getCurrentInputConnection();
         playClick(primaryCode);
         switch(primaryCode){
@@ -164,27 +177,27 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public void onText(CharSequence text) {
-
+        Log.e("Keyboard","onText");
     }
 
     @Override
     public void swipeLeft() {
-
+        Log.e("Keyboard","swipeLeft");
     }
 
     @Override
     public void swipeRight() {
-
+        Log.e("Keyboard","swipeRight");
     }
 
     @Override
     public void swipeDown() {
-
+        Log.e("Keyboard","swipeDown");
     }
 
     @Override
     public void swipeUp() {
-
+        Log.e("Keyboard","swipeUp");
     }
 
     public void popupStart(int primaryCode){

@@ -23,13 +23,10 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
-#include <time.h>
 
 #define die(str, args...) do { \
         perror(str); \
@@ -38,44 +35,7 @@
 
 int fd;
 int dx,dy;
-void Java_com_example_hellojni_PointingStickService_dragMouse(JNIEnv * a,jobject b)
-{
-    struct input_event evMouseLeftKey;
-    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
-    evMouseLeftKey.type = EV_KEY;
-    evMouseLeftKey.code = BTN_LEFT;
-    evMouseLeftKey.value = 1;
-    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
-    evMouseLeftKey.type = EV_SYN;
-    evMouseLeftKey.code = 0;
-    evMouseLeftKey.value = 0;
-    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-
-}
-void Java_com_example_hellojni_PointingStickService_releaseMouse(JNIEnv * a,jobject b)
-{
-    struct input_event evMouseLeftKey;
-
-    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
-    evMouseLeftKey.type = EV_KEY;
-    evMouseLeftKey.code = BTN_LEFT;
-    evMouseLeftKey.value = 0;
-    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
-    evMouseLeftKey.type = EV_SYN;
-    evMouseLeftKey.code = 0;
-    evMouseLeftKey.value = 0;
-    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
-        die("error: write");
-}
-void Java_com_example_hellojni_PointingStickService_clickLeftMouse(JNIEnv * a,jobject b)
+void Java_com_example_hellojni_StickTouchListenenr_clickLeftMouse(JNIEnv * a,jobject b)
 {
     struct input_event evMouseLeftKey;
     memset(&evMouseLeftKey, 0, sizeof(struct input_event));
@@ -148,8 +108,11 @@ jint Java_com_example_hellojni_PointingStickService_initMouseDriver(JNIEnv* env,
     int i,j;
     fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if(fd < 0) {
-        die("error: open");
-        return -1;
+        fd=open("/dev/input/uinput",O_WRONLY|O_NONBLOCK);
+        if(fd<0){
+            die("error: open");
+            return -1;
+        }
     }
     if(ioctl(fd, UI_SET_EVBIT, EV_KEY) < 0) {
         die("error: ioctl");

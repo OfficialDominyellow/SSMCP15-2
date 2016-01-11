@@ -13,7 +13,6 @@ import android.util.Log;
 
 public class VirtualMouseDriverController extends Thread {
     private volatile static VirtualMouseDriverController uniqueInstance;
-
     private int dx = 0;
     private int dy = 0;
     private Object mPauseLock;
@@ -22,7 +21,6 @@ public class VirtualMouseDriverController extends Thread {
     private int mMouseSpeed=5;
     private static int MAXMOVE;
     private static int INTERVAL;
-    private Context context;
 
     private native void moveMouse(int x, int y);
 
@@ -112,7 +110,6 @@ public class VirtualMouseDriverController extends Thread {
                     e.printStackTrace();
                 }
             }
-
             synchronized (mPauseLock) {
                 try {
                     mPauseLock.wait();
@@ -122,8 +119,5 @@ public class VirtualMouseDriverController extends Thread {
             }
 
         }
-        
-
     }
-
 }
