@@ -1,6 +1,5 @@
 package com.example.hellojni;
 
-import android.content.Context;
 import android.content.Intent;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
@@ -11,10 +10,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.hellojni.R;
 
 /**
  * Created by 김희중 on 2016-01-08.
@@ -23,9 +20,9 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     private final String TAG = "MyKeyboard";
 
-    private KeyboardView kv;
+    private MyKeyboardView kv;
+    //private KeyboardView kv;
     private Keyboard keyboard;
-
     private boolean caps = false;
 
     private double xPositionStart;
@@ -40,7 +37,8 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public View onCreateInputView(){
-        kv = (KeyboardView) getLayoutInflater().inflate(R.layout.keyboard, null);
+        kv=(MyKeyboardView)getLayoutInflater().inflate(R.layout.customkeyboard, null);
+
         keyboard = new Keyboard(this, R.xml.qwerty);
 
         kv.setKeyboard(keyboard);
@@ -49,7 +47,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         kv.setPreviewEnabled(false);
 
         kv.setOnKeyboardActionListener(this);
-
         mService = new Intent(this, KeyboardPopupService.class);
 
         kv.setOnTouchListener(new View.OnTouchListener() {
@@ -59,12 +56,16 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                     xPositionStart = event.getX();
                     yPositionStart = event.getY();
                     //Toast.makeText(getApplicationContext(), "X start : " + xPositionStart + " Y start : " + yPositionStart, Toast.LENGTH_SHORT).show();
-                    Log.i(TAG, "X start : " + xPositionStart + " Y start : " + yPositionStart);
+                    Log.i(TAG, "DOWN");
                 } else if(event.getAction() == MotionEvent.ACTION_UP){
                     xPositionEnd = event.getX();
                     yPositionEnd = event.getY();
                     //Toast.makeText(getApplicationContext(), "X END : " + xPositionEnd + " Y END : " + yPositionEnd, Toast.LENGTH_SHORT).show();
-                    Log.i(TAG, "X END : " + xPositionEnd + " Y END : " + yPositionEnd);
+                    Log.i(TAG, "UP");
+                }
+                else if(event.getAction()==MotionEvent.ACTION_MOVE)
+                {
+                    Log.i(TAG, "MOVE");
                 }
                 return false;
             }
@@ -73,7 +74,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         });
         return kv;
     }
-
     private void playClick(int keyCode){
         AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
         switch (keyCode){
@@ -198,4 +198,5 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         //Intent service = new Intent(this, KeyboardPopupService.class);
         stopService(mService);
     }
+
 }
