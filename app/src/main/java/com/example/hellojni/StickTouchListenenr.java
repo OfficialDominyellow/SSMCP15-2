@@ -20,6 +20,8 @@ public class StickTouchListenenr implements View.OnTouchListener {
     private WindowManager mWindowManager;
     private Button pointingStick;
     private Context mContext;
+    private StickTouchListenenr mStickTouchListenenr;
+
 
     private static VirtualMouseDriverController virtualMouseDriverController=PointingStickService.virtualMouseDriverController;
 
@@ -41,7 +43,6 @@ public class StickTouchListenenr implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
                 mPointingStickController.setSTART_X(event.getRawX());//터치 시작 점
                 mPointingStickController.setSTART_Y(event.getRawY());//터치 시작 점
-
                 mPointingStickController.setPREV_X(mParams.x);//뷰의 시작 점
                 mPointingStickController.setPREV_Y(mParams.y);//뷰의 시작
 
@@ -51,16 +52,18 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_MOVE:
                 final int MAXdp = 63;
-
                 xdiff = (int)(event.getRawX() - mPointingStickController.getSTART_X());	//이동한 거리
                 ydiff = (int)(event.getRawY() - mPointingStickController.getSTART_Y());	//이동한 거리
+
+                //Log.e("Service", "originX: "+originX+"  originY:"+originY);
 
                 double distance = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
                 float dpDistance = convertPixelsToDp((float)distance,mContext.getApplicationContext());
                 if (dpDistance>MAXdp && !mPointingStickController.getIsMoveMode()) {
                     xdiff=(int)(xdiff/dpDistance*MAXdp);
                     ydiff=(int)(ydiff/dpDistance*MAXdp);
-                }
+                }//포인팅 스틱의 범위를 벗어나지 않기 위한 xdiff,ydiff 설정
+
 
                 //터치해서 이동한 만큼 이동 시킨다
                 mParams.x = mPointingStickController.getPREV_X() + xdiff;
@@ -88,10 +91,14 @@ public class StickTouchListenenr implements View.OnTouchListener {
                     //isLongMouseClick=false;
                     mPointingStickController.setIsLongMouseClick(false);
                 }//롱클릭이 우선순위가 기본 클릭보다 높게 둠
-                else if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode())
+                else if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode())//mouse left click
                 {
+                    if(mPointingStickController.getTabMode())
+                    {
+                        clickTabKey();
+                        break;
+                    }
                     clickLeftMouse();//bug있음
-                    Log.e("Service", "left mouse clicked");
                 }
                 mPointingStickController.setIsMouseMove(true);
                 Log.e("Service", "ACTION_UP");
@@ -99,6 +106,8 @@ public class StickTouchListenenr implements View.OnTouchListener {
                     virtualMouseDriverController.onPause();
                     mParams.x = mPointingStickController.getPxWidth();
                     mParams.y = mPointingStickController.getPxHeight();//상대적으로 좌표 설정 ,원위치로 변경
+
+                    Log.e("Service", "Now pX  :" +  mParams.x + "  pY  :" +  mParams.y);
                     mWindowManager.updateViewLayout(pointingStick, mParams);
                 }
                 break;
@@ -116,4 +125,5 @@ public class StickTouchListenenr implements View.OnTouchListener {
         System.loadLibrary("hello-jni");
     }
     public native void clickLeftMouse();
+    public native void clickTabKey();
 }

@@ -16,6 +16,16 @@ public class PointingStickController
     private boolean isLongMouseClick=false;
     private boolean moveMode=false;
 
+    private boolean tabMode=false;
+
+    public boolean getTabMode() {
+        return tabMode;
+    }
+
+    public void setTabMode(boolean tabMode) {
+        this.tabMode = tabMode;
+    }
+
     public PointingStickController(String[] Options)
     {
         this.Options=Options;

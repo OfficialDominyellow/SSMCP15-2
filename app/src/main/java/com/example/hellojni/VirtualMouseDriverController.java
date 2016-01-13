@@ -21,6 +21,11 @@ public class VirtualMouseDriverController extends Thread {
     private int mMouseSpeed=5;
     private static int MAXMOVE;
     private static int INTERVAL;
+    private int x=0;
+    private int y=0;
+
+    private int originX=120;
+    private int originY=120;
 
     private native void moveMouse(int x, int y);
 
@@ -28,8 +33,6 @@ public class VirtualMouseDriverController extends Thread {
         mPauseLock = new Object();
         mPaused = false;
         mFinished = false;
-
-
     }
 
     public static synchronized VirtualMouseDriverController getInstance(Context context) {
@@ -79,11 +82,26 @@ public class VirtualMouseDriverController extends Thread {
         float px = dp * (metrics.densityDpi / 160f);
         return px;
     }
+    public int getMouseX()
+    {
+        return x;
+    }
+    public int getMouseY()
+    {
+        return y;
+    }
+
+    public int getOriginX(){
+        return originX;
+    }
+    public int getOriginY(){
+        return originY;
+    }
 
     @Override
     public void run() {
-        int x=0;
-        int y=0;
+       // int x=0;
+       // int y=0;
         while (!mFinished) {
             while (!mPaused) {
                 try {
@@ -101,11 +119,14 @@ public class VirtualMouseDriverController extends Thread {
                         }
                     }
 
-                    Log.e("Service", ""+x+" "+y);
                     if(mPaused)
                         continue;
-                    else
+                    else {
+                        originX+=x;
+                        originY+=y;
+                        Log.e("Service", "data X :" + originX+" Y"+originY);
                         moveMouse(x, y);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -117,7 +138,6 @@ public class VirtualMouseDriverController extends Thread {
                     e.printStackTrace();
                 }
             }
-
         }
     }
 }

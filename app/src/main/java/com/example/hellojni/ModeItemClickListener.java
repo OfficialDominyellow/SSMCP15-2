@@ -1,5 +1,6 @@
 package com.example.hellojni;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListPopupWindow;
@@ -37,8 +38,15 @@ public class ModeItemClickListener implements AdapterView.OnItemClickListener {
             case 1:
                 mList.dismiss();
                 break;
-            case 2:
+            case 2://tap
+                if(!mPointingStickController.getTabMode())
+                    mPointingStickController.setTabMode(true);
+                else
+                    mPointingStickController.setTabMode(false);
+                //clickTabKey();
                 mList.dismiss();
+                Log.e("Item", "Tab");
+
                 break;
         }
     }
