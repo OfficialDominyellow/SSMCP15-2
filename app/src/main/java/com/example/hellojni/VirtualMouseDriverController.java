@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
+import android.widget.Button;
 
 /**
  * Created by chu on 1/7/16.
@@ -23,9 +25,6 @@ public class VirtualMouseDriverController extends Thread {
     private static int INTERVAL;
     private int x=0;
     private int y=0;
-
-    private int originX=120;
-    private int originY=120;
 
     private native void moveMouse(int x, int y);
 
@@ -91,17 +90,8 @@ public class VirtualMouseDriverController extends Thread {
         return y;
     }
 
-    public int getOriginX(){
-        return originX;
-    }
-    public int getOriginY(){
-        return originY;
-    }
-
     @Override
     public void run() {
-       // int x=0;
-       // int y=0;
         while (!mFinished) {
             while (!mPaused) {
                 try {
@@ -118,13 +108,9 @@ public class VirtualMouseDriverController extends Thread {
                             break;
                         }
                     }
-
                     if(mPaused)
                         continue;
                     else {
-                        originX+=x;
-                        originY+=y;
-                        Log.e("Service", "data X :" + originX+" Y"+originY);
                         moveMouse(x, y);
                     }
                 } catch (InterruptedException e) {

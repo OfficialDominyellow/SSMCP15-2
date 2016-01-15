@@ -21,7 +21,6 @@ public class StickLongClickListener implements View.OnLongClickListener
         if(!mPointingStickController.getIsMouseMove()){
             Log.e("Service", "LONG CLICK");
             mList.show();
-            //isLongMouseClick=true;
             mPointingStickController.setIsLongMouseClick(true);
             return true;
         }
