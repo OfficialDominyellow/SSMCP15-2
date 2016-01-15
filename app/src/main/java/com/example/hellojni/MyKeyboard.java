@@ -84,6 +84,10 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                 12641, 12643, 12685
         };
 
+        public Hangul(){
+            init();
+        }
+
         private boolean isInSet(int[] hanSet, int primaryCode){
             for(int codeOfSet : hanSet){
                 if(codeOfSet == primaryCode){
@@ -286,8 +290,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                 init();
                                 step = 0;
                                 mDelCount = 0;
-                                this.jungsung = (char) primaryCode + "";
-                                dotUsedFlag = true;
+                                this.chosung = (char) primaryCode + "";
                             }
                             //나머지는 받침 찍고 종성입력단계로
                             else {
@@ -679,6 +682,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         //점왓다 -> 받침 + 아래아모음
                         if(primaryCode == 12685){
                             Log.i(TAG, "jongsung + dot");
+                            mDelCount = 0;
                             dotUsedFlag = true;
                             writingJongsungFlag = true;
                             step = 1;
@@ -865,9 +869,29 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             }
             return mLeftExtra+(char)getUnicode()+"";
         }
-        private int getDeleteCountForWrite(int primaryCode){
 
-            return 0;
+        public void deleteLastInst(){
+            String lastStr = "";
+            InputConnection ic = getCurrentInputConnection();
+
+            if(!this.jongsung.equals("")) {
+                this.jongsung = "";
+                lastStr = (char) getUnicode() + "";
+                delete(1);
+                ic.commitText(lastStr, 1);
+                step = 1;
+            }
+            else if(!this.jungsung.equals("")){
+                this.jungsung = "";
+                lastStr = (char) getUnicode() + "";
+                delete(1);
+                ic.commitText(lastStr, 1);
+                step = 0;
+            }
+            else{
+                init();
+                delete(1);
+            }
         }
         public void delete(int count) {
             InputConnection ic = getCurrentInputConnection();
@@ -879,7 +903,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             Log.i(TAG, "write(" + writeStr + ") : " + this.chosung + this.jungsung + this.jongsung);
             delete(mDelCount);
             InputConnection ic = getCurrentInputConnection();
-            ic.commitText(writeStr, 1);
+            ic.commitText(writeStr, 0);
         }
     }
 
@@ -980,7 +1004,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         switch (inputMode) {
             case HAN_MODE:
                 downKeycode = primaryCode;
-                kv.setPopupOffset(-(int) xPositionStart, -(int) yPositionStart);
+                //kv.setPopupOffset(-(int) xPositionStart, -(int) yPositionStart);
 
                 //키가 눌렸을 때, 키가 아닌 곳이 눌리면 안돼,
                 if (primaryCode != 0) {
@@ -1039,9 +1063,9 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
                 switch (downKeycode) {
                     case Keyboard.KEYCODE_DELETE :
-                        hangul.init();
-                        //hangul.delete(1);
-                        ic.deleteSurroundingText(1, 0);
+                        //hangul.init();
+                        hangul.deleteLastInst();
+                        //ic.deleteSurroundingText(1, 0);
                         break;
                     case Keyboard.KEYCODE_SHIFT:
                         caps = !caps;
@@ -1113,11 +1137,14 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     public void popupStart(int primaryCode){
 
         //Intent service = new Intent(this, KeyboardPopupService.class);
+
         mService.putExtra("primaryCode", primaryCode + "");
         mService.putExtra("keyboardWidth", kv.getWidth());
         mService.putExtra("keyboardHeight", kv.getHeight());
 
+
         startService(mService);
+
     }
 
     public void popupEnd(){

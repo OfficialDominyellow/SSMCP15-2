@@ -6,24 +6,24 @@
     android:keyHeight="60dp">
 
     <Row>
-        <Key android:codes="12609" android:keyLabel="ㅁ" android:keyEdgeFlags="left"/>
-        <Key android:codes="12596" android:keyLabel="ㄴ"/>
-        <Key android:codes="12615" android:keyLabel="ㅇ" />
-        <Key android:codes="12613" android:keyLabel="ㅅ"/>
-        <Key android:codes="12593" android:keyLabel="ㄱ" android:keyEdgeFlags="right"/>
+        <Key android:codes="12609"  android:iconPreview="@drawable/mieum_extend" android:keyIcon="@drawable/popimg"/>
+        <Key android:codes="12596" android:keyLabel="ㄴ" android:iconPreview="@drawable/nieun_extend"/>
+        <Key android:codes="12615" android:keyLabel="ㅇ" android:iconPreview="@drawable/ieung_extend"/>
+        <Key android:codes="12613" android:keyLabel="ㅅ" android:iconPreview="@drawable/siot_extend"/>
+        <Key android:codes="12593" android:keyLabel="ㄱ" android:iconPreview="@drawable/giyeok_extend"/>
     </Row>
     <Row>
-        <Key android:codes="12641" android:keyLabel="ㅡ" android:horizontalGap="30%p" android:keyEdgeFlags="left"/>
-        <Key android:codes="12643" android:keyLabel="ㅣ" android:keyEdgeFlags="right"/>
+        <Key android:codes="12641" android:keyLabel="ㅡ" android:horizontalGap="30%p"/>
+        <Key android:codes="12643" android:keyLabel="ㅣ"/>
     </Row>
     <Row>
-        <Key android:codes="12685" android:keyLabel="·" android:horizontalGap="40%p" android:keyEdgeFlags="left"/>
+        <Key android:codes="12685" android:keyLabel="·" android:horizontalGap="40%p"/>
     </Row>
-    <Row android:rowEdgeFlags="bottom">
-        <Key android:codes="-101" android:keyLabel="CHG" android:keyWidth="20%p" android:keyEdgeFlags="left"/>
+    <Row>
+        <Key android:codes="-101" android:keyLabel="CHG" android:keyWidth="20%p"/>
         <Key android:codes="32" android:keyLabel="SPACE" android:keyWidth="20%p"/>
         <Key android:codes="-5" android:keyLabel="DEL" android:keyWidth="10%p"/>
-        <Key android:codes="-4" android:keyLabel="DONE" android:keyWidth="10%p" android:keyEdgeFlags="right"/>
+        <Key android:codes="-4" android:keyLabel="DONE" android:keyWidth="10%p"/>
     </Row>
 
 </Keyboard>
