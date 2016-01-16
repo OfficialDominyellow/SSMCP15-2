@@ -1,5 +1,6 @@
 package com.example.hellojni;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -11,6 +12,7 @@ import android.view.MotionEvent;
 public class TabGestureListener implements GestureDetector.OnGestureListener {
 
     private PointingStickController mPointingStickController;
+    private static String TAG = "TabGestureListener";
 
     public TabGestureListener(PointingStickController mPointingStickController)
     {
@@ -24,6 +26,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener {
 
     @Override
     public void onShowPress(MotionEvent e) {
+        Log.i(TAG, "Start E : (" + e.getX() + ", " + e.getY() + ")");
         Log.e("Ges","ShowPress");
     }
 
@@ -36,6 +39,12 @@ public class TabGestureListener implements GestureDetector.OnGestureListener {
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        int centerY = GlobalVariable.stickHeight/2;
+        int centerX = GlobalVariable.stickHeight/2;
+
+        Log.i(TAG, "Center X : " + centerX + " Center Y : " + centerY);
+        Log.i(TAG, "e1 : (" + e1.getX() + ", " + e1.getY() + ") e2 : (" + e2.getX() + ", " + e2.getY() + ")");
+
         if(e1.getY()-e2.getY()>0)//up
         {
             Log.e("Ges", "e1");
@@ -69,7 +78,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener {
                 e.printStackTrace();
             }
         }
-        return false;
+        return true;
     }
 
     public void onLongPress(MotionEvent e)
@@ -109,7 +118,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener {
                 Log.e("Ges","Left");
                 inputBackTabKey();
             }
-        return true;
+        return false;
     }
     static {
         System.loadLibrary("hello-jni");

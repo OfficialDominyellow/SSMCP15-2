@@ -64,6 +64,10 @@ public class PointingStickService extends Service{
 
         pointingStick = new Button(this);
         pointingStick.setBackgroundResource(R.drawable.roundbutton);
+        pointingStick.setWidth(300);
+        GlobalVariable.stickWidth = 300;
+        pointingStick.setHeight(300);
+        GlobalVariable.stickHeight = 300;
         pointingStick.setText("Pointing\nStick");    //텍스트 설정
         pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
         pointingStick.setTextColor(Color.RED);
@@ -132,7 +136,7 @@ public class PointingStickService extends Service{
         //y 최대값 설정
         mPointingStickController.setMAX_Y(mPointingStickController.getPxHeight() - pointingStick.getHeight());
 
-        mPointingStickController.setPxWidth(mPointingStickController.getPxWidth()/5);
+        mPointingStickController.setPxWidth(mPointingStickController.getPxWidth() / 5);
         mPointingStickController.setPxHeight(mPointingStickController.getPxHeight() / 5);
 
         mParams.x= mPointingStickController.getPxWidth();
