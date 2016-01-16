@@ -1152,25 +1152,14 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         stopService(mService);
     }
 
-    //좌표간 유클리드 거리 리턴
-    private int getDist(int fx, int fy, int tx, int ty){
-        return (tx-fx)*(tx-fx) + (ty-fy)*(ty-fy);
-    }
 
-    //좌표간 기울기 리턴
-    private double getTangent(int fx, int fy, int tx, int ty){
-        if(tx-fx == 0){
-            tx = fx+1;
-        }
-        return ((double)(ty-fy))/((double)(tx-fx));
-    }
 
     //fx, fy : 시작 좌표, tx, ty : 마지막 좌표 로 방향을 리턴, threshold : 이 이상 벗어나야 방향 바뀐걸로
     private int getDerectionByPosition(int fx, int fy, int tx, int ty, int threshold){
         //제자리 = 0, 동 서 남 북 = 1, 2, 3, 4
         threshold = threshold * threshold;
-        int dist = getDist(fx, fy, tx, ty);
-        double tan = getTangent(fx, fy, tx, ty);
+        int dist = MyMath.getDist(fx, fy, tx, ty);
+        double tan = MyMath.getTangent(fx, fy, tx, ty);
 
         Log.i(TAG, "Dist : " + dist + " tangent : " + tan);
 
