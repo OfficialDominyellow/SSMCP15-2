@@ -37,7 +37,7 @@ public class PointingStickService extends Service{
 
     private String[] Options={"Move","Tab","Off"};//test
 
-    public static VirtualMouseDriverController virtualMouseDriverController;
+    private  VirtualMouseDriverController virtualMouseDriverController;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
 
     /*onTouch 에서
@@ -53,7 +53,7 @@ public class PointingStickService extends Service{
     SeekBarBinder mBinder=new SeekBarBinder();
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder;
+        Log.e("service", "onBind");return mBinder;
     }
     public void setProgress(int progress) throws RemoteException
     {
@@ -121,7 +121,7 @@ public class PointingStickService extends Service{
         pointingStick.setOnLongClickListener(mStickLongClickListener);
 
         mStickTouchListenenr=new StickTouchListenenr(mPointingStickController,mParams, mList, mWindowManager,  pointingStick,
-                 this);
+                 this,virtualMouseDriverController);
         pointingStick.setOnTouchListener(mStickTouchListenenr);
 
         mModeItemClickListener=new ModeItemClickListener(mPointingStickController,mList);
@@ -167,6 +167,7 @@ public class PointingStickService extends Service{
         }
         Log.e("service","onDestroy");
         removeMouseDriver();
+        virtualMouseDriverController=null;
         super.onDestroy();
     }
     static {

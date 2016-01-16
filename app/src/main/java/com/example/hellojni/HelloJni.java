@@ -82,7 +82,7 @@ public class HelloJni extends Activity
     {
         Log.e("service", "startService");
         Intent intent =new Intent(this,PointingStickService.class);
-        bindService(new Intent(this,PointingStickService.class),srvConn,BIND_AUTO_CREATE);
+        bindService(intent,srvConn,BIND_AUTO_CREATE);
         startService(intent);    //서비스 시작
     }
 

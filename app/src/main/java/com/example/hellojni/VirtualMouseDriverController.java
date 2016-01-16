@@ -26,8 +26,6 @@ public class VirtualMouseDriverController extends Thread {
     private int x=0;
     private int y=0;
 
-    private native void moveMouse(int x, int y);
-
     private VirtualMouseDriverController() {
         mPauseLock = new Object();
         mPaused = false;
@@ -126,4 +124,8 @@ public class VirtualMouseDriverController extends Thread {
             }
         }
     }
+    static {
+        System.loadLibrary("hello-jni");
+    }
+    private native void moveMouse(int x, int y);
 }

@@ -28,10 +28,10 @@ public class StickTouchListenenr implements View.OnTouchListener {
     private GestureDetector mDetector;
     private TabGestureListener mGestureListener;
 
-    private static VirtualMouseDriverController virtualMouseDriverController=PointingStickService.virtualMouseDriverController;
+    private static VirtualMouseDriverController virtualMouseDriverController;
 
     public StickTouchListenenr(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,ListPopupWindow mList,WindowManager mWindowManager, Button pointingStick,
-                               Context mContext)
+                               Context mContext,VirtualMouseDriverController virtualMouseDriverController)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mParams;
@@ -39,6 +39,7 @@ public class StickTouchListenenr implements View.OnTouchListener {
         this.mWindowManager=mWindowManager;
         this.pointingStick=pointingStick;
         this.mContext=mContext;
+        this.virtualMouseDriverController=virtualMouseDriverController;
         mGestureListener=new TabGestureListener(mPointingStickController);
         mDetector=new GestureDetector(mContext,mGestureListener);
     }
