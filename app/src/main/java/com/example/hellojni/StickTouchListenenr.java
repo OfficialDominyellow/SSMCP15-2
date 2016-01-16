@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 
@@ -106,6 +107,11 @@ public class StickTouchListenenr implements View.OnTouchListener {
                     Log.e("Service", "LeftMouse");
                     clickLeftMouse();//bug있음
                 }
+                else if( mPointingStickController.getIsMoveMode())
+                {
+                    mPointingStickController.setMoveMode(false);
+                }//Move one 1take
+
                 mPointingStickController.setIsMouseMove(true);
                 Log.e("Service", "ACTION_UP");
                 if(!mPointingStickController.getIsMoveMode())
@@ -113,8 +119,6 @@ public class StickTouchListenenr implements View.OnTouchListener {
                     virtualMouseDriverController.onPause();
                     mParams.x = mPointingStickController.getPxWidth();
                     mParams.y = mPointingStickController.getPxHeight();//상대적으로 좌표 설정 ,원위치로 변경
-
-                    Log.e("Service", "Now pX  :" + mParams.x + "  pY  :" + mParams.y);
                     mWindowManager.updateViewLayout(pointingStick, mParams);
                 }
                 break;

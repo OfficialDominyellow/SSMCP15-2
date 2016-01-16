@@ -37,7 +37,7 @@ public class PointingStickService extends Service{
     private SeekBar mSeekBar;//투명도 조절
     private ListPopupWindow mList;//옵션 제공 (롱클릭시);
 
-    private String[] Options={"Move","Hide","Tap"};//test
+    private String[] Options={"Move","Tab","Off"};//test
 
     public static VirtualMouseDriverController virtualMouseDriverController;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
@@ -63,11 +63,12 @@ public class PointingStickService extends Service{
         mPointingStickController=new PointingStickController(Options);
 
         pointingStick = new Button(this);
-        //pointingStick=mPointingStickController.getPointingStick();                                                         //뷰 생성
+        pointingStick.setBackgroundResource(R.drawable.roundbutton);
         pointingStick.setText("Pointing\nStick");    //텍스트 설정
         pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
-        pointingStick.setTextColor(Color.BLUE);                                                            //글자 색상
-        pointingStick.setBackgroundColor(Color.argb(127, 0, 255, 255));								//텍스트뷰 배경 색
+        pointingStick.setTextColor(Color.RED);
+        //pointingStick.setTextColor(Color.BLUE);                                                            //글자 색상
+        //pointingStick.setBackgroundColor(Color.argb(127, 0, 255, 255));								//텍스트뷰 배경 색
 
         mList=new ListPopupWindow(this);
         mList.setWidth(300);

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -41,9 +42,6 @@ public class KeyboardPopupService extends Service{
         if(Build.VERSION.SDK_INT >= 23){
             Log.i(TAG, "can ?  : " + Settings.canDrawOverlays(this));
         }
-
-
-
 
         if (mImage!=null) {
             onDestroy();
@@ -82,13 +80,10 @@ public class KeyboardPopupService extends Service{
         mImage = (ImageView)inflater.inflate(R.id.giyeok_extend_layout, null);
         Log.i(TAG, "LAYOUT = " + (LinearLayout.LayoutParams)mImage.getLayoutParams());
         */
-
         //mPrimaryCode에 따라서 다른 image 나타나도록
+
         mImage.setMaxHeight(1);
-
-
         mImage.setAlpha((float) 0.9999999);
-
 
 
         mParams = new WindowManager.LayoutParams(
@@ -98,21 +93,15 @@ public class KeyboardPopupService extends Service{
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 PixelFormat.TRANSLUCENT); // ����
 
-        /*
-        mParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_TOAST,
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                PixelFormat.TRANSLUCENT
-        );
-        */
-
-        mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        mManager.addView(mImage, mParams);
-
+        try {
+            mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+            mManager.addView(mImage, mParams);
+        }catch(Exception e)
+        {
+            Intent permissionIntent = new Intent(this, ExceptionActivity.class);
+            permissionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(permissionIntent);
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -140,8 +129,12 @@ public class KeyboardPopupService extends Service{
         Log.i(TAG, "Service Destroy");
 
         if (mImage != null) {
-            mManager.removeViewImmediate(mImage);
+            try {
+                mManager.removeViewImmediate(mImage);
+            }catch(Exception e)
+            {
 
+            }
         }
         mImage = null;
     }

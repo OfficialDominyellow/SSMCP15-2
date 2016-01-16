@@ -36,6 +36,39 @@ public class TabGestureListener implements GestureDetector.OnGestureListener {
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        if(e1.getY()-e2.getY()>0)//up
+        {
+            Log.e("Ges", "e1");
+
+        }
+        else if(e1.getY()-e2.getY()<0)//down
+        {
+            Log.e("Ges", "e2");
+
+        }
+        if((e1.getX()-e2.getX()<0))//right
+        {
+            //right
+            Log.e("Ges", "Right");
+            inputTabKey();
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        else if(e1.getX()-e2.getX()>0)//left
+        {
+            //left
+            Log.e("Ges","Left");
+            inputBackTabKey();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return false;
     }
 
@@ -48,13 +81,29 @@ public class TabGestureListener implements GestureDetector.OnGestureListener {
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
-            if(e1.getX()-e2.getX()<0)
+            /*if()//시계방향
+            {
+
+            }
+            else if()//반시계방향
+              */
+            if(e1.getY()-e2.getY()>0)//up
+            {
+                Log.e("Ges", "e1");
+
+            }
+            else if(e1.getY()-e2.getY()<0)//down
+            {
+                Log.e("Ges", "e2");
+
+            }
+            if((e1.getX()-e2.getX()<0))//right
             {
                 //right
                 Log.e("Ges", "Right");
                 inputTabKey();
             }
-            else if(e1.getX()-e2.getX()>0)
+            else if(e1.getX()-e2.getX()>0)//left
             {
                 //left
                 Log.e("Ges","Left");
