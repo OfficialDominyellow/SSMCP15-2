@@ -77,18 +77,19 @@ public class HelloJni extends Activity
             }
         });
         mSeekBar.setVisibility(View.INVISIBLE);
-
     }
     public void on()
     {
         Log.e("service", "startService");
         Intent intent =new Intent(this,PointingStickService.class);
-        bindService(intent,srvConn,BIND_AUTO_CREATE);
-        //startService(new Intent(this, PointingStickService.class));    //서비스 시작
+        bindService(new Intent(this,PointingStickService.class),srvConn,BIND_AUTO_CREATE);
+        startService(intent);    //서비스 시작
     }
+
     public void off()
     {
         Log.e("service","endService");
+        unbindService(srvConn);
         stopService(new Intent(this, PointingStickService.class));	//서비스 종료
     }
     ServiceConnection srvConn=new ServiceConnection() {
