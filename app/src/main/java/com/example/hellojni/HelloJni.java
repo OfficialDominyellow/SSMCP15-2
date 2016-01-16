@@ -17,87 +17,46 @@ package com.example.hellojni;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 import android.os.Bundle;
-import android.view.View.OnClickListener;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
-public class HelloJni extends Activity implements OnClickListener
+public class HelloJni extends Activity
 {
+    private Switch serviceSwitch;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        findViewById(R.id.start).setOnClickListener(this);		//시작버튼
-        findViewById(R.id.end).setOnClickListener(this);			//중시버튼
-        if(Build.VERSION.SDK_INT >= 23) {
-            findViewById(R.id.btn_service_permission).setOnClickListener(this);
-        }
-    }
-    public void onClick(View v) {
-        int view = v.getId();
-        if(view == R.id.start) {
-            Log.e("service", "startService");
-            startService(new Intent(this, PointingStickService.class));    //서비스 시작
-        }
-        else if(view == R.id.end){
-            Log.e("service","endService");
-            stopService(new Intent(this, PointingStickService.class));	//서비스 종료
-        }
-        else if(view == R.id.btn_service_permission){
-            Log.e("service", "getPermission");
-            checkDrawOverlayPermission();
-        }
-    }
 
-    private final static int  ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5959; //아무거나
-    public void checkDrawOverlayPermission() {
-        if (!Settings.canDrawOverlays(getApplicationContext())) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
-            if (Settings.canDrawOverlays(this)) {
-                Log.i("service", "Permission ON?");
-                // You have permission
+        serviceSwitch=(Switch)findViewById(R.id.switch1);
+        serviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked)
+                {
+                    on();
+                }
+                else{
+                    off();
+                }
             }
-        }
+        });
     }
+    public void on()
+    {
 
+        Log.e("service", "startService");
+        startService(new Intent(this, PointingStickService.class));    //서비스 시작
+    }
+    public void off()
+    {
 
-    /* A native method that is implemented by the
-         * 'hello-jni' native library, which is packaged
-         * with this application.
-         */
-    public native String  stringFromJNI();
-    /* This is another native method declaration that is *not*
-     * implemented by 'hello-jni'. This is simply to show that
-     * you can declare as many native methods in your Java code
-     * as you want, their implementation is searched in the
-     * currently loaded native libraries only the first time
-     * you call them.
-     *
-     * Trying to call this function will result in a
-     * java.lang.UnsatisfiedLinkError exception !
-     */
-    //public native String  unimplementedStringFromJNI();
-
-    /* this is used to load the 'hello-jni' library on application
-     * startup. The library has already been unpacked into
-     * /data/data/com.example.hellojni/lib/libhello-jni.so at
-     * installation time by the package manager.
-     */
-    static {
-        System.loadLibrary("hello-jni");
+        Log.e("service","endService");
+        stopService(new Intent(this, PointingStickService.class));	//서비스 종료
     }
 }
