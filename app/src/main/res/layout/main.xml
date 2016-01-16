@@ -13,4 +13,10 @@
         android:id="@+id/switch1"
         android:layout_weight="0.11" />
 
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar"
+        android:layout_weight="0.11" />
+
 </LinearLayout>
