@@ -38,7 +38,6 @@ public class HelloJni extends Activity implements OnClickListener
         if(view == R.id.start) {
             Log.e("service", "startService");
             startService(new Intent(this, PointingStickService.class));    //서비스 시작
-
         }
         else{Log.e("service","endService");
             stopService(new Intent(this, PointingStickService.class));	//서비스 종료

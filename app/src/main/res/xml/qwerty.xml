@@ -1,47 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Keyboard    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:keyWidth="10%p"
-    android:horizontalGap="0px"
-    android:verticalGap="0px"
-    android:keyHeight="60dp">
 
-<!--
-    <Row>
-        <Key android:codes="49" android:keyLabel="1" android:keyEdgeFlags="left"/>
-        <Key android:codes="50" android:keyLabel="2"/>
-        <Key android:codes="51" android:keyLabel="3"/>
-        <Key android:codes="52" android:keyLabel="4"/>
-        <Key android:codes="53" android:keyLabel="5"/>
-    </Row>
-    <Row>
-        <Key android:codes="49" android:keyLabel="1" android:keyEdgeFlags="left"/>
-        <Key android:codes="50" android:keyLabel="2"/>
-        <Key android:codes="51" android:keyLabel="3"/>
-        <Key android:codes="52" android:keyLabel="4"/>
-    </Row>
-    <Row android:rowEdgeFlags="bottom">
-        <Key android:codes="49" android:keyLabel="1" android:keyEdgeFlags="left"/>
-        <Key android:codes="50" android:keyLabel="2"/>
-        <Key android:codes="51" android:keyLabel="3"/>
-    </Row>
--->
-    <Arch>
-        <Key android:codes="49" android:keyLabel="a" android:keyEdgeFlags="left"/>
-        <Key android:codes="50" android:keyLabel="b"/>
-        <Key android:codes="51" android:keyLabel="c"/>
-        <Key android:codes="52" android:keyLabel="d"/>
-        <Key android:codes="53" android:keyLabel="e"/>
-    </Arch>
-    <Arch>
-        <Key android:codes="49" android:keyLabel="1" android:keyEdgeFlags="left"/>
-        <Key android:codes="50" android:keyLabel="2"/>
-        <Key android:codes="51" android:keyLabel="3"/>
-        <Key android:codes="52" android:keyLabel="4"/>
-    </Arch>
-    <Arch android:rowEdgeFlags="bottom">
-        <Key android:codes="49" android:keyLabel="1" android:keyEdgeFlags="left"/>
-        <Key android:codes="50" android:keyLabel="2"/>
-        <Key android:codes="51" android:keyLabel="3"/>
-    </Arch>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="80dp"
+    android:horizontalGap="20dp"
+    android:verticalGap="20dp"
+    android:keyHeight="80dp">
+
+
+    <Arc>
+        <Key android:codes="12609" android:keyLabel="ㅁ"/>
+        <Key android:codes="12596" android:keyLabel="ㄴ"/>
+        <Key android:codes="12615" android:keyLabel="ㅇ" />
+        <Key android:codes="12613" android:keyLabel="ㅅ"/>
+        <Key android:codes="12593" android:keyLabel="ㄱ"/>
+    </Arc>
+    <Arc>
+        <Key android:codes="12641" android:keyLabel="ㅡ" android:horizontalGap="120dp"/>
+        <Key android:codes="12643" android:keyLabel="ㅣ"/>
+    </Arc>
+    <Arc>
+        <Key android:codes="12685" android:keyLabel="·" android:horizontalGap="130dp"/>
+    </Arc>
+    <Arc>
+        <Key android:codes="-101" android:keyLabel="CHG" android:keyWidth="20%p"/>
+        <Key android:codes="32" android:keyLabel="SPACE" android:keyWidth="20%p"/>
+        <Key android:codes="-5" android:keyLabel="DEL" android:keyWidth="10%p"/>
+        <Key android:codes="-4" android:keyLabel="DONE" android:keyWidth="10%p"/>
+    </Arc>
+
 
 </Keyboard>

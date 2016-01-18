@@ -40,5 +40,16 @@
             android:exported="false"> <!-- 퍼미션 중요 -->
         </service>
 
+
+        <service
+            android:name=".CursorService"
+            android:enabled="true"
+            android:exported="false"> <!-- 퍼미션 중요 -->
+        </service>
+
+        <service android:name=".KeyboardPopupService"
+            android:exported="false">
+        </service>
+
     </application>
 </manifest>
