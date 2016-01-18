@@ -2,6 +2,7 @@ package com.example.hellojni;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
@@ -34,10 +35,10 @@ public class PointingStickService extends Service{
     private WindowManager mWindowManager;
 
     private ListPopupWindow mList;//옵션 제공 (롱클릭시);
-
     private String[] Options={"Move","Tab","Off"};//test
-
     private  VirtualMouseDriverController virtualMouseDriverController;
+    private int mProgress;
+    private int mSize;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
 
     /*onTouch 에서
@@ -47,10 +48,10 @@ public class PointingStickService extends Service{
     return false 를 반환
     이벤트 호출 순서 onTouch -> onLongClick -> onClick .*/
 
-    public class SeekBarBinder extends Binder {
+    public class DataBinder extends Binder {
         PointingStickService getService(){return PointingStickService.this;}
     }
-    SeekBarBinder mBinder=new SeekBarBinder();
+    DataBinder mBinder=new DataBinder();
     @Override
     public IBinder onBind(Intent intent) {
         Log.e("service", "onBind");return mBinder;
@@ -60,7 +61,13 @@ public class PointingStickService extends Service{
         mParams.alpha = progress / 100.0f;			//알파값 설정
         mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
     }
-
+    public void setStickSize(int size) throws RemoteException
+    {
+        pointingStick.setWidth(size);
+        pointingStick.setHeight(size);
+        GlobalVariable.stickWidth = mSize;
+        GlobalVariable.stickHeight = mSize;
+    }
     @Override
     public void onCreate() {
         super.onCreate();
@@ -69,14 +76,16 @@ public class PointingStickService extends Service{
             Toast.makeText(getApplicationContext(), "Fail to load Vmouse.", Toast.LENGTH_LONG).show();
             return;
         }
+        getPreferencesProgress();getPreferencesSize();
         mPointingStickController=new PointingStickController(Options);
 
         pointingStick = new Button(this);
         pointingStick.setBackgroundResource(R.drawable.roundbutton);
-        pointingStick.setWidth(300);
-        GlobalVariable.stickWidth = 300;
-        pointingStick.setHeight(300);
-        GlobalVariable.stickHeight = 300;
+        pointingStick.setWidth(mSize);
+        pointingStick.setHeight(mSize);
+        GlobalVariable.stickWidth = mSize;
+        GlobalVariable.stickHeight = mSize;
+
         pointingStick.setText("Pointing\nStick");    //텍스트 설정
         pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
         pointingStick.setTextColor(Color.RED);
@@ -114,13 +123,15 @@ public class PointingStickService extends Service{
             virtualMouseDriverController.onPause();
         }
         setAllListener();
+        mParams.alpha = mProgress / 100.0f;			//알파값 설정
+        mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
     }
     public void setAllListener()
     {
-        mStickLongClickListener=new StickLongClickListener(mPointingStickController,mList);
+        mStickLongClickListener = new StickLongClickListener(mPointingStickController,mList);
         pointingStick.setOnLongClickListener(mStickLongClickListener);
 
-        mStickTouchListenenr=new StickTouchListenenr(mPointingStickController,mParams, mList, mWindowManager,  pointingStick,
+        mStickTouchListenenr=new StickTouchListenenr(mPointingStickController,mParams, mList, mWindowManager, pointingStick,
                  this,virtualMouseDriverController);
         pointingStick.setOnTouchListener(mStickTouchListenenr);
 
@@ -165,10 +176,19 @@ public class PointingStickService extends Service{
         if(mWindowManager != null) {		//서비스 종료시 뷰 제거. *중요 : 뷰를 꼭 제거 해야함.
             if(pointingStick != null) mWindowManager.removeView(pointingStick);
         }
-        Log.e("service","onDestroy");
+        Log.e("service", "onDestroy");
         removeMouseDriver();
         virtualMouseDriverController=null;
         super.onDestroy();
+    }
+
+    private void getPreferencesProgress(){
+        SharedPreferences pref = getSharedPreferences("forProgress", MODE_PRIVATE);
+        mProgress = pref.getInt("progress", 100);
+    }
+    private void getPreferencesSize(){
+        SharedPreferences pref = getSharedPreferences("forSize", MODE_PRIVATE);
+        mSize = pref.getInt("size", 100);
     }
     static {
         System.loadLibrary("hello-jni");

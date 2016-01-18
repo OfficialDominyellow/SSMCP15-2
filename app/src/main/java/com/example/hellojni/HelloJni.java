@@ -19,12 +19,15 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Switch;
 
@@ -33,31 +36,76 @@ public class HelloJni extends Activity
     private Switch serviceSwitch;
     private SeekBar mSeekBar;
     private PointingStickService mPointingStickService;
-
+    private ServiceConnection srvConn;
+    private RadioGroup mGroup;
+    private RadioButton size1,size2,size3;
+    private boolean switchValue;
+    private int mProgress;
+    private int mSize;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mSeekBar=(SeekBar)findViewById(R.id.seekBar);
+        getPreferencesSwitch();getPreferencesProgress();getPreferencesSize();
 
+        mSeekBar=(SeekBar)findViewById(R.id.seekBar);
         serviceSwitch=(Switch)findViewById(R.id.switch1);
+        mGroup=(RadioGroup)findViewById(R.id.sizeGroup);
+        size1=(RadioButton)findViewById(R.id.option1);
+        size2=(RadioButton)findViewById(R.id.option2);
+        size3=(RadioButton)findViewById(R.id.option3);
+
+        if(mSize/100==1)
+            size1.setChecked(true);
+        else if(mSize/100==2)
+            size2.setChecked(true);
+        else
+            size3.setChecked(true);
+
+        initActivityOption();
+        if(switchValue)
+            serviceSwitch.setChecked(true);
+        else
+            serviceSwitch.setChecked(false);
+    }
+    public void on()
+    {
+        Log.e("service", "startService");
+        Intent intent =new Intent(this,PointingStickService.class);
+        bindService(intent, srvConn, BIND_AUTO_CREATE);
+        startService(intent);    //서비스 시작
+    }
+
+    public void off()
+    {
+        Log.e("service", "endService");
+        unbindService(srvConn);
+        stopService(new Intent(this, PointingStickService.class));	//서비스 종료
+    }
+
+    private void initActivityOption()
+    {
         serviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mSeekBar.setVisibility(View.VISIBLE);
+                    switchValue = true;
+                    savePreferencesSwitch();
+                    setVisible();
                     on();
                 } else {
-                    mSeekBar.setVisibility(View.INVISIBLE);
+                    switchValue = false;
+                    savePreferencesSwitch();
+                    setInVisible();
                     off();
                 }
             }
         });
 
         mSeekBar.setMax(100);					//맥스 값 설정.
-        mSeekBar.setProgress(100);			//현재 투명도 설정. 100:불투명, 0은 완전 투명
+        mSeekBar.setProgress(mProgress);			//현재 투명도 설정. 100:불투명, 0은 완전 투명
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -71,34 +119,90 @@ public class HelloJni extends Activity
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 try {
                     mPointingStickService.setProgress(progress);//seekbar변경 정보를 포인팅스틱에 전달
+                    mProgress = progress;
+                    savePreferencesProgress();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }
         });
-        mSeekBar.setVisibility(View.INVISIBLE);
-    }
-    public void on()
-    {
-        Log.e("service", "startService");
-        Intent intent =new Intent(this,PointingStickService.class);
-        bindService(intent,srvConn,BIND_AUTO_CREATE);
-        startService(intent);    //서비스 시작
+
+        mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.option1:
+                        mSize = 100;
+                        break;
+                    case R.id.option2:
+                        mSize = 200;
+                        break;
+                    case R.id.option3:
+                        mSize = 300;
+                        break;
+                }
+                try {
+                    mPointingStickService.setStickSize(mSize);
+                    savePreferencesSize();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        setInVisible();
+
+        srvConn=new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                mPointingStickService=((PointingStickService.DataBinder)binder).getService();
+            }
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+            }
+        };
     }
 
-    public void off()
+    public void setVisible()
     {
-        Log.e("service","endService");
-        unbindService(srvConn);
-        stopService(new Intent(this, PointingStickService.class));	//서비스 종료
+        mSeekBar.setVisibility(View.VISIBLE);
+        mGroup.setVisibility(View.VISIBLE);
     }
-    ServiceConnection srvConn=new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            mPointingStickService=((PointingStickService.SeekBarBinder)binder).getService();
-        }
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
+    public void setInVisible()
+    {
+        mSeekBar.setVisibility(View.INVISIBLE);
+        mGroup.setVisibility(View.INVISIBLE);
+    }
+    // 값 불러오기
+    private void getPreferencesSwitch(){
+        SharedPreferences pref = getSharedPreferences("forSwitch", MODE_PRIVATE);
+        switchValue=pref.getBoolean("switchMode", false);
+    }
+    // 값 저장하기
+    private void savePreferencesSwitch(){
+        SharedPreferences pref = getSharedPreferences("forSwitch", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("switchMode", switchValue);
+        editor.commit();
+    }
+    private void getPreferencesProgress(){
+        SharedPreferences pref = getSharedPreferences("forProgress", MODE_PRIVATE);
+        mProgress = pref.getInt("progress", 100);
+    }
+    private void savePreferencesProgress(){
+        SharedPreferences pref = getSharedPreferences("forProgress", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("progress", mProgress);
+        editor.commit();
+    }
+    private void getPreferencesSize(){
+        SharedPreferences pref = getSharedPreferences("forSize", MODE_PRIVATE);
+        mSize = pref.getInt("size", 100);
+    }
+    private void savePreferencesSize(){
+        SharedPreferences pref = getSharedPreferences("forSize", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("size", mSize);
+        editor.commit();
+    }
 }
