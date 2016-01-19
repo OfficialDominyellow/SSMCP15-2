@@ -40,8 +40,8 @@ public class VirtualMouseDriverController extends Thread {
     public static synchronized VirtualMouseDriverController getInstance(Context context) {
         if (uniqueInstance == null) {
             uniqueInstance = new VirtualMouseDriverController(context);
-            MAXMOVE=(int)convertDpToPixel(63,context.getApplicationContext());
-            INTERVAL=(int)convertDpToPixel(5,context.getApplicationContext());
+            MAXMOVE=(int)GlobalVariable.convertDpToPixel(63, context.getApplicationContext());
+            INTERVAL=(int)GlobalVariable.convertDpToPixel(5,context.getApplicationContext());
         }
         return uniqueInstance;
     }
@@ -78,12 +78,6 @@ public class VirtualMouseDriverController extends Thread {
         }
     }
 
-    public static float convertDpToPixel(float dp, Context context){
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * (metrics.densityDpi / 160f);
-        return px;
-    }
     public int getMouseX()
     {
         return x;
@@ -108,13 +102,13 @@ public class VirtualMouseDriverController extends Thread {
         while (!mFinished) {
             while (!mPaused) {
                 try {
-                    if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(10,this.context.getApplicationContext())) {
+                    if(Math.sqrt(dx*dx+dy*dy)<(int)GlobalVariable.convertDpToPixel(10, this.context.getApplicationContext())) {
                         sleepTime=25;
-                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(12,this.context.getApplicationContext())) {
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)GlobalVariable.convertDpToPixel(12, this.context.getApplicationContext())) {
                         sleepTime=20;
-                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(25,this.context.getApplicationContext())) {
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)GlobalVariable.convertDpToPixel(25, this.context.getApplicationContext())) {
                         sleepTime=13;
-                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(50,this.context.getApplicationContext())) {
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)GlobalVariable.convertDpToPixel(50, this.context.getApplicationContext())) {
                         sleepTime=11;
                     } else {
                         sleepTime=8;
@@ -152,9 +146,6 @@ public class VirtualMouseDriverController extends Thread {
                     e.printStackTrace();
                 }
             }
-
         }
-
-
     }
 }

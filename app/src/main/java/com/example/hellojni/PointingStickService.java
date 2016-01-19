@@ -63,10 +63,13 @@ public class PointingStickService extends Service{
     }
     public void setStickSize(int size) throws RemoteException
     {
-        pointingStick.setWidth(size);
-        pointingStick.setHeight(size);
-        GlobalVariable.stickWidth = mSize;
-        GlobalVariable.stickHeight = mSize;
+        int newSize=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());
+        mParams.width=newSize;
+        mParams.height=newSize;
+        GlobalVariable.stickWidth = newSize;
+        GlobalVariable.stickHeight = newSize;
+
+        mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
     }
     @Override
     public void onCreate() {
@@ -81,12 +84,13 @@ public class PointingStickService extends Service{
 
         pointingStick = new Button(this);
         pointingStick.setBackgroundResource(R.drawable.roundbutton);
-        pointingStick.setWidth(mSize);
-        pointingStick.setHeight(mSize);
+        //pointingStick.setWidth(mSize);
+        //pointingStick.setHeight(mSize);
+
         GlobalVariable.stickWidth = mSize;
         GlobalVariable.stickHeight = mSize;
 
-        pointingStick.setText("Pointing\nStick");    //텍스트 설정
+        pointingStick.setText("P");    //텍스트 설정
         pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
         pointingStick.setTextColor(Color.RED);
         //pointingStick.setTextColor(Color.BLUE);                                                            //글자 색상
@@ -144,6 +148,7 @@ public class PointingStickService extends Service{
      */
     private void initPosition() {
         DisplayMetrics matrix = new DisplayMetrics();
+        int newSize=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mSize, getResources().getDisplayMetrics());
         mWindowManager.getDefaultDisplay().getMetrics(matrix);		//화면 정보를 가져와서
 
         mPointingStickController.setPxWidth(matrix.widthPixels);
@@ -159,6 +164,8 @@ public class PointingStickService extends Service{
 
         mParams.x= mPointingStickController.getPxWidth();
         mParams.y=mPointingStickController.getPxHeight();//x,y 위치 초기화
+        mParams.width=newSize;
+        mParams.height=newSize;
     }
 
     /**
@@ -167,6 +174,14 @@ public class PointingStickService extends Service{
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         initPosition();
+        int tmp;
+        tmp=GlobalVariable.displayMaxLeft;
+        GlobalVariable.displayMaxLeft=GlobalVariable.displayMaxRight;
+        GlobalVariable.displayMaxRight=tmp;
+
+        tmp=GlobalVariable.displayMaxTop;
+        GlobalVariable.displayMaxTop=GlobalVariable.displayMaxBottom;
+        GlobalVariable.displayMaxBottom=tmp;
     }// 화면 roatate시에 발생
 
     @Override

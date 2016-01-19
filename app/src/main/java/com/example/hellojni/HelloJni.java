@@ -17,6 +17,7 @@ package com.example.hellojni;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -24,7 +25,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -57,9 +60,9 @@ public class HelloJni extends Activity
         size2=(RadioButton)findViewById(R.id.option2);
         size3=(RadioButton)findViewById(R.id.option3);
 
-        if(mSize/100==1)
+        if(mSize==70)
             size1.setChecked(true);
-        else if(mSize/100==2)
+        else if(mSize==100)
             size2.setChecked(true);
         else
             size3.setChecked(true);
@@ -132,13 +135,13 @@ public class HelloJni extends Activity
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.option1:
-                        mSize = 100;
+                        mSize = 70;
                         break;
                     case R.id.option2:
-                        mSize = 200;
+                        mSize = 100;
                         break;
                     case R.id.option3:
-                        mSize = 300;
+                        mSize = 120;
                         break;
                 }
                 try {
@@ -149,7 +152,6 @@ public class HelloJni extends Activity
                 }
             }
         });
-
         setInVisible();
 
         srvConn=new ServiceConnection() {
@@ -161,6 +163,18 @@ public class HelloJni extends Activity
             public void onServiceDisconnected(ComponentName name) {
             }
         };
+
+        //디바이스 화면 값
+        Display display=((WindowManager)this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int dipWidth=display.getWidth();
+        int dipHeight=display.getHeight();
+        GlobalVariable.displayMaxLeft=-(dipWidth/2)+(dipWidth*3)/10;
+        GlobalVariable.displayMaxRight=(dipWidth/2)-(dipWidth*3)/10;
+        GlobalVariable.displayMaxTop=-(dipHeight/2)+(dipHeight*2)/10;
+        GlobalVariable.displayMaxBottom=(dipHeight/2)-(dipHeight*2)/10;//20%마진을 줌
+
+        Log.e("Move","Size left:"+ GlobalVariable.displayMaxLeft+"  right:"+ GlobalVariable.displayMaxRight);
+        Log.e("Move","Size top:"+ GlobalVariable.displayMaxTop+"  bottmom:"+ GlobalVariable.displayMaxBottom);
     }
 
     public void setVisible()

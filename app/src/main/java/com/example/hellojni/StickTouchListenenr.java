@@ -1,19 +1,13 @@
 package com.example.hellojni;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListPopupWindow;
-import android.widget.PopupWindow;
 
 /**
  * Created by SECMEM-DY on 2016-01-09.
@@ -68,11 +62,11 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 //Log.e("Service", "originX: "+originX+"  originY:"+originY);
 
                 double distance = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
-                float dpDistance = convertPixelsToDp((float)distance,mContext.getApplicationContext());
+                float dpDistance = GlobalVariable.convertPixelsToDp((float)distance,mContext.getApplicationContext());
                 if (dpDistance>MAXdp && !mPointingStickController.getIsMoveMode()) {
                     xdiff=(int)(xdiff/dpDistance*MAXdp);
                     ydiff=(int)(ydiff/dpDistance*MAXdp);
-                }//포인팅 스틱의 범위를 벗어나지 않기 위한 xdiff,ydiff 설정
+                }//포인팅 스틱의 범위를 벗어나지 않기 위한 xdiff,ydiff 설정 스틱모드일 때
 
 
                 //터치해서 이동한 만큼 이동 시킨다
@@ -81,11 +75,21 @@ public class StickTouchListenenr implements View.OnTouchListener {
 
                 if(mPointingStickController.getIsMoveMode())//Move mode일때
                 {
+                    if(mParams.x<GlobalVariable.displayMaxLeft)
+                        mParams.x=GlobalVariable.displayMaxLeft;
+                    else if(mParams.x>GlobalVariable.displayMaxRight)
+                        mParams.x=GlobalVariable.displayMaxRight;
+                    if(mParams.y<GlobalVariable.displayMaxTop)
+                        mParams.y=GlobalVariable.displayMaxTop;
+                    else if(mParams.y>GlobalVariable.displayMaxBottom)
+                        mParams.y=GlobalVariable.displayMaxBottom;
+
                     mPointingStickController.setPxWidth(mParams.x);
                     mPointingStickController.setPxHeight(mParams.y);
                 }
+
                 mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
-                mPointingStickController.setIsMouseMove(true);
+                mPointingStickController.setIsMouseMove(true);//원테이크
                 Log.e("Service","ACTION_MOVE");
                 virtualMouseDriverController.setDifference(xdiff,ydiff);
                 if(virtualMouseDriverController.getmPause() &&!mPointingStickController.getIsMoveMode() &&!mPointingStickController.getTabMode())
@@ -125,12 +129,6 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 break;
         }
         return false;
-    }
-    public static float convertPixelsToDp(float px, Context context){
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = px / (metrics.densityDpi / 160f);
-        return dp;
     }
 
     static {
