@@ -16,56 +16,89 @@
 package com.example.hellojni;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
-import android.view.View;
 import android.os.Bundle;
-import android.view.View.OnClickListener;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.SeekBar;
+import android.widget.Switch;
 
-public class HelloJni extends Activity implements OnClickListener
+public class HelloJni extends Activity
 {
+    private Switch serviceSwitch;
+    private SeekBar mSeekBar;
+    private PointingStickService mPointingStickService;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        findViewById(R.id.start).setOnClickListener(this);		//시작버튼
-        findViewById(R.id.end).setOnClickListener(this);			//중시버튼
-    }
-    public void onClick(View v) {
-        int view = v.getId();
-        if(view == R.id.start) {
-            Log.e("service", "startService");
-            startService(new Intent(this, PointingStickService.class));    //서비스 시작
-        }
-        else{Log.e("service","endService");
-            stopService(new Intent(this, PointingStickService.class));	//서비스 종료
-        }
-    }
-    /* A native method that is implemented by the
-     * 'hello-jni' native library, which is packaged
-     * with this application.
-     */
-    public native String  stringFromJNI();
-    /* This is another native method declaration that is *not*
-     * implemented by 'hello-jni'. This is simply to show that
-     * you can declare as many native methods in your Java code
-     * as you want, their implementation is searched in the
-     * currently loaded native libraries only the first time
-     * you call them.
-     *
-     * Trying to call this function will result in a
-     * java.lang.UnsatisfiedLinkError exception !
-     */
-    //public native String  unimplementedStringFromJNI();
+        mSeekBar=(SeekBar)findViewById(R.id.seekBar);
 
-    /* this is used to load the 'hello-jni' library on application
-     * startup. The library has already been unpacked into
-     * /data/data/com.example.hellojni/lib/libhello-jni.so at
-     * installation time by the package manager.
-     */
-    static {
-        System.loadLibrary("hello-jni");
+        serviceSwitch=(Switch)findViewById(R.id.switch1);
+        serviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mSeekBar.setVisibility(View.VISIBLE);
+                    on();
+                } else {
+                    mSeekBar.setVisibility(View.INVISIBLE);
+                    off();
+                }
+            }
+        });
+
+        mSeekBar.setMax(100);					//맥스 값 설정.
+        mSeekBar.setProgress(100);			//현재 투명도 설정. 100:불투명, 0은 완전 투명
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                try {
+                    mPointingStickService.setProgress(progress);//seekbar변경 정보를 포인팅스틱에 전달
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        mSeekBar.setVisibility(View.INVISIBLE);
     }
+    public void on()
+    {
+        Log.e("service", "startService");
+        Intent intent =new Intent(this,PointingStickService.class);
+        bindService(intent,srvConn,BIND_AUTO_CREATE);
+        startService(intent);    //서비스 시작
+    }
+
+    public void off()
+    {
+        Log.e("service","endService");
+        unbindService(srvConn);
+        stopService(new Intent(this, PointingStickService.class));	//서비스 종료
+    }
+    ServiceConnection srvConn=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            mPointingStickService=((PointingStickService.SeekBarBinder)binder).getService();
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
 }

@@ -34,8 +34,7 @@
     } while(0)
 
 static int fd;//uinput fd
-
-void Java_com_example_hellojni_StickTouchListenenr_clickTabKey(JNIEnv * a,jobject b)
+void Java_com_example_hellojni_TabGestureListener_inputTabKey(JNIEnv * a,jobject b)
 {
     struct input_event tabEV;
 
@@ -68,6 +67,98 @@ void Java_com_example_hellojni_StickTouchListenenr_clickTabKey(JNIEnv * a,jobjec
         die("error: write");
 }
 
+void Java_com_example_hellojni_TabGestureListener_inputBackTabKey(JNIEnv * a,jobject b)
+{
+    struct input_event tabEV;
+
+    memset(&tabEV,0,sizeof(struct input_event));
+    tabEV.type = EV_KEY;
+    tabEV.code=KEY_LEFTSHIFT;
+    tabEV.value=1;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+    memset(&tabEV, 0, sizeof(struct input_event));
+    tabEV.type = EV_SYN;
+    tabEV.code = 0;
+    tabEV.value = 0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+
+    memset(&tabEV,0,sizeof(struct input_event));
+    tabEV.type = EV_KEY;
+    tabEV.code=KEY_TAB;
+    tabEV.value=1;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+    memset(&tabEV, 0, sizeof(struct input_event));
+    tabEV.type = EV_SYN;
+    tabEV.code = 0;
+    tabEV.value = 0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+    memset(&tabEV,0,sizeof(struct input_event));
+    tabEV.type = EV_KEY;
+    tabEV.code=KEY_TAB;
+    tabEV.value=0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+    memset(&tabEV, 0, sizeof(struct input_event));
+    tabEV.type = EV_SYN;
+    tabEV.code = 0;
+    tabEV.value = 0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+
+    memset(&tabEV,0,sizeof(struct input_event));
+    tabEV.type = EV_KEY;
+    tabEV.code=KEY_LEFTSHIFT;
+    tabEV.value=0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+    memset(&tabEV, 0, sizeof(struct input_event));
+    tabEV.type = EV_SYN;
+    tabEV.code = 0;
+    tabEV.value = 0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+}
+
+void Java_com_example_hellojni_TabGestureListener_inputEnterKey(JNIEnv * a,jobject b)
+{
+    struct input_event tabEV;
+    memset(&tabEV,0,sizeof(struct input_event));
+    tabEV.type = EV_KEY;
+    tabEV.code=KEY_ENTER;
+    tabEV.value=1;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+    memset(&tabEV, 0, sizeof(struct input_event));
+    tabEV.type = EV_SYN;
+    tabEV.code = 0;
+    tabEV.value = 0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+    memset(&tabEV,0,sizeof(struct input_event));
+    tabEV.type = EV_KEY;
+    tabEV.code=KEY_ENTER;
+    tabEV.value=0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+
+    memset(&tabEV, 0, sizeof(struct input_event));
+    tabEV.type = EV_SYN;
+    tabEV.code = 0;
+    tabEV.value = 0;
+    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
+        die("error: write");
+}
 void Java_com_example_hellojni_StickTouchListenenr_clickLeftMouse(JNIEnv * a,jobject b)
 {
     struct input_event evMouseLeftKey;
@@ -159,6 +250,14 @@ jint Java_com_example_hellojni_PointingStickService_initMouseDriver(JNIEnv* env,
         die("error: ioctl");
         return -1;
     }
+    if(ioctl(fd, UI_SET_KEYBIT, KEY_ENTER) < 0) {
+        die("error: ioctl");
+        return -1;
+    }
+    if(ioctl(fd, UI_SET_KEYBIT, KEY_LEFTSHIFT) < 0) {
+        die("error: ioctl");
+        return -1;
+    }
 
     if(ioctl(fd, UI_SET_EVBIT, EV_REL) < 0) {
         die("error: ioctl");
@@ -189,7 +288,7 @@ jint Java_com_example_hellojni_PointingStickService_initMouseDriver(JNIEnv* env,
         return -1;
     }
 
-    int dx=100,dy=100;
+    int dx=1,dy=1;
 
     memset(&ev, 0, sizeof(struct input_event));
     ev.type = EV_REL;

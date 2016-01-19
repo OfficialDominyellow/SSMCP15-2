@@ -23,22 +23,10 @@ public class ModeItemClickListener implements AdapterView.OnItemClickListener {
                 if(mPointingStickController.getIsMoveMode()==false) {
                    // moveMode = true;
                     mPointingStickController.setMoveMode(true);
-                    //Options[0]="Fix";
-                    mPointingStickController.setOptions(0,"Fix");
-                }
-                else
-                {
-                    //moveMode=false;
-                    mPointingStickController.setMoveMode(false);
-                    //Options[0]="Move";
-                    mPointingStickController.setOptions(0,"Move");
                 }
                 mList.dismiss();
                 break;
-            case 1:
-                mList.dismiss();
-                break;
-            case 2://tap
+            case 1://tab
                 if(!mPointingStickController.getTabMode())
                     mPointingStickController.setTabMode(true);
                 else
@@ -46,7 +34,9 @@ public class ModeItemClickListener implements AdapterView.OnItemClickListener {
                 //clickTabKey();
                 mList.dismiss();
                 Log.e("Item", "Tab");
-
+            case 2://off
+                mList.dismiss();
+                Log.e("Item", "Off");
                 break;
         }
     }

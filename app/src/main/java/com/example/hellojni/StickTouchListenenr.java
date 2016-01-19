@@ -2,13 +2,18 @@ package com.example.hellojni;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListPopupWindow;
+import android.widget.PopupWindow;
 
 /**
  * Created by SECMEM-DY on 2016-01-09.
@@ -20,13 +25,13 @@ public class StickTouchListenenr implements View.OnTouchListener {
     private WindowManager mWindowManager;
     private Button pointingStick;
     private Context mContext;
-    private StickTouchListenenr mStickTouchListenenr;
+    private GestureDetector mDetector;
+    private TabGestureListener mGestureListener;
 
-
-    private static VirtualMouseDriverController virtualMouseDriverController=PointingStickService.virtualMouseDriverController;
+    private static VirtualMouseDriverController virtualMouseDriverController;
 
     public StickTouchListenenr(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,ListPopupWindow mList,WindowManager mWindowManager, Button pointingStick,
-                               Context mContext)
+                               Context mContext,VirtualMouseDriverController virtualMouseDriverController)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mParams;
@@ -34,11 +39,16 @@ public class StickTouchListenenr implements View.OnTouchListener {
         this.mWindowManager=mWindowManager;
         this.pointingStick=pointingStick;
         this.mContext=mContext;
+        this.virtualMouseDriverController=virtualMouseDriverController;
+        mGestureListener=new TabGestureListener(mPointingStickController);
+        mDetector=new GestureDetector(mContext,mGestureListener);
     }
-
     public boolean onTouch(View v, MotionEvent event) {
         int xdiff=0;
         int ydiff=0;
+        if(mPointingStickController.getTabMode())
+            return mDetector.onTouchEvent(event);//tap 모드
+
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
                 mPointingStickController.setSTART_X(event.getRawX());//터치 시작 점
@@ -78,36 +88,38 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 mPointingStickController.setIsMouseMove(true);
                 Log.e("Service","ACTION_MOVE");
                 virtualMouseDriverController.setDifference(xdiff,ydiff);
-                if(virtualMouseDriverController.getmPause() &&!mPointingStickController.getIsMoveMode()) {
+                if(virtualMouseDriverController.getmPause() &&!mPointingStickController.getIsMoveMode() &&!mPointingStickController.getTabMode())
+                {
                     virtualMouseDriverController.onResume();
-                } else {
-
                 }
                 break;
                 /* reset position */
             case MotionEvent.ACTION_UP:
                 if(mPointingStickController.getIsLongMouseClick())
                 {
-                    //isLongMouseClick=false;
                     mPointingStickController.setIsLongMouseClick(false);
                 }//롱클릭이 우선순위가 기본 클릭보다 높게 둠
-                else if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode())//mouse left click
+                else if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode()&&!mPointingStickController.getTabMode())//mouse left click
                 {
                     if(mPointingStickController.getTabMode())
                     {
-                        clickTabKey();
                         break;
-                    }
+                    }//tap mode
+                    Log.e("Service", "LeftMouse");
                     clickLeftMouse();//bug있음
                 }
+                else if( mPointingStickController.getIsMoveMode())
+                {
+                    mPointingStickController.setMoveMode(false);
+                }//Move one 1take
+
                 mPointingStickController.setIsMouseMove(true);
                 Log.e("Service", "ACTION_UP");
-                if(!mPointingStickController.getIsMoveMode()) {
+                if(!mPointingStickController.getIsMoveMode())
+                {
                     virtualMouseDriverController.onPause();
                     mParams.x = mPointingStickController.getPxWidth();
                     mParams.y = mPointingStickController.getPxHeight();//상대적으로 좌표 설정 ,원위치로 변경
-
-                    Log.e("Service", "Now pX  :" +  mParams.x + "  pY  :" +  mParams.y);
                     mWindowManager.updateViewLayout(pointingStick, mParams);
                 }
                 break;
@@ -125,5 +137,4 @@ public class StickTouchListenenr implements View.OnTouchListener {
         System.loadLibrary("hello-jni");
     }
     public native void clickLeftMouse();
-    public native void clickTabKey();
 }

@@ -3,15 +3,20 @@
     android:id="@+id/root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
-    <Button
-        android:id="@+id/start"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:text="ON" />
-    <Button
-        android:id="@+id/end"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:text="OFF" />
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="한손 모드"
+        android:id="@+id/switch1"
+        android:layout_weight="0.11" />
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar"
+        android:layout_weight="0.11" />
+
 </LinearLayout>

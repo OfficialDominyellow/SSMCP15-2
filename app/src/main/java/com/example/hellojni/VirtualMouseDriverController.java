@@ -23,23 +23,25 @@ public class VirtualMouseDriverController extends Thread {
     private static int INTERVAL;
     private int x=0;
     private int y=0;
+    private static Context context;
 
     private int originX=120;
     private int originY=120;
 
     private native void moveMouse(int x, int y);
 
-    private VirtualMouseDriverController() {
+    private VirtualMouseDriverController(Context context) {
         mPauseLock = new Object();
         mPaused = false;
         mFinished = false;
+        this.context = context;
     }
 
     public static synchronized VirtualMouseDriverController getInstance(Context context) {
         if (uniqueInstance == null) {
-            uniqueInstance = new VirtualMouseDriverController();
+            uniqueInstance = new VirtualMouseDriverController(context);
             MAXMOVE=(int)convertDpToPixel(63,context.getApplicationContext());
-            INTERVAL=(int)convertDpToPixel(50,context.getApplicationContext());
+            INTERVAL=(int)convertDpToPixel(5,context.getApplicationContext());
         }
         return uniqueInstance;
     }
@@ -100,37 +102,49 @@ public class VirtualMouseDriverController extends Thread {
 
     @Override
     public void run() {
-       // int x=0;
-       // int y=0;
+        int x=0;
+        int y=0;
+        int sleepTime=10;
         while (!mFinished) {
             while (!mPaused) {
                 try {
-                    Thread.sleep(10);
+                    if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(10,this.context.getApplicationContext())) {
+                        sleepTime=25;
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(12,this.context.getApplicationContext())) {
+                        sleepTime=20;
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(25,this.context.getApplicationContext())) {
+                        sleepTime=13;
+                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)convertDpToPixel(50,this.context.getApplicationContext())) {
+                        sleepTime=11;
+                    } else {
+                        sleepTime=8;
+                    }
+                    Thread.sleep(sleepTime);
                     for (int i=0;i<INTERVAL;i++) {
                         if(Math.abs(dx)<=MAXMOVE/INTERVAL*i) {
-                            x=(dx<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            //x=(dx<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            x=(dx<0)?(int)(0-i):(int)(i);
                             break;
                         }
                     }
                     for (int i=0;i<INTERVAL;i++) {
                         if(Math.abs(dy)<=MAXMOVE/INTERVAL*i) {
-                            y=(dy<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            //y=(dy<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
+                            y=(dy<0)?(int)(0-i):(int)(i);
                             break;
                         }
                     }
 
+                    Log.e("Service", ""+x+" "+y);
                     if(mPaused)
                         continue;
-                    else {
-                        originX+=x;
-                        originY+=y;
-                        Log.e("Service", "data X :" + originX+" Y"+originY);
+                    else
                         moveMouse(x, y);
-                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+
             synchronized (mPauseLock) {
                 try {
                     mPauseLock.wait();
@@ -138,6 +152,9 @@ public class VirtualMouseDriverController extends Thread {
                     e.printStackTrace();
                 }
             }
+
         }
+
+
     }
 }

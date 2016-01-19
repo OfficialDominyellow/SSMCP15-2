@@ -7,6 +7,7 @@
     android:keyHeight="80dp">
 
 
+
     <Arc>
         <Key android:codes="12609" android:keyLabel="ㅁ"/>
         <Key android:codes="12596" android:keyLabel="ㄴ"/>
@@ -22,11 +23,13 @@
         <Key android:codes="12685" android:keyLabel="·" android:horizontalGap="130dp"/>
     </Arc>
     <Arc>
+
         <Key android:codes="-101" android:keyLabel="CHG" android:keyWidth="20%p"/>
         <Key android:codes="32" android:keyLabel="SPACE" android:keyWidth="20%p"/>
         <Key android:codes="-5" android:keyLabel="DEL" android:keyWidth="10%p"/>
         <Key android:codes="-4" android:keyLabel="DONE" android:keyWidth="10%p"/>
     </Arc>
+
 
 
 </Keyboard>
