@@ -9,7 +9,7 @@ import android.view.MotionEvent;
  * Created by SECMEM-DY on 2016-01-14.
  */
 
-public class TabGestureListener implements GestureDetector.OnGestureListener {
+public class TabGestureListener implements GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
 
     private PointingStickController mPointingStickController;
     private static String TAG = "TabGestureListener";
@@ -133,88 +133,40 @@ public class TabGestureListener implements GestureDetector.OnGestureListener {
                 }
             }
         }
-
-        /*
-        if(e1.getY()-e2.getY()>0)//up
-        {
-            Log.e("Ges", "e1");
-
-        }
-        else if(e1.getY()-e2.getY()<0)//down
-        {
-            Log.e("Ges", "e2");
-
-        }
-        if((e1.getX()-e2.getX()<0))//right
-        {
-            //right
-            Log.e("Ges", "Right");
-            inputTabKey();
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        else if(e1.getX()-e2.getX()>0)//left
-        {
-            //left
-            Log.e("Ges","Left");
-            inputBackTabKey();
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        */
         return true;
     }
 
     public void onLongPress(MotionEvent e)
     {
-        Log.e("Ges","Long");
-        mPointingStickController.setTabMode(false);
+        Log.e("Ges","onLongPress");
+        mPointingStickController.setTabMode(false);//tab모드 해제
     }
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-            /*if()//시계방향
-            {
-
-            }
-            else if()//반시계방향
-              */
-            if(e1.getY()-e2.getY()>0)//up
-            {
-                Log.e("Ges", "e1");
-
-            }
-            else if(e1.getY()-e2.getY()<0)//down
-            {
-                Log.e("Ges", "e2");
-
-            }
-            if((e1.getX()-e2.getX()<0))//right
-            {
-                //right
-                Log.e("Ges", "Right");
-                inputTabKey();
-            }
-            else if(e1.getX()-e2.getX()>0)//left
-            {
-                //left
-                Log.e("Ges","Left");
-                inputBackTabKey();
-            }
         return false;
     }
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        Log.e("Ges","onDoubleTap");
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
+    }
+
     static {
         System.loadLibrary("hello-jni");
     }
     public native void inputTabKey();
     public native void inputEnterKey();
     public native  void inputBackTabKey();
+
 }

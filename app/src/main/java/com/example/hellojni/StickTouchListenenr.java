@@ -15,7 +15,6 @@ import android.widget.ListPopupWindow;
 public class StickTouchListenenr implements View.OnTouchListener {
     private PointingStickController mPointingStickController;
     private WindowManager.LayoutParams mParams;
-    private ListPopupWindow mList;
     private WindowManager mWindowManager;
     private Button pointingStick;
     private Context mContext;
@@ -24,12 +23,11 @@ public class StickTouchListenenr implements View.OnTouchListener {
 
     private static VirtualMouseDriverController virtualMouseDriverController;
 
-    public StickTouchListenenr(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,ListPopupWindow mList,WindowManager mWindowManager, Button pointingStick,
+    public StickTouchListenenr(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager, Button pointingStick,
                                Context mContext,VirtualMouseDriverController virtualMouseDriverController)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mParams;
-        this.mList=mList;
         this.mWindowManager=mWindowManager;
         this.pointingStick=pointingStick;
         this.mContext=mContext;
@@ -40,9 +38,10 @@ public class StickTouchListenenr implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         int xdiff=0;
         int ydiff=0;
-        if(mPointingStickController.getTabMode())
-            return mDetector.onTouchEvent(event);//tap 모드
-
+        if(mPointingStickController.getTabMode()) {
+            Log.e("Service", "tabMode");//bug있음
+            return mDetector.onTouchEvent(event);//tab 모드
+        }
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
                 mPointingStickController.setSTART_X(event.getRawX());//터치 시작 점
@@ -51,7 +50,6 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 mPointingStickController.setPREV_Y(mParams.y);//뷰의 시작
 
                 mPointingStickController.setIsMouseMove(false);
-                mList.dismiss();//리스트 숨김
                 Log.e("Service", "ACTION_DOWN");
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -86,6 +84,8 @@ public class StickTouchListenenr implements View.OnTouchListener {
 
                     mPointingStickController.setPxWidth(mParams.x);
                     mPointingStickController.setPxHeight(mParams.y);
+                    GlobalVariable.stickWidth = mParams.width;
+                    GlobalVariable.stickHeight = mParams.height;
                 }
 
                 mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
@@ -99,11 +99,12 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 break;
                 /* reset position */
             case MotionEvent.ACTION_UP:
+                /*
                 if(mPointingStickController.getIsLongMouseClick())
                 {
                     mPointingStickController.setIsLongMouseClick(false);
                 }//롱클릭이 우선순위가 기본 클릭보다 높게 둠
-                else if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode()&&!mPointingStickController.getTabMode())//mouse left click
+                else*/ if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode()&&!mPointingStickController.getTabMode())//mouse left click
                 {
                     if(mPointingStickController.getTabMode())
                     {

@@ -1,0 +1,41 @@
+
+<com.example.hellojni.CircleLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circle="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_circle_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/main_selected_textView"
+    android:layout_gravity="center_horizontal"
+    circle:firstChildPosition="South"
+    circle:isRotating="false"
+    circle:speed="25">
+
+        <com.example.hellojni.CircleImageView
+            android:id="@+id/main_calendar_image"
+            circle:name="@string/calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_calendar" />
+
+        <com.example.hellojni.CircleImageView
+            android:id="@+id/main_cloud_image"
+            circle:name="@string/cloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_cloud" />
+
+        <com.example.hellojni.CircleImageView
+            android:id="@+id/main_facebook_image"
+            circle:name="@string/facebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_facebook" />
+
+        <com.example.hellojni.CircleImageView
+            android:id="@+id/main_key_image"
+            circle:name="@string/key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_key" />
+    </com.example.hellojni.CircleLayout>
+

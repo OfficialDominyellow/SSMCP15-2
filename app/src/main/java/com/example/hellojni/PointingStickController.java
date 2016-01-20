@@ -5,8 +5,6 @@ package com.example.hellojni;
  */
 public class PointingStickController
 {
-
-    private String[] Options;//test
     private float START_X,START_Y;
     private int PREV_X,PREV_Y;
     private int MAX_X=-1,MAX_Y=-1;
@@ -26,17 +24,9 @@ public class PointingStickController
         this.tabMode = tabMode;
     }
 
-    public PointingStickController(String[] Options)
+    public PointingStickController()
     {
-        this.Options=Options;
-    }
 
-    public String[] getOptions() {
-        return Options;
-    }
-
-    public void setOptions(int idx,String option) {
-        Options[idx] = option;
     }
 
     public float getSTART_X() {

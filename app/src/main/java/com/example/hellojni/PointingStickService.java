@@ -1,6 +1,7 @@
 package com.example.hellojni;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -12,10 +13,9 @@ import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListPopupWindow;
 import android.widget.Toast;
 
 
@@ -25,29 +25,24 @@ import android.widget.Toast;
 
 public class PointingStickService extends Service{
     private PointingStickController mPointingStickController;
-    private StickLongClickListener mStickLongClickListener;
-    private ModeItemClickListener mModeItemClickListener;
-    private StickTouchListenenr mStickTouchListenenr;
 
     private Button pointingStick;
-
     private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
     private WindowManager mWindowManager;
 
-    private ListPopupWindow mList;//옵션 제공 (롱클릭시);
-    private String[] Options={"Move","Tab","Off"};//test
+    private LayoutInflater mInflater;
+    private CircleLayout circleView;
+
     private  VirtualMouseDriverController virtualMouseDriverController;
     private int mProgress;
     private int mSize;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
-
     /*onTouch 에서
     return true 를 반환하면 이후 비슷한 이벤트는 더이상 진행되지 않음
     만일 onTouch 에서 특정한 플래그 값만 변경하고,
     이후 click, longclick 이벤트가 계속 수행되길 원하시면 필요한 작업 후
     return false 를 반환
     이벤트 호출 순서 onTouch -> onLongClick -> onClick .*/
-
     public class DataBinder extends Binder {
         PointingStickService getService(){return PointingStickService.this;}
     }
@@ -63,13 +58,10 @@ public class PointingStickService extends Service{
     }
     public void setStickSize(int size) throws RemoteException
     {
-        int newSize=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());
+        int newSize=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());//dp로 변환
         mParams.width=newSize;
         mParams.height=newSize;
-        GlobalVariable.stickWidth = newSize;
-        GlobalVariable.stickHeight = newSize;
-
-        mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
+        mWindowManager.updateViewLayout(pointingStick, mParams);
     }
     @Override
     public void onCreate() {
@@ -80,30 +72,20 @@ public class PointingStickService extends Service{
             return;
         }
         getPreferencesProgress();getPreferencesSize();
-        mPointingStickController=new PointingStickController(Options);
+        mPointingStickController=new PointingStickController();
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         pointingStick = new Button(this);
         pointingStick.setBackgroundResource(R.drawable.roundbutton);
-        //pointingStick.setWidth(mSize);
-        //pointingStick.setHeight(mSize);
 
-        GlobalVariable.stickWidth = mSize;
-        GlobalVariable.stickHeight = mSize;
-
-        pointingStick.setText("P");    //텍스트 설정
+        pointingStick.setText("●");    //텍스트 설정
         pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
         pointingStick.setTextColor(Color.RED);
         //pointingStick.setTextColor(Color.BLUE);                                                            //글자 색상
         //pointingStick.setBackgroundColor(Color.argb(127, 0, 255, 255));								//텍스트뷰 배경 색
 
-        mList=new ListPopupWindow(this);
-        mList.setWidth(300);
-        mList.setHeight(300);
-        mList.setAnchorView(pointingStick);//리스트 팝업 윈도우 등록 롱클릭시 발동
-        mList.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1,
-                Options));
-        mList.setModal(true);
+
+        circleView = (CircleLayout) mInflater.inflate(R.layout.sample_no_rotation2, null);
 
 
         //최상위 윈도우에 넣기 위한 설정
@@ -132,24 +114,18 @@ public class PointingStickService extends Service{
     }
     public void setAllListener()
     {
-        mStickLongClickListener = new StickLongClickListener(mPointingStickController,mList);
-        pointingStick.setOnLongClickListener(mStickLongClickListener);
-
-        mStickTouchListenenr=new StickTouchListenenr(mPointingStickController,mParams, mList, mWindowManager, pointingStick,
-                 this,virtualMouseDriverController);
-        pointingStick.setOnTouchListener(mStickTouchListenenr);
-
-        mModeItemClickListener=new ModeItemClickListener(mPointingStickController,mList);
-        mList.setOnItemClickListener(mModeItemClickListener);
+        circleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController, mParams, mWindowManager, circleView, pointingStick));
+        pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController,mParams,mWindowManager,circleView,pointingStick));
+        pointingStick.setOnTouchListener(new StickTouchListenenr(mPointingStickController, mParams, mWindowManager, pointingStick,
+                this, virtualMouseDriverController));
     }
-
     /**
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다
      */
     private void initPosition() {
         DisplayMetrics matrix = new DisplayMetrics();
-        int newSize=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mSize, getResources().getDisplayMetrics());
-        mWindowManager.getDefaultDisplay().getMetrics(matrix);		//화면 정보를 가져와서
+        int newSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mSize, getResources().getDisplayMetrics());
+        mWindowManager.getDefaultDisplay().getMetrics(matrix);        //화면 정보를 가져와서
 
         mPointingStickController.setPxWidth(matrix.widthPixels);
         mPointingStickController.setPxHeight(matrix.heightPixels);
@@ -160,12 +136,15 @@ public class PointingStickService extends Service{
         mPointingStickController.setMAX_Y(mPointingStickController.getPxHeight() - pointingStick.getHeight());
 
         mPointingStickController.setPxWidth(mPointingStickController.getPxWidth() / 5);
-        mPointingStickController.setPxHeight(mPointingStickController.getPxHeight() / 5);
+        mPointingStickController.setPxHeight(mPointingStickController.getPxHeight() / 5);//최초 위치 설정
 
-        mParams.x= mPointingStickController.getPxWidth();
-        mParams.y=mPointingStickController.getPxHeight();//x,y 위치 초기화
-        mParams.width=newSize;
-        mParams.height=newSize;
+        mParams.x = mPointingStickController.getPxWidth();
+        mParams.y = mPointingStickController.getPxHeight();//x,y 위치 초기화
+
+        mParams.width = newSize;
+        mParams.height = newSize;
+        GlobalVariable.stickWidth = mParams.width;
+        GlobalVariable.stickHeight = mParams.height;
     }
 
     /**
@@ -178,7 +157,6 @@ public class PointingStickService extends Service{
         tmp=GlobalVariable.displayMaxLeft;
         GlobalVariable.displayMaxLeft=GlobalVariable.displayMaxRight;
         GlobalVariable.displayMaxRight=tmp;
-
         tmp=GlobalVariable.displayMaxTop;
         GlobalVariable.displayMaxTop=GlobalVariable.displayMaxBottom;
         GlobalVariable.displayMaxBottom=tmp;
@@ -189,7 +167,10 @@ public class PointingStickService extends Service{
         virtualMouseDriverController.interrupt();
 
         if(mWindowManager != null) {		//서비스 종료시 뷰 제거. *중요 : 뷰를 꼭 제거 해야함.
-            if(pointingStick != null) mWindowManager.removeView(pointingStick);
+            if(pointingStick != null && !mPointingStickController.getIsLongMouseClick())
+                mWindowManager.removeView(pointingStick);
+            else if(circleView!=null)
+                mWindowManager.removeView(circleView);
         }
         Log.e("service", "onDestroy");
         removeMouseDriver();
