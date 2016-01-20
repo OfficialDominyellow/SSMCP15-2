@@ -69,12 +69,13 @@ public class HelloJni extends Activity
         else
             size3.setChecked(true);
 
+
+        initActivityOption();
+
         if(switchValue)
             serviceSwitch.setChecked(true);
         else
             serviceSwitch.setChecked(false);
-
-        initActivityOption();
 
         IntentFilter filter = new IntentFilter();
 
@@ -84,8 +85,6 @@ public class HelloJni extends Activity
     public void on()
     {
         Log.e("service", "startService");
-        savePreferencesSwitch();
-        setVisible();
         Intent intent =new Intent(this,PointingStickService.class);
         bindService(intent, srvConn, BIND_AUTO_CREATE);
         startService(intent);    //서비스 시작
@@ -93,9 +92,7 @@ public class HelloJni extends Activity
 
     public void off() {
         Log.e("service", "endService");
-        savePreferencesSwitch();
-        setInVisible();
-        unbindService(srvConn);
+        //unbindService(srvConn);
         stopService(new Intent(this, PointingStickService.class));	//서비스 종료
     }
 
@@ -106,9 +103,14 @@ public class HelloJni extends Activity
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     switchValue = true;
+                    savePreferencesSwitch();
+                    setVisible();
                     on();
                 } else {
                     switchValue = false;
+                    savePreferencesSwitch();
+                    unbindService(srvConn);
+                    setInVisible();
                     off();
                 }
             }
@@ -229,7 +231,11 @@ public class HelloJni extends Activity
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            finish();
+            serviceSwitch.performClick();
+            switchValue = false;
+            savePreferencesSwitch();
+            setInVisible();
+            off();
         }
     };
     public void finish() {
