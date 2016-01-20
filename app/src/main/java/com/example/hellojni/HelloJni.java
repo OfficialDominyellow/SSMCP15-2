@@ -16,9 +16,11 @@
 package com.example.hellojni;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.IBinder;
@@ -67,23 +69,32 @@ public class HelloJni extends Activity
         else
             size3.setChecked(true);
 
-        initActivityOption();
         if(switchValue)
             serviceSwitch.setChecked(true);
         else
             serviceSwitch.setChecked(false);
+
+        initActivityOption();
+
+        IntentFilter filter = new IntentFilter();
+
+        filter.addAction(GlobalVariable.STOP_SERVICE);
+        registerReceiver(receiver, filter);
     }
     public void on()
     {
         Log.e("service", "startService");
+        savePreferencesSwitch();
+        setVisible();
         Intent intent =new Intent(this,PointingStickService.class);
         bindService(intent, srvConn, BIND_AUTO_CREATE);
         startService(intent);    //서비스 시작
     }
 
-    public void off()
-    {
+    public void off() {
         Log.e("service", "endService");
+        savePreferencesSwitch();
+        setInVisible();
         unbindService(srvConn);
         stopService(new Intent(this, PointingStickService.class));	//서비스 종료
     }
@@ -95,13 +106,9 @@ public class HelloJni extends Activity
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     switchValue = true;
-                    savePreferencesSwitch();
-                    setVisible();
                     on();
                 } else {
                     switchValue = false;
-                    savePreferencesSwitch();
-                    setInVisible();
                     off();
                 }
             }
@@ -218,5 +225,14 @@ public class HelloJni extends Activity
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt("size", mSize);
         editor.commit();
+    }
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    };
+    public void finish() {
+        super.finish();
     }
 }

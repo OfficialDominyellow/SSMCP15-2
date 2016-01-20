@@ -15,27 +15,27 @@
             circle:name="@string/calendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_calendar" />
+            android:src="@drawable/movemode" />
 
         <com.example.hellojni.CircleImageView
             android:id="@+id/main_cloud_image"
             circle:name="@string/cloud"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_cloud" />
+            android:src="@drawable/tabmode" />
 
         <com.example.hellojni.CircleImageView
             android:id="@+id/main_facebook_image"
             circle:name="@string/facebook"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_facebook" />
+            android:src="@drawable/hidemode" />
 
         <com.example.hellojni.CircleImageView
             android:id="@+id/main_key_image"
             circle:name="@string/key"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_key" />
+            android:src="@drawable/serviceoff" />
     </com.example.hellojni.CircleLayout>
 

@@ -16,6 +16,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
@@ -63,6 +64,7 @@ public class PointingStickService extends Service{
         mParams.height=newSize;
         mWindowManager.updateViewLayout(pointingStick, mParams);
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -114,7 +116,7 @@ public class PointingStickService extends Service{
     }
     public void setAllListener()
     {
-        circleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController, mParams, mWindowManager, circleView, pointingStick));
+        circleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController, mParams, mWindowManager, circleView, pointingStick,getBaseContext()));
         pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController,mParams,mWindowManager,circleView,pointingStick));
         pointingStick.setOnTouchListener(new StickTouchListenenr(mPointingStickController, mParams, mWindowManager, pointingStick,
                 this, virtualMouseDriverController));
@@ -165,7 +167,6 @@ public class PointingStickService extends Service{
     @Override
     public void onDestroy() {
         virtualMouseDriverController.interrupt();
-
         if(mWindowManager != null) {		//서비스 종료시 뷰 제거. *중요 : 뷰를 꼭 제거 해야함.
             if(pointingStick != null && !mPointingStickController.getIsLongMouseClick())
                 mWindowManager.removeView(pointingStick);

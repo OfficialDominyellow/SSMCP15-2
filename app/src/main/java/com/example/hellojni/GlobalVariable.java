@@ -14,6 +14,7 @@ public class GlobalVariable {
     public static int displayMaxRight;
     public static int displayMaxTop;
     public static int displayMaxBottom;
+    public static String STOP_SERVICE = "SEND_STOP_SERVICE";
 
     public static float convertDpToPixel(float dp, Context context){
         Resources resources = context.getResources();
