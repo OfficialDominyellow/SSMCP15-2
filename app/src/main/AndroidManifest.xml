@@ -10,7 +10,9 @@
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        android:hardwareAccelerated="true"
+        >
 
         <activity
             android:name=".LoadingActivity"
@@ -34,6 +36,7 @@
         <service
             android:name=".MyKeyboard"
             android:label="@string/my_keyboard"
+            android:hardwareAccelerated="true"
             android:permission="android.permission.BIND_INPUT_METHOD">
 
             <meta-data android:name="android.view.im"
@@ -46,12 +49,14 @@
 
         <service
             android:name=".PointingStickService"
+            android:hardwareAccelerated="true"
             android:enabled="true"
             android:exported="false"> <!-- 퍼미션 중요 -->
         </service>
 
 
         <service android:name=".KeyboardPopupService"
+            android:hardwareAccelerated="true"
             android:enabled="true"
             android:exported="false">
         </service>

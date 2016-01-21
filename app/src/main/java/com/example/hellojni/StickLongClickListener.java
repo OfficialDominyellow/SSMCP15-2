@@ -15,15 +15,15 @@ public class StickLongClickListener implements View.OnLongClickListener
     private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
     private WindowManager mWindowManager;
     private PointingStickController mPointingStickController;
-    private CircleLayout circleView;
+    private CircleLayout mCircleView;
     private Button pointingStick;
 
-    public StickLongClickListener(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager,CircleLayout circleView,Button pointingStick)
+    public StickLongClickListener(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager,CircleLayout mCircleView,Button pointingStick)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mParams;
         this.mWindowManager=mWindowManager;
-        this.circleView=circleView;
+        this.mCircleView=mCircleView;
         this.pointingStick=pointingStick;
     }
     public boolean onLongClick(View v) {
@@ -34,8 +34,8 @@ public class StickLongClickListener implements View.OnLongClickListener
             mParams.width=mParams.width*2;
             mParams.height=mParams.height*2;
             mWindowManager.removeView(pointingStick);
-            mWindowManager.addView(circleView, mParams);
-            mWindowManager.updateViewLayout(circleView, mParams);
+            mWindowManager.addView(mCircleView, mParams);
+            mWindowManager.updateViewLayout(mCircleView, mParams);
             mPointingStickController.setIsLongMouseClick(true);
             return true;
         }

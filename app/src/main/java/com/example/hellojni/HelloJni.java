@@ -92,7 +92,7 @@ public class HelloJni extends Activity
 
     public void off() {
         Log.e("service", "endService");
-        //unbindService(srvConn);
+        //unbindService(srvConn); 여기서 unbind시 에러 발생
         stopService(new Intent(this, PointingStickService.class));	//서비스 종료
     }
 

@@ -32,7 +32,7 @@ public class StickTouchListenenr implements View.OnTouchListener {
         this.pointingStick=pointingStick;
         this.mContext=mContext;
         this.virtualMouseDriverController=virtualMouseDriverController;
-        mGestureListener=new TabGestureListener(mPointingStickController);
+        mGestureListener=new TabGestureListener(mPointingStickController,pointingStick);
         mDetector=new GestureDetector(mContext,mGestureListener);
     }
     public boolean onTouch(View v, MotionEvent event) {
@@ -115,6 +115,7 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 }
                 else if( mPointingStickController.getIsMoveMode())
                 {
+                    pointingStick.setBackgroundResource(R.drawable.pointing_stick);//Move mode에서 원상태로 복귀
                     mPointingStickController.setMoveMode(false);
                 }//Move one 1take
 

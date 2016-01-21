@@ -1,4 +1,3 @@
-
 <com.example.hellojni.CircleLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:circle="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_circle_layout"
@@ -10,32 +9,40 @@
     circle:isRotating="false"
     circle:speed="25">
 
-        <com.example.hellojni.CircleImageView
-            android:id="@+id/main_calendar_image"
-            circle:name="@string/calendar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/movemode" />
+    <com.example.hellojni.CircleImageView
+        android:id="@+id/main_move_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/movemode"
+        circle:name="move" />
 
-        <com.example.hellojni.CircleImageView
-            android:id="@+id/main_cloud_image"
-            circle:name="@string/cloud"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/tabmode" />
+    <com.example.hellojni.CircleImageView
+        android:id="@+id/main_tab_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/tabmode"
+        circle:name="tab" />
 
-        <com.example.hellojni.CircleImageView
-            android:id="@+id/main_facebook_image"
-            circle:name="@string/facebook"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/hidemode" />
+    <com.example.hellojni.CircleImageView
+        android:id="@+id/main_hide_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/hidemode"
+        circle:name="hide" />
 
-        <com.example.hellojni.CircleImageView
-            android:id="@+id/main_key_image"
-            circle:name="@string/key"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/serviceoff" />
-    </com.example.hellojni.CircleLayout>
+    <com.example.hellojni.CircleImageView
+        android:id="@+id/main_off_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/serviceoff"
+        circle:name="off" />
+
+    <com.example.hellojni.CircleImageView
+        android:id="@+id/main_back_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/bg"
+        circle:name="back" />
+
+</com.example.hellojni.CircleLayout>
 

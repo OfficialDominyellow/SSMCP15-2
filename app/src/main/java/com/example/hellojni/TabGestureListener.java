@@ -1,9 +1,10 @@
 package com.example.hellojni;
 
-import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.animation.Animation;
+import android.widget.Button;
 
 /**
  * Created by SECMEM-DY on 2016-01-14.
@@ -11,15 +12,18 @@ import android.view.MotionEvent;
 
 public class TabGestureListener implements GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
 
+    private Animation anim=null;
     private PointingStickController mPointingStickController;
+    private Button pointingStick;
     private static String TAG = "TabGestureListener";
 
     private int mPrevType;
     private int mCurrType;
 
-    public TabGestureListener(PointingStickController mPointingStickController)
+    public TabGestureListener(PointingStickController mPointingStickController,Button pointingStick)
     {
         this.mPointingStickController=mPointingStickController;
+        this.pointingStick=pointingStick;
     }
     @Override
     public boolean onDown(MotionEvent e) {
@@ -110,11 +114,11 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
         int dir = getClockDirection();
         if(dir != -1) {
             mPrevType = mCurrType;
-            if(dir == 1){
+            if (dir == 1) {
                 Log.i(TAG, "ClockWise");
+                pointingStick.setBackgroundResource(R.drawable.tab_right);
 
                 inputTabKey();
-
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -123,9 +127,9 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
             }
             else{
                 Log.i(TAG, "CounterClickWise");
+                pointingStick.setBackgroundResource(R.drawable.tab_left);
 
                 inputBackTabKey();
-
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -139,6 +143,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
     public void onLongPress(MotionEvent e)
     {
         Log.e("Ges","onLongPress");
+        pointingStick.setBackgroundResource(R.drawable.pointing_stick);
         mPointingStickController.setTabMode(false);//tab모드 해제
     }
 
