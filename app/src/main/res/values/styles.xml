@@ -29,7 +29,11 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:typeface">monospace</item>
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="AppTheme.DialogWhenLarge" parent="@android:style/Theme.Holo.Light.DialogWhenLarge">
     </style>
 
 </resources>
