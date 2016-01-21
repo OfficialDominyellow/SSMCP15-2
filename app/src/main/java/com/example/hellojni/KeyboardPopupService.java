@@ -74,7 +74,6 @@ public class KeyboardPopupService extends Service{
         extendImage = Bitmap.createScaledBitmap(extendImage, mKeyboardWidth / 3, mKeyboardHeight / 3, true);
         mImage.setImageBitmap(extendImage);
 
-
         /*
         LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         mImage = new ImageView(this);
