@@ -47,7 +47,12 @@ public class HelloJni extends Activity
     private boolean switchValue;
     private int mProgress;
     private int mSize;
+
+
+
     /** Called when the activity is first created. */
+
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {

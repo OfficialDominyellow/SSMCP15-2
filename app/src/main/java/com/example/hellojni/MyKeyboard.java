@@ -48,18 +48,18 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     private static Intent mService;
 
     private class Hangul {
+        private static final int INPUT_MODE_CHO = 0;
+        private static final int INPUT_MODE_JUNG = 1;
+        private static final int INPUT_MODE_JONG = 2;
+
         public String chosung = "";
         public String jungsung = "";
         public String jongsung = "";
-        public String jongsung2 = "";
-        public int step = 0; //0 : 초성 입랙대기, 1 : 중성 입력대기, 2 : 종성 입력대기
-        public boolean writingJongsungFlag = false; //전글짜의 받침이 다음글짜 초성으로 넘어올 수도 있을 때 true
-        public boolean dotUsedFlag = false; //방금 천지인 . 썼어
-        public boolean doubledFlag = false; //방금 천지인 .. 썼어
-        public boolean addCursorFlag = false;
+        public int step = INPUT_MODE_CHO; //0 : 초성 입랙대기, 1 : 중성 입력대기, 2 : 종성 입력대기
 
-        private boolean spaceFlag = false;
-
+        private boolean writingJongsungFlag = false; //전글짜의 받침이 다음글짜 초성으로 넘어올 수도 있을 때 true
+        private boolean dotUsedFlag = false; //방금 천지인 . 썼어
+        private boolean doubledFlag = false; //방금 천지인 .. 썼어
         private int mDelCount = 0;
         private String mLeftExtra="";
 
@@ -83,6 +83,17 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         private final int[] PREF_CHUNJIIN = {
                 12641, 12643, 12685
         };
+
+        public void init() {
+            this.chosung = "";
+            this.jungsung = "";
+            this.jongsung = "";
+            this.step = INPUT_MODE_CHO;
+            this.writingJongsungFlag = false;
+            this.dotUsedFlag = false;
+            this.doubledFlag = false;
+            this.mDelCount = 0;
+        }
 
         public Hangul(){
             init();
@@ -191,24 +202,12 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             return -1;
         }
 
-        public void init() {
-            this.chosung = "";
-            this.jungsung = "";
-            this.jongsung = "";
-            this.jongsung2 = "";
-            this.step = 0;
-            this.writingJongsungFlag = false;
-            this.dotUsedFlag = false;
-            this.doubledFlag = false;
-            this.addCursorFlag = false;
-            this.spaceFlag = false;
-            this.mDelCount = 0;
-        }
+
 
         private void makeHangul(int primaryCode) {
             switch(this.step){
                 //초성입력
-                case 0:
+                case INPUT_MODE_CHO:
                     //자음이 왔어
                     if(isInSet(PREF_CHO, primaryCode)){
                         //첫 자음이야
@@ -235,7 +234,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                     }
                     //천지인 모음 입력이 왔어
                     else if (isInSet(PREF_CHUNJIIN, primaryCode)){
-                        step = 1;
+                        step = INPUT_MODE_JUNG;
                         //아래아가 왔을 때
                         if(primaryCode == 12685) {
                             Log.i(TAG, ".? : " + (char)primaryCode+"");
@@ -244,12 +243,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                             dotUsedFlag = true;
                             this.jungsung = (char)primaryCode + "";
 
-                            /*
-                            //앞이 쌍자음이면 의머없는 쌍자음 + 아래아모음 모드로 변경
-                            if (isDoubleJa(this.chosung)) {
-                                writingDoubleFlag = true;
-                            }
-                            */
                         }
                         //ㅡ ㅣ
                         else {
@@ -276,33 +269,25 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         }
                     }
                     break;
-                case 1:
+                case INPUT_MODE_JUNG:
                     //자음이 왔어 -> 받침이야, 혹은 dot 2개 이후 의미없는 자음이 올수도
                     if(isInSet(PREF_CHO, primaryCode)){
                         //최근이 dot들이면 받침이 안되고 따로 빠져야해
                         if((dotUsedFlag || doubledFlag) && this.jungsung.equals("ㆍ")) {
                             init();
-                            this.chosung = (char)primaryCode+"";
                         }
                         else {
                             //다좋은데 ㄸ, ㅃ, ㅉ 받침 안돼
                             if (primaryCode == 12600 || primaryCode == 12611 || primaryCode == 12617) {
                                 init();
-                                step = 0;
-                                mDelCount = 0;
-                                this.chosung = (char) primaryCode + "";
                             }
                             //나머지는 받침 찍고 종성입력단계로
                             else {
                                 //하지만 초성이 없다면 얘기가 달라지지
                                 if (this.chosung.equals("")) {
                                     init();
-                                    step = 0;
-                                    mDelCount = 0;
-                                    this.chosung = (char) primaryCode + "";
                                 } else {
-                                    Log.i(TAG, "AHN");
-                                    step = 2;
+                                    step = INPUT_MODE_JONG;
                                     mDelCount = 1;
                                     this.jongsung = (char) primaryCode + "";
                                 }
@@ -358,12 +343,9 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                 doubledFlag = false;
                                 //점 또찍어 아래아 2개에 dot 추가되면 그냥 따로야
                                 if(primaryCode == 12685) {
-                                    Log.i(TAG, "jong + dotdotdot");
-                                    mDelCount = 0;
                                     init();
-                                    step = 1;
+                                    step = INPUT_MODE_JUNG;
                                     dotUsedFlag = true;
-                                    this.jungsung = (char)primaryCode + "";
                                 }
                                 //모음 완성
                                 else{
@@ -486,9 +468,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                             //조합이 안맞아
                                             else {
                                                 init();
-                                                step = 0;
-                                                mDelCount = 0;
-                                                this.jungsung = (char) primaryCode + "";
                                             }
                                         }
                                         //+ㅣ -> ㅓ ㅐ ㅟ ㅙ
@@ -513,9 +492,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                             //조합이 안맞아
                                             else {
                                                 init();
-                                                step = 0;
-                                                mDelCount = 0;
-                                                this.jungsung = (char) primaryCode + "";
                                                 dotUsedFlag = true;
                                             }
                                         }
@@ -530,9 +506,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                 //아래아 또 찍었어 글씨 따로 빠져
                                 if (primaryCode == 12685) {
                                     init();
-                                    step = 1;
-                                    mDelCount = 0;
-                                    this.jungsung = (char) primaryCode + "";
+                                    step = INPUT_MODE_JUNG;
                                     dotUsedFlag = true;
                                 }
                                 //모음완성
@@ -571,9 +545,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                             //조합이 안나와
                                             else {
                                                 init();
-                                                step = 1;
-                                                mDelCount = 0;
-                                                this.jungsung = (char) primaryCode + "";
+                                                step = INPUT_MODE_JUNG;
                                             }
                                         }
                                         //+ㅣ -> ㅕ ㅒ ㅝ
@@ -615,9 +587,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                     //글씨 따로 빠져
                                     else {
                                         init();
-                                        step = 1;
-                                        mDelCount = 0;
-                                        this.jungsung = (char) primaryCode + "";
+                                        step = INPUT_MODE_JUNG;
                                         dotUsedFlag = true;
                                     }
                                 }
@@ -626,9 +596,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                     // 최근에 아래아 없이 ㅡ 못와 -> 글씨 따로 빠져
                                     if (primaryCode == 12641) {
                                         init();
-                                        step = 1;
-                                        mDelCount = 0;
-                                        this.jungsung = (char) primaryCode + "";
+                                        step = INPUT_MODE_JUNG;
                                     }
                                     // ㅣ
                                     else if (primaryCode == 12643) {
@@ -648,9 +616,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
                                         else {
                                             init();
-                                            step = 1;
-                                            mDelCount = 0;
-                                            this.jungsung = (char) primaryCode + "";
+                                            step = INPUT_MODE_JUNG;
                                         }
                                     }
                                 }
@@ -659,7 +625,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                     }
 
                     break;
-                case 2:
+                case INPUT_MODE_JONG:
                     //받침 입력
                     //자음 왔어
                     if(isInSet(PREF_CHO, primaryCode)) {
@@ -672,9 +638,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         //기존에 있던 받침이랑 복자음이 안돼
                         else {
                             init();
-                            step = 0;
-                            mDelCount=0;
-                            this.chosung = (char)primaryCode + "";
                         }
                     }
                     //천지인 모음 왔어
@@ -685,7 +648,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                             mDelCount = 0;
                             dotUsedFlag = true;
                             writingJongsungFlag = true;
-                            step = 1;
+                            step = INPUT_MODE_JUNG;
                         }
                         else {
                             //받침이 복자음이면 나눠야해
@@ -699,7 +662,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                 this.chosung = (char) jongsungRightCode + "";
                                 this.jungsung = (char) primaryCode + "";
                                 this.jongsung = "";
-                                step = 1;
+                                step = INPUT_MODE_JUNG;
                             }
                             //받침 그냥 자음이야 나눠
                             else {
@@ -711,7 +674,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                                 this.chosung = jongsungPrev;
                                 this.jungsung = (char)primaryCode + "";
                                 this.jongsung = "";
-                                step = 1;
+                                step = INPUT_MODE_JUNG;
                             }
                         }
                     }
@@ -861,6 +824,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
             return 44032 + cho * 588 + jung * 28 + jong;
         }
+
         private String getHangulInputStr(int primaryCode){
             mLeftExtra = "";
             makeHangul(primaryCode);
@@ -879,14 +843,14 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                 lastStr = (char) getUnicode() + "";
                 delete(1);
                 ic.commitText(lastStr, 1);
-                step = 1;
+                step = INPUT_MODE_JUNG;
             }
             else if(!this.jungsung.equals("")){
                 this.jungsung = "";
                 lastStr = (char) getUnicode() + "";
                 delete(1);
                 ic.commitText(lastStr, 1);
-                step = 0;
+                step = INPUT_MODE_CHO;
             }
             else{
                 init();
