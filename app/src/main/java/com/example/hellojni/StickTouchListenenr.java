@@ -32,7 +32,7 @@ public class StickTouchListenenr implements View.OnTouchListener {
         this.pointingStick=pointingStick;
         this.mContext=mContext;
         this.virtualMouseDriverController=virtualMouseDriverController;
-        mGestureListener=new TabGestureListener(mPointingStickController);
+        mGestureListener=new TabGestureListener(mPointingStickController,pointingStick);
         mDetector=new GestureDetector(mContext,mGestureListener);
     }
     public boolean onTouch(View v, MotionEvent event) {
@@ -44,6 +44,10 @@ public class StickTouchListenenr implements View.OnTouchListener {
         }
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:				//사용자 터치 다운이면
+                if(event.getToolType(0)==event.TOOL_TYPE_MOUSE) {
+                    Log.e("Service", "MOUSE_ACTION_DOWN");
+                    break;
+                }
                 mPointingStickController.setSTART_X(event.getRawX());//터치 시작 점
                 mPointingStickController.setSTART_Y(event.getRawY());//터치 시작 점
                 mPointingStickController.setPREV_X(mParams.x);//뷰의 시작 점
@@ -104,17 +108,53 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 {
                     mPointingStickController.setIsLongMouseClick(false);
                 }//롱클릭이 우선순위가 기본 클릭보다 높게 둠
-                else*/ if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode()&&!mPointingStickController.getTabMode())//mouse left click
+
+
+                else*/
+                if(event.getToolType(0)==event.TOOL_TYPE_MOUSE) {
+                    synchronized (mouseLock) {
+                        Log.e("Service", "MOUSE_ACTION_UP");
+
+                        /*
+                        mTmpWidth = mParams.width;
+                        mTmpHeight = mParams.height;
+                        mParams.width = 1;
+                        mParams.height = 1;
+                        mWindowManager.updateViewLayout(pointingStick, mParams);
+                        */
+                        mWindowManager.removeViewImmediate(pointingStick);
+                        for (int i = 0; i < 1; i++) {
+                            Log.e("Service", "없어져라얍!");
+                        }
+
+                        Log.e("Service", "클");
+                        clickLeftMouse();
+                        Log.e("Service", "릭");
+                        for (int i = 0; i < 1; i++) {
+                            Log.e("Service", "살아나라얍!");
+                        }
+
+
+                        mWindowManager.addView(pointingStick,mParams);
+
+                    }
+                    break;
+                }
+
+                if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode()&&!mPointingStickController.getTabMode())//mouse left click
+
                 {
                     if(mPointingStickController.getTabMode())
                     {
                         break;
                     }//tap mode
                     Log.e("Service", "LeftMouse");
-                    clickLeftMouse();//bug있음
+                    clickLeftMouse();
                 }
                 else if( mPointingStickController.getIsMoveMode())
                 {
+                    pointingStick.setBackgroundResource(R.drawable.pointing_stick);//Move mode에서 원상태로 복귀
+
                     mPointingStickController.setMoveMode(false);
                 }//Move one 1take
 

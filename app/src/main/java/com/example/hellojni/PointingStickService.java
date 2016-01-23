@@ -16,9 +16,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.Toast;
-
 
 /**
  * Created by SECMEM-DY on 2016-01-06.
@@ -32,7 +30,7 @@ public class PointingStickService extends Service{
     private WindowManager mWindowManager;
 
     private LayoutInflater mInflater;
-    private CircleLayout circleView;
+    private CircleLayout mCircleView;
 
     private  VirtualMouseDriverController virtualMouseDriverController;
     private int mProgress;
@@ -55,16 +53,24 @@ public class PointingStickService extends Service{
     public void setProgress(int progress) throws RemoteException
     {
         mParams.alpha = progress / 100.0f;			//알파값 설정
-        mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
+        updateView();
     }
     public void setStickSize(int size) throws RemoteException
     {
         int newSize=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());//dp로 변환
+        if(mPointingStickController.getIsLongMouseClick())
+                newSize*=2;
         mParams.width=newSize;
         mParams.height=newSize;
-        mWindowManager.updateViewLayout(pointingStick, mParams);
+        updateView();
     }
-
+    public void updateView()
+    {
+        if(mPointingStickController.getIsLongMouseClick())
+            mWindowManager.updateViewLayout(mCircleView,mParams);
+        else
+            mWindowManager.updateViewLayout(pointingStick, mParams);
+    }
     @Override
     public void onCreate() {
         super.onCreate();
@@ -78,17 +84,13 @@ public class PointingStickService extends Service{
         mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         pointingStick = new Button(this);
-        pointingStick.setBackgroundResource(R.drawable.roundbutton);
-
+        pointingStick.setBackgroundResource(R.drawable.pointing_stick);
         pointingStick.setText("●");    //텍스트 설정
         pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);                                //텍스트 크기 18sp
         pointingStick.setTextColor(Color.RED);
-        //pointingStick.setTextColor(Color.BLUE);                                                            //글자 색상
         //pointingStick.setBackgroundColor(Color.argb(127, 0, 255, 255));								//텍스트뷰 배경 색
 
-
-        circleView = (CircleLayout) mInflater.inflate(R.layout.sample_no_rotation2, null);
-
+        mCircleView = (CircleLayout) mInflater.inflate(R.layout.sample_no_rotation2, null);
 
         //최상위 윈도우에 넣기 위한 설정
         mParams = new WindowManager.LayoutParams(
@@ -96,7 +98,8 @@ public class PointingStickService extends Service{
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,					//항상 최 상위에 있게. status bar 밑에 있음. 터치 이벤트 받을 수 있음.
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE		//이 속성을 안주면 터치 & 키 이벤트도 먹게 된다.
-                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
         //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
@@ -116,8 +119,8 @@ public class PointingStickService extends Service{
     }
     public void setAllListener()
     {
-        circleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController, mParams, mWindowManager, circleView, pointingStick,getBaseContext()));
-        pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController,mParams,mWindowManager,circleView,pointingStick));
+        mCircleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController, mParams, mWindowManager, mCircleView, pointingStick,getBaseContext()));
+        pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController,mParams,mWindowManager,mCircleView,pointingStick));
         pointingStick.setOnTouchListener(new StickTouchListenenr(mPointingStickController, mParams, mWindowManager, pointingStick,
                 this, virtualMouseDriverController));
     }
@@ -170,8 +173,8 @@ public class PointingStickService extends Service{
         if(mWindowManager != null) {		//서비스 종료시 뷰 제거. *중요 : 뷰를 꼭 제거 해야함.
             if(pointingStick != null && !mPointingStickController.getIsLongMouseClick())
                 mWindowManager.removeView(pointingStick);
-            else if(circleView!=null)
-                mWindowManager.removeView(circleView);
+            else if(mCircleView!=null)
+                mWindowManager.removeView(mCircleView);
         }
         Log.e("service", "onDestroy");
         removeMouseDriver();

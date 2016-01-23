@@ -75,7 +75,6 @@ public class KeyboardPopupService extends Service{
         extendImage = Bitmap.createScaledBitmap(extendImage, mKeyboardWidth / 3, mKeyboardHeight / 3, true);
         mImage.setImageBitmap(extendImage);
 
-
         /*
         LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         mImage = new ImageView(this);
@@ -92,7 +91,8 @@ public class KeyboardPopupService extends Service{
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT); // ����
 
         try {
