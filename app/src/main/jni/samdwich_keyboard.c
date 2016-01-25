@@ -4,7 +4,7 @@
 //
 //#include "samdwich_driver.h"
 //
-//void Java_org_secmem_gn_ctos_samdwich_TabGestureListener_inputTabKey(JNIEnv * a,jobject b)
+//void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputTabKey(JNIEnv * a,jobject b)
 //{
 //    struct input_event tabEV;
 //
@@ -37,7 +37,7 @@
 //        die("error: write");
 //}
 //
-//void Java_org_secmem_gn_ctos_samdwich_TabGestureListener_inputBackTabKey(JNIEnv * a,jobject b)
+//void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputBackTabKey(JNIEnv * a,jobject b)
 //{
 //    struct input_event tabEV;
 //
@@ -98,7 +98,7 @@
 //        die("error: write");
 //}
 //
-//void Java_org_secmem_gn_ctos_samdwich_TabGestureListener_inputEnterKey(JNIEnv * a,jobject b)
+//void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputEnterKey(JNIEnv * a,jobject b)
 //{
 //    struct input_event tabEV;
 //    memset(&tabEV,0,sizeof(struct input_event));
