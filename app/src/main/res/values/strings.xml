@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">HelloJni</string>
-    <string name="my_keyboard">MyKeyboard</string>
-    <string name="subtype_en_US">English (US)</string>
+    <string name="app_name">Samdwich</string>
+    <string name="my_keyboard">Samdwich Keyboard</string>
+    <string name="subtype_samdwich">Korean, English, Numeric</string>
     <!-- Main list items -->
     <string name="main_sample">Sample Circle menu</string>
     <string name="main_fast">Fast rotation</string>
-    <string name="main_no_rotation">No rotation</string>
-    <string name="main_west">Orientation to west</string>
+    <string name="main_no_rotation">No rota tion</string>
+    <string name="main_west">Orientation towest</string>
     <string name="main_background">Circle menu with background</string>
     <string name="main_7_icons">7 Icons</string>
     <string name="main_8_icons">8 Icons</string>

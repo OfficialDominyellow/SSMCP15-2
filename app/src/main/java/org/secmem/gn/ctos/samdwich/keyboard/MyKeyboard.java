@@ -1,17 +1,18 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.keyboard;
 
 import android.content.Intent;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.AudioManager;
-import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
-import android.widget.Toast;
+
+import org.secmem.gn.ctos.samdwich.R;
+import org.secmem.gn.ctos.samdwich.global.MyMath;
 
 
 /**
@@ -23,10 +24,10 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     private static final int HAN_MODE = 0;
     private static final int ENG_MODE = 1;
-    private static final int ENG_UPPER_MODE = 2;
-    private static final int NUM_MODE = 3;
+    private static final int NUM_MODE = 2;
+    private static final int SPECIAL_MODE = 3;
 
-    private int inputMode = HAN_MODE;
+    private int inputKeyboardMode = HAN_MODE;
 
     //private KeyboardView kv;
     private MyKeyboardView kv;
@@ -870,8 +871,28 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             ic.commitText(writeStr, 0);
         }
     }
-
     private Hangul hangul = new Hangul();
+
+
+
+    private void changeKeyboardLayout(int ikMode){
+        switch(ikMode){
+            case HAN_MODE:
+                keyboard = new Keyboard(this, R.xml.hangul);
+                kv.setKeyboard(keyboard);
+                break;
+            case ENG_MODE:
+                keyboard = new Keyboard(this, R.xml.english);
+                kv.setKeyboard(keyboard);
+                break;
+            case NUM_MODE:
+                keyboard = new Keyboard(this, R.xml.numpad);
+                kv.setKeyboard(keyboard);
+                break;
+            default:
+
+        }
+    }
 
     @Override
     public View onCreateInputView(){
@@ -880,7 +901,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         kv=(MyKeyboardView)getLayoutInflater().inflate(R.layout.customkeyboard, null);
 
 
-        keyboard = new Keyboard(this, R.xml.qwerty);
+        keyboard = new Keyboard(this, R.xml.hangul);
 
         kv.setKeyboard(keyboard);
         kv.setPopupOffset(250, 150);
@@ -894,12 +915,12 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
         //delete key repeatable하게 만들기
         for(Keyboard.Key key : keyboard.getKeys()){
-
             if(key.codes[0] == Keyboard.KEYCODE_DELETE) {
                 key.repeatable = true;
                 Log.i(TAG, "key : " + key.label + " code : " + key.codes[0] + " ." + key.codes.length);
             }
         }
+
         mService = new Intent(this, KeyboardPopupService.class);
 
 
@@ -965,7 +986,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         Log.i(TAG, "onPress start : " + primaryCode + "("+(char)primaryCode+")");
         prevTouchKeyCode = currTouchKeyCode = primaryCode;
 
-        switch (inputMode) {
+        switch (inputKeyboardMode) {
             case HAN_MODE:
                 downKeycode = primaryCode;
                 //kv.setPopupOffset(-(int) xPositionStart, -(int) yPositionStart);
@@ -1014,27 +1035,85 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public void onKey(int primaryCode, int[] keyCodes) {
-        Log.i(TAG, "onKey start : " + primaryCode + "("+(char)primaryCode + ")");
+        Log.i(TAG, "onKey start : " + primaryCode + "(" + (char) primaryCode + ")");
 
         popupEnd();
         InputConnection ic = getCurrentInputConnection();
 
         playClick(primaryCode);
 
-        switch(inputMode) {
+//        HashMap<Integer, Runnable> hm = new HashMap<>();
+//        hm.put(HAN_MODE, new Runnable() {
+//            @Override
+//            public void run() {
+//                switch (downKeycode) {
+//                    case Keyboard.KEYCODE_DELETE :
+//                        //hangul.init();
+//                        hangul.deleteLastInst();
+//                        //ic.deleteSurroundingText(1, 0);
+//                        break;
+//                    case Keyboard.KEYCODE_SHIFT:
+//                        caps = !caps;
+//                        keyboard.setShifted(caps);
+//                        kv.invalidateAllKeys();
+//                        break;
+//                    case Keyboard.KEYCODE_MODE_CHANGE:
+//                        Log.i(TAG, "Keyboard Change han -> Eng");
+//                        hangul.init();
+//                        inputKeyboardMode = ENG_MODE;
+//                        changeKeyboardLayout(ENG_MODE);
+//                        return;
+//                    //break;
+//                    case 32:
+//                        //space
+//                        hangul.init();
+//                        ic.commitText(" ", 1);
+//                        break;
+//                    case Keyboard.KEYCODE_DONE:
+//                        ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+//                        break;
+//                    default:
+//                        //한글 입력
+//                        //모음 눌렀어 ㅡ, ㅣ, .
+//                        if(downKeycode == 12641 || downKeycode == 12643 || downKeycode == 12685) {
+//
+//                        }
+//                        //자음 눌렀겠지 자음은 올라올 때 눌려
+//                        else {
+//                            //primaryCode + 시작좌표 마지막좌표 판단해서 left right up down cen 판단해서 알맞는 키 입력되도록
+//                            int endPrimaryCode = getPrimaryCodeByDirection((int)xPositionStart, (int)yPositionStart, (int)xPositionEnd, (int)yPositionEnd, downKeycode);
+//                            Log.i(TAG, "endPC : " + endPrimaryCode);
+//                            Log.i(TAG, "Ja ("+xPositionStart + ", " + yPositionStart + ") -> (" + xPositionEnd + ", " + yPositionEnd + ")");
+//                            primaryCode = downKeycode;
+//                            hangul.write(endPrimaryCode);
+//                            /*
+//                            char code = (char) primaryCode;
+//                            if (Character.isLetter(code) && caps) {
+//                                code = Character.toUpperCase(code);
+//                            }
+//                            ic.commitText(String.valueOf(code), 1);
+//                            */
+//                        }
+//                }
+//            }
+//        });
+//
+//        hm.get(HAN_MODE).run();
+
+        switch(inputKeyboardMode) {
             case HAN_MODE :
-
-
                 switch (downKeycode) {
                     case Keyboard.KEYCODE_DELETE :
                         //hangul.init();
                         hangul.deleteLastInst();
                         //ic.deleteSurroundingText(1, 0);
                         break;
-                    case Keyboard.KEYCODE_SHIFT:
-                        caps = !caps;
-                        keyboard.setShifted(caps);
-                        kv.invalidateAllKeys();
+                    case Keyboard.KEYCODE_MODE_CHANGE:
+                        Log.i(TAG, "Keyboard Change han -> Eng");
+                        hangul.init();
+                        inputKeyboardMode = ENG_MODE;
+                        changeKeyboardLayout(ENG_MODE);
+                        //return;
                         break;
                     case 32:
                         //space
@@ -1045,6 +1124,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
                         break;
                     default:
+                        Log.i(TAG, "HAN ONKEY");
                         //한글 입력
                         //모음 눌렀어 ㅡ, ㅣ, .
                         if(downKeycode == 12641 || downKeycode == 12643 || downKeycode == 12685) {
@@ -1067,7 +1147,63 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                             */
                         }
                 }
-
+                break;
+            case ENG_MODE :
+                switch(primaryCode){
+                    case Keyboard.KEYCODE_DELETE :
+                        ic.deleteSurroundingText(1, 0);
+                        break;
+                    case Keyboard.KEYCODE_SHIFT:
+                        caps = !caps;
+                        keyboard.setShifted(caps);
+                        kv.invalidateAllKeys();
+                        break;
+                    case Keyboard.KEYCODE_MODE_CHANGE:
+                        Log.i(TAG, "Keyboard Change eng -> num");
+                        inputKeyboardMode = NUM_MODE;
+                        changeKeyboardLayout(NUM_MODE);
+                        //return;
+                        break;
+                    case 32:
+                        //space
+                        ic.commitText(" ", 1);
+                        break;
+                    case Keyboard.KEYCODE_DONE:
+                        ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+                        break;
+                    default:
+                        Log.i(TAG, "ENG ONKEY " + inputKeyboardMode);
+                        char engCode = (char)primaryCode;
+                        if(Character.isLetter(engCode) && caps){
+                            engCode = Character.toUpperCase(engCode);
+                        }
+                        ic.commitText(String.valueOf(engCode), 1);
+                }
+                break;
+            case NUM_MODE :
+                switch(primaryCode){
+                    case Keyboard.KEYCODE_DELETE :
+                        ic.deleteSurroundingText(1, 0);
+                        break;
+                    case Keyboard.KEYCODE_MODE_CHANGE:
+                        Log.i(TAG, "Keyboard Change num-> han");
+                        inputKeyboardMode = HAN_MODE;
+                        changeKeyboardLayout(HAN_MODE);
+                        //return;
+                        break;
+                    case 32:
+                        //space
+                        ic.commitText(" ", 1);
+                        break;
+                    case Keyboard.KEYCODE_DONE:
+                        ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+                        break;
+                    default:
+                        Log.i(TAG, "NUM ONKEY ");
+                        char numCode = (char)primaryCode;
+                        ic.commitText(String.valueOf(numCode), 1);
+                }
+                break;
             default:
 
         }

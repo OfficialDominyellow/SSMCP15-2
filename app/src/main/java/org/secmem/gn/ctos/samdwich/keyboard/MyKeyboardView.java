@@ -1,14 +1,9 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.keyboard;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
-import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.util.AttributeSet;
-import android.util.Log;
-
-import java.util.List;
 
 /**
  * Created by SECMEM-DY on 2016-01-11.

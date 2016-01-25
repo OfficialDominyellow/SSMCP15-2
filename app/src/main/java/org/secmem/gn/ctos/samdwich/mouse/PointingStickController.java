@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 /**
  * Created by SECMEM-DY on 2016-01-09.

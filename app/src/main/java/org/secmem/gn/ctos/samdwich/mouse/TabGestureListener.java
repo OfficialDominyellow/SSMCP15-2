@@ -1,10 +1,15 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.widget.Button;
+
+import org.secmem.gn.ctos.samdwich.R;
+import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
+import org.secmem.gn.ctos.samdwich.global.MyMath;
+
 
 /**
  * Created by SECMEM-DY on 2016-01-14.
@@ -168,7 +173,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
     }
 
     static {
-        System.loadLibrary("hello-jni");
+        System.loadLibrary("samdwich_jni");
     }
     public native void inputTabKey();
     public native void inputEnterKey();

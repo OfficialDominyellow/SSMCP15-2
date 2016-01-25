@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 import android.app.Service;
 import android.content.Context;
@@ -18,6 +18,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import org.secmem.gn.ctos.samdwich.R;
+import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
+import org.secmem.gn.ctos.samdwich.global.VirtualMouseDriverController;
+
+
 /**
  * Created by SECMEM-DY on 2016-01-06.
  */
@@ -32,7 +37,7 @@ public class PointingStickService extends Service{
     private LayoutInflater mInflater;
     private CircleLayout mCircleView;
 
-    private  VirtualMouseDriverController virtualMouseDriverController;
+    private VirtualMouseDriverController virtualMouseDriverController;
     private int mProgress;
     private int mSize;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
@@ -43,7 +48,7 @@ public class PointingStickService extends Service{
     return false 를 반환
     이벤트 호출 순서 onTouch -> onLongClick -> onClick .*/
     public class DataBinder extends Binder {
-        PointingStickService getService(){return PointingStickService.this;}
+        public PointingStickService getService(){return PointingStickService.this;}
     }
     DataBinder mBinder=new DataBinder();
     @Override
@@ -191,7 +196,7 @@ public class PointingStickService extends Service{
         mSize = pref.getInt("size", 100);
     }
     static {
-        System.loadLibrary("hello-jni");
+        System.loadLibrary("samdwich_jni");
     }
     public native int initMouseDriver();
     public native void removeMouseDriver();

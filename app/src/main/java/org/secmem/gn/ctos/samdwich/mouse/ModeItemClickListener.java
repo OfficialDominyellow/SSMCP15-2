@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 import android.util.Log;
 import android.view.View;

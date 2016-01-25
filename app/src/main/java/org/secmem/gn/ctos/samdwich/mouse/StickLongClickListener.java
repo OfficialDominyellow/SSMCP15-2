@@ -1,11 +1,9 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ListPopupWindow;
 
 /**
  * Created by SECMEM-DY on 2016-01-09.

@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,7 +7,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ListPopupWindow;
+
+import org.secmem.gn.ctos.samdwich.R;
+import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
+import org.secmem.gn.ctos.samdwich.global.VirtualMouseDriverController;
+
 
 /**
  * Created by SECMEM-DY on 2016-01-09.
@@ -20,6 +24,7 @@ public class StickTouchListenenr implements View.OnTouchListener {
     private Context mContext;
     private GestureDetector mDetector;
     private TabGestureListener mGestureListener;
+    Object mouseLock;
 
     private static VirtualMouseDriverController virtualMouseDriverController;
 
@@ -64,7 +69,7 @@ public class StickTouchListenenr implements View.OnTouchListener {
                 //Log.e("Service", "originX: "+originX+"  originY:"+originY);
 
                 double distance = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
-                float dpDistance = GlobalVariable.convertPixelsToDp((float)distance,mContext.getApplicationContext());
+                float dpDistance = GlobalVariable.convertPixelsToDp((float) distance, mContext.getApplicationContext());
                 if (dpDistance>MAXdp && !mPointingStickController.getIsMoveMode()) {
                     xdiff=(int)(xdiff/dpDistance*MAXdp);
                     ydiff=(int)(ydiff/dpDistance*MAXdp);
@@ -173,7 +178,7 @@ public class StickTouchListenenr implements View.OnTouchListener {
     }
 
     static {
-        System.loadLibrary("hello-jni");
+        System.loadLibrary("samdwich_jni");
     }
     public native void clickLeftMouse();
 }

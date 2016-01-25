@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 /*
  * Copyright 2015 Csaba Szugyiczki
@@ -32,6 +32,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+
+import org.secmem.gn.ctos.samdwich.R;
 
 
 /**

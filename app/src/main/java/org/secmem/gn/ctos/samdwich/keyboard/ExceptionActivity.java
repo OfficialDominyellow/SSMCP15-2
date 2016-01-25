@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.keyboard;
 
 import android.app.Activity;
 import android.content.Intent;

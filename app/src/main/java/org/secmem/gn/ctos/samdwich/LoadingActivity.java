@@ -1,9 +1,10 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+
 
 /**
  * Created by SECMEM-DY on 2016-01-16.
@@ -18,7 +19,7 @@ public class LoadingActivity extends Activity {
     }
     private class loadingHandler implements Runnable {
         public void run() {
-                startActivity(new Intent(getApplication(), HelloJni.class));//설정으로 넘어감
+                startActivity(new Intent(getApplication(), SettingActivity.class));//설정으로 넘어감
                 LoadingActivity.this.finish();
         }
     }

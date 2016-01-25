@@ -1,8 +1,9 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.global;
 
 /**
  * Created by 김희중 on 2016-01-16.
  */
+
 public class MyMath {
     //좌표간 유클리드 거리 리턴
     public static int getDist(int fx, int fy, int tx, int ty){

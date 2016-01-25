@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.global;
 
 import android.content.Context;
 import android.content.res.Resources;

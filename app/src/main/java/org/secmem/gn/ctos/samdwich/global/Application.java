@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.global;
 
 /**
  * Created by 김희중 on 2016-01-20.

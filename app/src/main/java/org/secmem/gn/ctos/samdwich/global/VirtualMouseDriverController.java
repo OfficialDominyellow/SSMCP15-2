@@ -1,10 +1,6 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.global;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.os.Handler;
-import android.os.Message;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 /**
@@ -28,6 +24,10 @@ public class VirtualMouseDriverController extends Thread {
     private int originX=120;
     private int originY=120;
 
+    static {
+        System.loadLibrary("samdwich_jni");
+    }
+
     private native void moveMouse(int x, int y);
 
     private VirtualMouseDriverController(Context context) {
@@ -40,7 +40,7 @@ public class VirtualMouseDriverController extends Thread {
     public static synchronized VirtualMouseDriverController getInstance(Context context) {
         if (uniqueInstance == null) {
             uniqueInstance = new VirtualMouseDriverController(context);
-            MAXMOVE=(int)GlobalVariable.convertDpToPixel(63, context.getApplicationContext());
+            MAXMOVE=(int) GlobalVariable.convertDpToPixel(63, context.getApplicationContext());
             INTERVAL=(int)GlobalVariable.convertDpToPixel(5,context.getApplicationContext());
         }
         return uniqueInstance;

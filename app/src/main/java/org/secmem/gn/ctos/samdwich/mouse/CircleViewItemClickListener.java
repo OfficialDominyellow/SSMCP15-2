@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +7,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+
+import org.secmem.gn.ctos.samdwich.R;
+import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
+
 
 /**
  * Created by SECMEM-DY on 2016-01-19.

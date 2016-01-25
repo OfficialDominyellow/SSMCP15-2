@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -36,7 +36,11 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Switch;
 
-public class HelloJni extends Activity
+import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
+import org.secmem.gn.ctos.samdwich.mouse.PointingStickService;
+
+
+public class SettingActivity extends Activity
 {
     private Switch serviceSwitch;
     private SeekBar mSeekBar;

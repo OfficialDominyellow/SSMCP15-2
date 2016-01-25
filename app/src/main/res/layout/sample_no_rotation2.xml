@@ -1,4 +1,4 @@
-<com.example.hellojni.CircleLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.secmem.gn.ctos.samdwich.mouse.CircleLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:circle="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_circle_layout"
     android:layout_width="wrap_content"
@@ -9,40 +9,40 @@
     circle:isRotating="false"
     circle:speed="25">
 
-    <com.example.hellojni.CircleImageView
+    <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_move_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/movemode"
         circle:name="move" />
 
-    <com.example.hellojni.CircleImageView
+    <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_tab_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/tabmode"
         circle:name="tab" />
 
-    <com.example.hellojni.CircleImageView
+    <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_hide_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/hidemode"
         circle:name="hide" />
 
-    <com.example.hellojni.CircleImageView
+    <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_off_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/serviceoff"
         circle:name="off" />
 
-    <com.example.hellojni.CircleImageView
+    <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_back_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/bg"
         circle:name="back" />
 
-</com.example.hellojni.CircleLayout>
+</org.secmem.gn.ctos.samdwich.mouse.CircleLayout>
 

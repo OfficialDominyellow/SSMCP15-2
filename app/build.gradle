@@ -6,7 +6,7 @@ model {
         buildToolsVersion = "23.0.2"
 
         defaultConfig.with {
-            applicationId = "com.example.hellojni"
+            applicationId = "org.secmem.gn.ctos.samdwich"
             minSdkVersion.apiLevel = 16
             targetSdkVersion.apiLevel = 23
         }
@@ -21,7 +21,9 @@ model {
      * native build settings
      */
     android.ndk {
-        moduleName = "hello-jni"
+        moduleName = "samdwich_jni"
+        //moduleName = "samdwich_keyboard"
+
         /*
          * Other ndk flags configurable here are
          * cppFlags.add("-fno-rtti")

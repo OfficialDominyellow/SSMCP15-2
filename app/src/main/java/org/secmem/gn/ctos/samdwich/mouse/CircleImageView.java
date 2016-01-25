@@ -1,4 +1,4 @@
-package com.example.hellojni;
+package org.secmem.gn.ctos.samdwich.mouse;
 
 /*
  * Copyright 2013 Csaba Szugyiczki
@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
+import org.secmem.gn.ctos.samdwich.R;
 
 
 /**
