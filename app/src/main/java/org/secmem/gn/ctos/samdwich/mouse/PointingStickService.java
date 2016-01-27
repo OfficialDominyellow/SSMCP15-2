@@ -126,7 +126,7 @@ public class PointingStickService extends Service{
     {
         mCircleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController, mParams, mWindowManager, mCircleView, pointingStick,getBaseContext()));
         pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController,mParams,mWindowManager,mCircleView,pointingStick));
-        pointingStick.setOnTouchListener(new StickTouchListenenr(mPointingStickController, mParams, mWindowManager, pointingStick,
+        pointingStick.setOnTouchListener(new StickTouchListener(mPointingStickController, mParams, mWindowManager, pointingStick,
                 this, virtualMouseDriverController));
     }
     /**

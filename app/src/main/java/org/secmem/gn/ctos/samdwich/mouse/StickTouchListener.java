@@ -16,7 +16,7 @@ import org.secmem.gn.ctos.samdwich.global.VirtualMouseDriverController;
 /**
  * Created by SECMEM-DY on 2016-01-09.
  */
-public class StickTouchListenenr implements View.OnTouchListener {
+public class StickTouchListener implements View.OnTouchListener {
     private PointingStickController mPointingStickController;
     private WindowManager.LayoutParams mParams;
     private WindowManager mWindowManager;
@@ -28,8 +28,8 @@ public class StickTouchListenenr implements View.OnTouchListener {
 
     private static VirtualMouseDriverController virtualMouseDriverController;
 
-    public StickTouchListenenr(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager, Button pointingStick,
-                               Context mContext,VirtualMouseDriverController virtualMouseDriverController)
+    public StickTouchListener(PointingStickController mPointingStickController, WindowManager.LayoutParams mParams, WindowManager mWindowManager, Button pointingStick,
+                              Context mContext, VirtualMouseDriverController virtualMouseDriverController)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mParams;

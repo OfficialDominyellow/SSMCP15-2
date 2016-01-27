@@ -4,7 +4,7 @@
 
 #include "samdwich_driver.h"
 
-void Java_org_secmem_gn_ctos_samdwich_mouse_StickTouchListenenr_clickLeftMouse(JNIEnv * a,jobject b)
+void Java_org_secmem_gn_ctos_samdwich_mouse_StickTouchListener_clickLeftMouse(JNIEnv * a,jobject b)
 {
     struct input_event evMouseLeftKey;
     memset(&evMouseLeftKey, 0, sizeof(struct input_event));

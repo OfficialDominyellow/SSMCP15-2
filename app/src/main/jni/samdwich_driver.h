@@ -21,7 +21,7 @@
 static int fd;//uinput fd
 
 
-void Java_org_secmem_gn_ctos_samdwich_mouse_StickTouchListenenr_clickLeftMouse(JNIEnv * a,jobject b);
+void Java_org_secmem_gn_ctos_samdwich_mouse_StickTouchListener_clickLeftMouse(JNIEnv * a,jobject b);
 void Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_removeMouseDriver(JNIEnv* env, jobject thiz);
 void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputBackTabKey(JNIEnv * a,jobject b);
 void Java_org_secmem_gn_ctos_samdwich_global_VirtualMouseDriverController_moveMouse(JNIEnv * a,jobject b,jint x,jint y);
