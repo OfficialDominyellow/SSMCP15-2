@@ -28,7 +28,6 @@ public class StickLongClickListener implements View.OnLongClickListener
         if(!mPointingStickController.getIsMouseMove()
                 &&!mPointingStickController.getTabMode()){
             Log.e("Service", "LONG CLICK");
-            //mList.show();
             mParams.width=mParams.width*2;
             mParams.height=mParams.height*2;
             mWindowManager.removeView(pointingStick);

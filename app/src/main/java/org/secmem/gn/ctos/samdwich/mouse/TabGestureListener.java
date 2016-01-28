@@ -122,7 +122,6 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
             if (dir == 1) {
                 Log.i(TAG, "ClockWise");
                 pointingStick.setBackgroundResource(R.drawable.tab_right);
-
                 inputTabKey();
                 try {
                     Thread.sleep(100);

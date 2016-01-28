@@ -114,19 +114,14 @@ public class StickTouchListener implements View.OnTouchListener {
                 {
                     mPointingStickController.setIsLongMouseClick(false);
                 }//롱클릭이 우선순위가 기본 클릭보다 높게 둠
-
-
                 else*/
                 if(event.getToolType(0)==event.TOOL_TYPE_MOUSE) {
-                    synchronized (mouseLock) {
                         Log.e("Service", "MOUSE_ACTION_UP");
                         mWindowManager.removeViewImmediate(pointingStick);
                         Log.e("Service", "클");
                         clickLeftMouse();
                         Log.e("Service", "릭");
                         mWindowManager.addView(pointingStick,mParams);
-
-                    }
                     break;
                 }
 

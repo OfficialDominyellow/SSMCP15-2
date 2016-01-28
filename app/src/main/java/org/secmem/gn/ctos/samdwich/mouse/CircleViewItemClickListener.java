@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -15,7 +16,7 @@ import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
 /**
  * Created by SECMEM-DY on 2016-01-19.
  */
-public class CircleViewItemClickListener implements CircleLayout.OnItemClickListener{
+public class CircleViewItemClickListener implements CircleLayout.OnItemClickListener,CircleLayout.OnClickListener{
     private WindowManager.LayoutParams mParams;
     private WindowManager mWindowManager;
     private CircleLayout mCircleView;
@@ -67,6 +68,9 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
             case R.id.main_back_image://back
                 Log.e("Circle", "5");
                 break;
+            default:
+                Log.e("Circle", "Back");
+                break;
         }
         finishCircleView();
     }
@@ -85,5 +89,9 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean("switchMode", false);
         editor.commit();
+    }
+    @Override
+    public void onClick(View v) {
+        Log.e("Circle","onTouch");
     }
 }

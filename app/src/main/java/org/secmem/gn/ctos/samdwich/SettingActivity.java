@@ -102,7 +102,6 @@ public class SettingActivity extends Activity
 
     public void off() {
         Log.e("service", "endService");
-        //unbindService(srvConn); 여기서 unbind시 에러 발생
         stopService(new Intent(this, PointingStickService.class));	//서비스 종료
     }
 
@@ -198,7 +197,12 @@ public class SettingActivity extends Activity
         Log.e("Move","Size left:"+ GlobalVariable.displayMaxLeft+"  right:"+ GlobalVariable.displayMaxRight);
         Log.e("Move","Size top:"+ GlobalVariable.displayMaxTop+"  bottmom:"+ GlobalVariable.displayMaxBottom);
     }
-
+    public void onPause()
+    {
+        super.onPause();
+        unbindService(srvConn);
+        unregisterReceiver(receiver);
+    }
     public void setVisible()
     {
         mSeekBar.setVisibility(View.VISIBLE);

@@ -879,8 +879,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     }
     private Hangul hangul = new Hangul();
 
-
-
     private void changeKeyboardLayout(int ikMode){
         switch(ikMode){
             case HAN_MODE:

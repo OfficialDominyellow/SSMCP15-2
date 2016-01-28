@@ -122,13 +122,12 @@ public class PointingStickService extends Service{
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,					//항상 최 상위에 있게. status bar 밑에 있음. 터치 이벤트 받을 수 있음.
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE		//이 속성을 안주면 터치 & 키 이벤트도 먹게 된다.
-                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                |WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
         //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-
         initPosition();
         mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
 
@@ -181,6 +180,7 @@ public class PointingStickService extends Service{
      */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
         initPosition();
         int tmp;
         tmp=GlobalVariable.displayMaxLeft;
