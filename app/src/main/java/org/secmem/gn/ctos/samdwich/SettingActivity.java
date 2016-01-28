@@ -53,8 +53,6 @@ public class SettingActivity extends Activity
     private int mSize;
     private boolean mBound = false;
 
-
-
     /** Called when the activity is first created. */
 
 
@@ -201,9 +199,11 @@ public class SettingActivity extends Activity
     public void onPause()
     {
         super.onPause();
-        if(mBound)
+        if(mBound) {
             unbindService(srvConn);
-        unregisterReceiver(receiver);
+            unregisterReceiver(receiver);
+        }
+        mBound=false;
     }
     public void setVisible()
     {
