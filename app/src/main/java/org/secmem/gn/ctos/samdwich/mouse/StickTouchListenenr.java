@@ -16,7 +16,7 @@ import org.secmem.gn.ctos.samdwich.global.VirtualMouseDriverController;
 /**
  * Created by SECMEM-DY on 2016-01-09.
  */
-public class StickTouchListener implements View.OnTouchListener {
+public class StickTouchListenenr implements View.OnTouchListener {
     private PointingStickController mPointingStickController;
     private WindowManager.LayoutParams mParams;
     private WindowManager mWindowManager;
@@ -24,12 +24,11 @@ public class StickTouchListener implements View.OnTouchListener {
     private Context mContext;
     private GestureDetector mDetector;
     private TabGestureListener mGestureListener;
-    Object mouseLock;
 
     private static VirtualMouseDriverController virtualMouseDriverController;
 
-    public StickTouchListener(PointingStickController mPointingStickController, WindowManager.LayoutParams mParams, WindowManager mWindowManager, Button pointingStick,
-                              Context mContext, VirtualMouseDriverController virtualMouseDriverController)
+    public StickTouchListenenr(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager, Button pointingStick,
+                               Context mContext,VirtualMouseDriverController virtualMouseDriverController)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mParams;
@@ -96,7 +95,6 @@ public class StickTouchListener implements View.OnTouchListener {
                     GlobalVariable.stickWidth = mParams.width;
                     GlobalVariable.stickHeight = mParams.height;
                 }
-                Log.e("Service"," "+mParams.x+" "+mParams.y);
 
                 mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
                 mPointingStickController.setIsMouseMove(true);//원테이크
@@ -118,19 +116,32 @@ public class StickTouchListener implements View.OnTouchListener {
 
                 else*/
                 if(event.getToolType(0)==event.TOOL_TYPE_MOUSE) {
-                    synchronized (mouseLock) {
                         Log.e("Service", "MOUSE_ACTION_UP");
+
+                        /*
+                        mTmpWidth = mParams.width;
+                        mTmpHeight = mParams.height;
+                        mParams.width = 1;
+                        mParams.height = 1;
+                        mWindowManager.updateViewLayout(pointingStick, mParams);
+                        */
                         mWindowManager.removeViewImmediate(pointingStick);
+                        for (int i = 0; i < 1; i++) {
+                            Log.e("Service", "없어져라얍!");
+                        }
+
                         Log.e("Service", "클");
                         clickLeftMouse();
                         Log.e("Service", "릭");
+                        for (int i = 0; i < 1; i++) {
+                            Log.e("Service", "살아나라얍!");
+                        }
                         mWindowManager.addView(pointingStick,mParams);
-
-                    }
                     break;
                 }
 
                 if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode()&&!mPointingStickController.getTabMode())//mouse left click
+
                 {
                     if(mPointingStickController.getTabMode())
                     {

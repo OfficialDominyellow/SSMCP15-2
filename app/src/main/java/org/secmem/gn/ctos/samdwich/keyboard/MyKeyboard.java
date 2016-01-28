@@ -1,18 +1,24 @@
 package org.secmem.gn.ctos.samdwich.keyboard;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.AudioManager;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import org.secmem.gn.ctos.samdwich.R;
 import org.secmem.gn.ctos.samdwich.global.MyMath;
+import org.secmem.gn.ctos.samdwich.mouse.PointingStickService;
 
 
 /**
@@ -29,7 +35,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     private int inputKeyboardMode = HAN_MODE;
 
-    //private KeyboardView kv;
     private MyKeyboardView kv;
 
     private Keyboard keyboard;
@@ -45,7 +50,8 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     private int prevTouchKeyCode;
     private int currTouchKeyCode;
-
+    private PointingStickService mPointingStickService;
+    private ServiceConnection srvConn;
     private static Intent mService;
 
     private class Hangul {
@@ -890,17 +896,53 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                 kv.setKeyboard(keyboard);
                 break;
             default:
-
         }
     }
 
+    public void onStartInputView(EditorInfo info, boolean restarting) {
+        super.onStartInput(info, restarting);
+        Log.e("Keyboard","keyboard up2"+"keyboardHeight:"+keyboard.getHeight()+" keyboardW:"+kv.getHeight());//키보드 업 부분
+        try {
+            mPointingStickService.setStickHide();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    public void onFinishInputView(boolean finishingInput) {
+        super.onFinishInput();
+        try {
+            mPointingStickService.setStickDisplay();
+           // unbindService(srvConn);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        Log.e("Keyboard","keyboard down"+"keyboardHeight:"+keyboard.getHeight()+" keyboardW:"+kv.getHeight());//키보드 업 부분
+    }
+    public void onCreate() {
+        super.onCreate();
+        srvConn=new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                mPointingStickService=((PointingStickService.DataBinder)binder).getService();
+            }
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+        Intent intent =new Intent(this,PointingStickService.class);
+        bindService(intent, srvConn, BIND_AUTO_CREATE);
+        Log.e("Keyboard", "onCreate");//키보드 업 부분
+    }
+    @Override public void onDestroy() {
+        super.onDestroy();
+        unbindService(srvConn);
+    }
     @Override
     public View onCreateInputView(){
-
-        //kv = (KeyboardView) getLayoutInflater().inflate(R.layout.keyboard, null);
+        super.onCreateInputView();
+        Log.e("Keyboard", "onCreateInputView");//키보드 업 부분
         kv=(MyKeyboardView)getLayoutInflater().inflate(R.layout.customkeyboard, null);
-
-
         keyboard = new Keyboard(this, R.xml.hangul);
 
         kv.setKeyboard(keyboard);
@@ -912,7 +954,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         kv.setFocusable(true);
         kv.setFocusableInTouchMode(true);
 
-
         //delete key repeatable하게 만들기
         for(Keyboard.Key key : keyboard.getKeys()){
             if(key.codes[0] == Keyboard.KEYCODE_DELETE) {
@@ -920,9 +961,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                 Log.i(TAG, "key : " + key.label + " code : " + key.codes[0] + " ." + key.codes.length);
             }
         }
-
         mService = new Intent(this, KeyboardPopupService.class);
-
 
         kv.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -1010,21 +1049,16 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                     else{
 
                     }
-
-
                 }
                 break;
 
             default:
-
         }
-
     }
 
     @Override
     public void onRelease(int primaryCode) {
     }
-
     /*
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
@@ -1032,7 +1066,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         return super.onKeyUp(keyCode, event);
     }
     */
-
     @Override
     public void onKey(int primaryCode, int[] keyCodes) {
         Log.i(TAG, "onKey start : " + primaryCode + "(" + (char) primaryCode + ")");

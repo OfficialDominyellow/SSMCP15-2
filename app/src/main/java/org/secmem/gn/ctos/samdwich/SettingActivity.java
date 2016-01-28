@@ -51,6 +51,7 @@ public class SettingActivity extends Activity
     private boolean switchValue;
     private int mProgress;
     private int mSize;
+    private boolean mBound = false;
 
 
 
@@ -119,6 +120,7 @@ public class SettingActivity extends Activity
                     switchValue = false;
                     savePreferencesSwitch();
                     unbindService(srvConn);
+                    mBound=false;
                     setInVisible();
                     off();
                 }
@@ -176,9 +178,11 @@ public class SettingActivity extends Activity
             @Override
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 mPointingStickService=((PointingStickService.DataBinder)binder).getService();
+                mBound = true;
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {
+                mBound=false;
             }
         };
 

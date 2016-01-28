@@ -69,6 +69,23 @@ public class PointingStickService extends Service{
         mParams.height=newSize;
         updateView();
     }
+    public void setStickHide()throws RemoteException
+    {
+        Log.e("String", "keyboardup");
+        if(mPointingStickController.getIsLongMouseClick())
+            mWindowManager.removeView(mCircleView);
+        else
+            mWindowManager.removeView(pointingStick);
+    }
+    public void setStickDisplay()throws RemoteException
+    {
+        Log.e("String", "keyboardDown");
+        if(mPointingStickController.getIsLongMouseClick())
+            mWindowManager.addView(mCircleView,mParams);
+        else
+            mWindowManager.addView(pointingStick,mParams);
+        updateView();
+    }
     public void updateView()
     {
         if(mPointingStickController.getIsLongMouseClick())
@@ -76,6 +93,8 @@ public class PointingStickService extends Service{
         else
             mWindowManager.updateViewLayout(pointingStick, mParams);
     }
+
+
     @Override
     public void onCreate() {
         super.onCreate();
