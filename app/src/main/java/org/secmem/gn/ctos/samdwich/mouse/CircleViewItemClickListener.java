@@ -16,7 +16,7 @@ import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
 /**
  * Created by SECMEM-DY on 2016-01-19.
  */
-public class CircleViewItemClickListener implements CircleLayout.OnItemClickListener,CircleLayout.OnClickListener{
+public class CircleViewItemClickListener implements CircleLayout.OnItemClickListener{
     private WindowManager.LayoutParams mParams;
     private WindowManager mWindowManager;
     private CircleLayout mCircleView;
@@ -89,9 +89,5 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean("switchMode", false);
         editor.commit();
-    }
-    @Override
-    public void onClick(View v) {
-        Log.e("Circle","onTouch");
     }
 }

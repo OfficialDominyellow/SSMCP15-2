@@ -118,7 +118,8 @@ public class SettingActivity extends Activity
                 } else {
                     switchValue = false;
                     savePreferencesSwitch();
-                    unbindService(srvConn);
+                    if(mBound)
+                        unbindService(srvConn);
                     mBound=false;
                     setInVisible();
                     off();
@@ -200,7 +201,8 @@ public class SettingActivity extends Activity
     public void onPause()
     {
         super.onPause();
-        unbindService(srvConn);
+        if(mBound)
+            unbindService(srvConn);
         unregisterReceiver(receiver);
     }
     public void setVisible()
