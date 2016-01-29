@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.secmem.gn.ctos.samdwich.R;
 import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
@@ -19,23 +20,28 @@ import org.secmem.gn.ctos.samdwich.global.VirtualMouseDriverController;
 public class StickTouchListener implements View.OnTouchListener {
     private PointingStickController mPointingStickController;
     private WindowManager.LayoutParams mParams;
+    private WindowManager.LayoutParams mParamsCenter;
     private WindowManager mWindowManager;
     private Button pointingStick;
+    private TextView centerPoint;
     private Context mContext;
     private GestureDetector mDetector;
     private TabGestureListener mGestureListener;
+
     Object mouseLock;
 
     private static VirtualMouseDriverController virtualMouseDriverController;
 
     public StickTouchListener(PointingStickController mPointingStickController, WindowManager.LayoutParams mParams, WindowManager mWindowManager, Button pointingStick,
-                              Context mContext, VirtualMouseDriverController virtualMouseDriverController)
+                              Context mContext, VirtualMouseDriverController virtualMouseDriverController,WindowManager.LayoutParams mParamsCenter,TextView centerPoint)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mParams;
         this.mWindowManager=mWindowManager;
         this.pointingStick=pointingStick;
         this.mContext=mContext;
+        this.mParamsCenter=mParamsCenter;
+        this.centerPoint=centerPoint;
         this.virtualMouseDriverController=virtualMouseDriverController;
         mGestureListener=new TabGestureListener(mPointingStickController,pointingStick);
         mDetector=new GestureDetector(mContext,mGestureListener);
@@ -95,10 +101,13 @@ public class StickTouchListener implements View.OnTouchListener {
                     mPointingStickController.setPxHeight(mParams.y);
                     GlobalVariable.stickWidth = mParams.width;
                     GlobalVariable.stickHeight = mParams.height;
+                    mParamsCenter.x=mParams.x;
+                    mParamsCenter.y=mParams.y;
                 }
                 Log.e("Service"," "+mParams.x+" "+mParams.y);
 
                 mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
+                mWindowManager.updateViewLayout(centerPoint, mParamsCenter);	//뷰 업데이트
                 mPointingStickController.setIsMouseMove(true);//원테이크
                 Log.e("Service","ACTION_MOVE");
                 virtualMouseDriverController.setDifference(xdiff,ydiff);
@@ -124,7 +133,6 @@ public class StickTouchListener implements View.OnTouchListener {
                         mWindowManager.addView(pointingStick,mParams);
                     break;
                 }
-
                 if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode()&&!mPointingStickController.getTabMode())//mouse left click
                 {
                     if(mPointingStickController.getTabMode())
@@ -137,7 +145,6 @@ public class StickTouchListener implements View.OnTouchListener {
                 else if( mPointingStickController.getIsMoveMode())
                 {
                     pointingStick.setBackgroundResource(R.drawable.pointing_stick);//Move mode에서 원상태로 복귀
-
                     mPointingStickController.setMoveMode(false);
                 }//Move one 1take
 

@@ -1,14 +1,12 @@
 package org.secmem.gn.ctos.samdwich.keyboard;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.AudioManager;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -17,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import org.secmem.gn.ctos.samdwich.R;
+import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
 import org.secmem.gn.ctos.samdwich.global.MyMath;
 import org.secmem.gn.ctos.samdwich.mouse.PointingStickService;
 
@@ -50,9 +49,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     private int prevTouchKeyCode;
     private int currTouchKeyCode;
-    private PointingStickService mPointingStickService;
-    private ServiceConnection srvConn;
-    private boolean mBound=false;
     private static Intent mService;
 
     private class Hangul {
@@ -900,52 +896,21 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     public void onStartInputView(EditorInfo info, boolean restarting) {
         super.onStartInput(info, restarting);
-        Log.e("Keyboard","keyboard up2"+"keyboardHeight:"+keyboard.getHeight()+" keyboardW:"+kv.getHeight());//키보드 업 부분
-        try {
-            mPointingStickService.setStickHide();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        Log.e("Keyboard", "keyboard up");//키보드 업 부분
+        Intent intent=new Intent();
+        intent.setAction(GlobalVariable.HIDE_SERVICE);
+        this.sendBroadcast(intent);
     }
     public void onFinishInputView(boolean finishingInput) {
         super.onFinishInput();
-        try {
-            mPointingStickService.setStickDisplay();
-           if(mBound)
-                unbindService(srvConn);
-            mBound=false;
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        Log.e("Keyboard","keyboard down"+"keyboardHeight:"+keyboard.getHeight()+" keyboardW:"+kv.getHeight());//키보드 업 부분
+        Log.e("Keyboard", "keyboard down");//키보드 다운 부분
+        Intent intent=new Intent();
+        intent.setAction(GlobalVariable.DISP_SERVICE);
+        this.sendBroadcast(intent);
     }
     public void onCreate() {
         super.onCreate();
-        srvConn=new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder binder) {
-                mPointingStickService=((PointingStickService.DataBinder)binder).getService();
-                mBound = true;
-            }
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                mBound=false;
-            }
-        };
-        Intent intent =new Intent(this,PointingStickService.class);
-        bindService(intent, srvConn, BIND_AUTO_CREATE);
-        Log.e("Keyboard", "onCreate");//키보드 업 부분
-    }
-    @Override public void onDestroy() {
-        super.onDestroy();
-        if(mBound)
-            unbindService(srvConn);
-        mBound=false;
-    }
-    @Override
-    public View onCreateInputView(){
-        super.onCreateInputView();
-        Log.e("Keyboard", "onCreateInputView");//키보드 업 부분
+        Log.e("Keyboard", "onCreate");//키보드
         kv=(MyKeyboardView)getLayoutInflater().inflate(R.layout.customkeyboard, null);
         keyboard = new Keyboard(this, R.xml.hangul);
 
@@ -1005,6 +970,13 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
 
         });
+    }
+    @Override public void onDestroy() {
+        super.onDestroy();
+    }
+    @Override
+    public View onCreateInputView(){
+        super.onCreateInputView();
         return kv;
     }
     private void playClick(int keyCode){

@@ -84,17 +84,15 @@ public class SettingActivity extends Activity
             serviceSwitch.setChecked(true);
         else
             serviceSwitch.setChecked(false);
-
-        IntentFilter filter = new IntentFilter();
-
-        filter.addAction(GlobalVariable.STOP_SERVICE);
-        registerReceiver(receiver, filter);
     }
     public void on()
     {
         Log.e("service", "startService");
         Intent intent =new Intent(this,PointingStickService.class);
         bindService(intent, srvConn, BIND_AUTO_CREATE);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(GlobalVariable.STOP_SERVICE);
+        registerReceiver(receiver, filter);
         startService(intent);    //서비스 시작
     }
 
@@ -247,6 +245,7 @@ public class SettingActivity extends Activity
         editor.putInt("size", mSize);
         editor.commit();
     }
+
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

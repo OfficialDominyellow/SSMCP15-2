@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.secmem.gn.ctos.samdwich.R;
 import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
@@ -23,7 +24,10 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
     private Button pointingStick;
     private PointingStickController mPointingStickController;
     private Context mContext;
-    public CircleViewItemClickListener(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager,CircleLayout mCircleView,Button pointingStick,Context mContext)
+    private TextView centerPoint;
+    private WindowManager.LayoutParams mParamsCenter;
+    public CircleViewItemClickListener(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager,CircleLayout mCircleView,Button pointingStick,Context mContext,
+                                       WindowManager.LayoutParams mParamsCenter,TextView centerPoint)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mParams;
@@ -31,6 +35,8 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
         this.pointingStick=pointingStick;
         this.mCircleView=mCircleView;
         this.mContext=mContext;
+        this.mParamsCenter=mParamsCenter;
+        this.centerPoint=centerPoint;
     }
     @Override
     public void onItemClick(View view, String name) {
@@ -80,6 +86,7 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
         mWindowManager.removeView(mCircleView);
         mParams.width=mParams.width/2;
         mParams.height = mParams.height/2;
+        mWindowManager.addView(centerPoint, mParamsCenter);
         mWindowManager.addView(pointingStick, mParams);
         mWindowManager.updateViewLayout(pointingStick, mParams);
     }
