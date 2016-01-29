@@ -52,6 +52,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     private int currTouchKeyCode;
     private PointingStickService mPointingStickService;
     private ServiceConnection srvConn;
+    private boolean mBound=false;
     private static Intent mService;
 
     private class Hangul {
@@ -910,7 +911,9 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         super.onFinishInput();
         try {
             mPointingStickService.setStickDisplay();
-           // unbindService(srvConn);
+           if(mBound)
+                unbindService(srvConn);
+            mBound=false;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -922,10 +925,11 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             @Override
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 mPointingStickService=((PointingStickService.DataBinder)binder).getService();
+                mBound = true;
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {
-
+                mBound=false;
             }
         };
         Intent intent =new Intent(this,PointingStickService.class);
@@ -934,7 +938,9 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     }
     @Override public void onDestroy() {
         super.onDestroy();
-        unbindService(srvConn);
+        if(mBound)
+            unbindService(srvConn);
+        mBound=false;
     }
     @Override
     public View onCreateInputView(){
