@@ -55,7 +55,6 @@ public class SettingActivity extends Activity
 
     /** Called when the activity is first created. */
 
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -77,7 +76,6 @@ public class SettingActivity extends Activity
         else
             size3.setChecked(true);
 
-
         initActivityOption();
 
         if(switchValue)
@@ -95,12 +93,10 @@ public class SettingActivity extends Activity
         registerReceiver(receiver, filter);
         startService(intent);    //서비스 시작
     }
-
     public void off() {
         Log.e("service", "endService");
         stopService(new Intent(this, PointingStickService.class));	//서비스 종료
     }
-
     private void initActivityOption()
     {
         serviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -200,8 +196,8 @@ public class SettingActivity extends Activity
         if(mBound) {
             unbindService(srvConn);
             unregisterReceiver(receiver);
+            mBound=false;
         }
-        mBound=false;
     }
     public void setVisible()
     {

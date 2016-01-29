@@ -13,21 +13,21 @@ import org.w3c.dom.Text;
  */
 public class StickLongClickListener implements View.OnLongClickListener
 {
-    private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
+    private WindowManager.LayoutParams mParams;
     private WindowManager mWindowManager;
     private PointingStickController mPointingStickController;
     private CircleLayout mCircleView;
     private Button pointingStick;
     private TextView centerPoint;
 
-    public StickLongClickListener(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager,CircleLayout mCircleView,Button pointingStick,TextView centerPoint)
+    public StickLongClickListener(PointingStickController mPointingStickController)
     {
         this.mPointingStickController=mPointingStickController;
-        this.mParams=mParams;
-        this.mWindowManager=mWindowManager;
-        this.mCircleView=mCircleView;
-        this.pointingStick=pointingStick;
-        this.centerPoint=centerPoint;
+        this.mParams=mPointingStickController.getmParams();
+        this.mWindowManager=mPointingStickController.getmWindowManager();
+        this.mCircleView=mPointingStickController.getmCircleView();
+        this.pointingStick=mPointingStickController.getPointingStick();
+        this.centerPoint=mPointingStickController.getCenterPoint();
     }
     public boolean onLongClick(View v) {
         if(!mPointingStickController.getIsMouseMove()

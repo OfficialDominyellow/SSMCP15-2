@@ -117,6 +117,8 @@ public class PointingStickService extends Service{
             Toast.makeText(getApplicationContext(), "Fail to load Vmouse.", Toast.LENGTH_LONG).show();
             return;
         }
+        getPreferencesProgress();getPreferencesSize();//설정값 불러오기
+
         filter = new IntentFilter();
         filter.addAction(GlobalVariable.HIDE_SERVICE);
         registerReceiver(hideReceiver, filter);
@@ -124,10 +126,6 @@ public class PointingStickService extends Service{
         filter2 = new IntentFilter();
         filter2.addAction(GlobalVariable.DISP_SERVICE);
         registerReceiver(dispReceiver, filter2);
-
-        getPreferencesProgress();getPreferencesSize();
-        mPointingStickController=new PointingStickController();
-        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         pointingStick = new Button(this);
         pointingStick.setBackgroundResource(R.drawable.pointing_stick);
@@ -137,6 +135,8 @@ public class PointingStickService extends Service{
         centerPoint=new TextView(this);
         centerPoint.setText("●");
         centerPoint.setTextColor(Color.RED);
+
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mCircleView = (CircleLayout) mInflater.inflate(R.layout.sample_no_rotation2, null);
 
         //최상위 윈도우에 넣기 위한 설정
@@ -150,35 +150,40 @@ public class PointingStickService extends Service{
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
         //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
-
         mParamsCenter= new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,					//항상 최 상위에 있게. status bar 밑에 있음. 터치 이벤트 받을 수 있음.
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE		//이 속성을 안주면 터치 & 키 이벤트도 먹게 된다.
-                        |WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                |WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT);
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        initPosition();
-
-        mWindowManager.addView(centerPoint, mParamsCenter);
-        mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
 
         virtualMouseDriverController = virtualMouseDriverController.getInstance(getApplicationContext());
         if (virtualMouseDriverController.getState()==Thread.State.NEW) {
             virtualMouseDriverController.start();
             virtualMouseDriverController.onPause();
         }
-        setAllListener();
+        mPointingStickController=new PointingStickController(this,
+                mWindowManager,
+                mParams ,
+                mParamsCenter,
+                mCircleView,
+                pointingStick,
+                centerPoint);
+        initPosition();//순서 변경시 에러 발생 =>null exception
+        mWindowManager.addView(centerPoint, mParamsCenter);
+        mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
         mParams.alpha = mProgress / 100.0f;			//알파값 설정
         mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
+        setAllListener();
     }
     public void setAllListener()
     {
-        mCircleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController, mParams, mWindowManager, mCircleView, pointingStick,getBaseContext(),mParamsCenter,centerPoint));
-        pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController,mParams,mWindowManager,mCircleView,pointingStick,centerPoint));
-        pointingStick.setOnTouchListener(new StickTouchListener(mPointingStickController, mParams, mWindowManager, pointingStick,
-                this, virtualMouseDriverController,mParamsCenter,centerPoint));
+        mCircleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController));
+        pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController));
+        pointingStick.setOnTouchListener(new StickTouchListener(mPointingStickController,virtualMouseDriverController));
     }
     /**
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다

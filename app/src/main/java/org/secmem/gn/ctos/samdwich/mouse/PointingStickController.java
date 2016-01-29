@@ -1,5 +1,10 @@
 package org.secmem.gn.ctos.samdwich.mouse;
 
+import android.content.Context;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
+
 /**
  * Created by SECMEM-DY on 2016-01-09.
  */
@@ -16,17 +21,62 @@ public class PointingStickController
 
     private boolean tabMode=false;
 
+    private WindowManager mWindowManager;
+    private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
+    private WindowManager.LayoutParams mParamsCenter; //Layout params객체, 뷰의 위치 크기 지정
+
+    private CircleLayout mCircleView;
+    private Button pointingStick;
+    private TextView centerPoint;
+
+    private Context mContext;
+
+    public PointingStickController(Context mContext, WindowManager mWindowManager, WindowManager.LayoutParams mParams , WindowManager.LayoutParams mParamsCenter,
+                                   CircleLayout mCircleView,
+                                   Button pointingStick,
+                                   TextView centerPoint)
+    {
+        this.mContext=mContext;
+        this.mWindowManager=mWindowManager;
+        this.mParams=mParams;
+        this.mParamsCenter=mParamsCenter;
+        this.mCircleView=mCircleView;
+        this.pointingStick=pointingStick;
+        this.centerPoint=centerPoint;
+    }
+    public Context getmContext() {return mContext;}
+
+    public Button getPointingStick() {
+        return pointingStick;
+    }
+
+    public TextView getCenterPoint() {
+        return centerPoint;
+    }
+
+    public WindowManager.LayoutParams getmParams() {
+        return mParams;
+    }
+
+    public WindowManager.LayoutParams getmParamsCenter() {
+        return mParamsCenter;
+    }
+
+    public WindowManager getmWindowManager() {
+        return mWindowManager;
+    }
+
+    public CircleLayout getmCircleView() {
+        return mCircleView;
+    }
+
+
     public boolean getTabMode() {
         return tabMode;
     }
 
     public void setTabMode(boolean tabMode) {
         this.tabMode = tabMode;
-    }
-
-    public PointingStickController()
-    {
-
     }
 
     public float getSTART_X() {

@@ -3,7 +3,6 @@ package org.secmem.gn.ctos.samdwich.mouse;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.animation.Animation;
 import android.widget.Button;
 
 import org.secmem.gn.ctos.samdwich.R;
@@ -17,7 +16,6 @@ import org.secmem.gn.ctos.samdwich.global.MyMath;
 
 public class TabGestureListener implements GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
 
-    private Animation anim=null;
     private PointingStickController mPointingStickController;
     private Button pointingStick;
     private static String TAG = "TabGestureListener";
@@ -25,10 +23,10 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
     private int mPrevType;
     private int mCurrType;
 
-    public TabGestureListener(PointingStickController mPointingStickController,Button pointingStick)
+    public TabGestureListener(PointingStickController mPointingStickController)
     {
         this.mPointingStickController=mPointingStickController;
-        this.pointingStick=pointingStick;
+        this.pointingStick=mPointingStickController.getPointingStick();
     }
     @Override
     public boolean onDown(MotionEvent e) {

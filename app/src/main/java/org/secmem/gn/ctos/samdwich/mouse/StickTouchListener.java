@@ -28,22 +28,20 @@ public class StickTouchListener implements View.OnTouchListener {
     private GestureDetector mDetector;
     private TabGestureListener mGestureListener;
 
-    Object mouseLock;
-
     private static VirtualMouseDriverController virtualMouseDriverController;
 
-    public StickTouchListener(PointingStickController mPointingStickController, WindowManager.LayoutParams mParams, WindowManager mWindowManager, Button pointingStick,
-                              Context mContext, VirtualMouseDriverController virtualMouseDriverController,WindowManager.LayoutParams mParamsCenter,TextView centerPoint)
+    public StickTouchListener(PointingStickController mPointingStickController, VirtualMouseDriverController virtualMouseDriverController)
     {
         this.mPointingStickController=mPointingStickController;
-        this.mParams=mParams;
-        this.mWindowManager=mWindowManager;
-        this.pointingStick=pointingStick;
-        this.mContext=mContext;
-        this.mParamsCenter=mParamsCenter;
-        this.centerPoint=centerPoint;
+        this.mParams=mPointingStickController.getmParams();
+        this.mWindowManager=mPointingStickController.getmWindowManager();
+        this.pointingStick=mPointingStickController.getPointingStick();
+        this.mContext=mPointingStickController.getmContext();
+        this.mParamsCenter=mPointingStickController.getmParamsCenter();
+        this.centerPoint=mPointingStickController.getCenterPoint();
         this.virtualMouseDriverController=virtualMouseDriverController;
-        mGestureListener=new TabGestureListener(mPointingStickController,pointingStick);
+
+        mGestureListener=new TabGestureListener(mPointingStickController);
         mDetector=new GestureDetector(mContext,mGestureListener);
     }
     public boolean onTouch(View v, MotionEvent event) {
@@ -80,7 +78,6 @@ public class StickTouchListener implements View.OnTouchListener {
                     xdiff=(int)(xdiff/dpDistance*MAXdp);
                     ydiff=(int)(ydiff/dpDistance*MAXdp);
                 }//포인팅 스틱의 범위를 벗어나지 않기 위한 xdiff,ydiff 설정 스틱모드일 때
-
 
                 //터치해서 이동한 만큼 이동 시킨다
                 mParams.x = mPointingStickController.getPREV_X() + xdiff;
@@ -122,8 +119,7 @@ public class StickTouchListener implements View.OnTouchListener {
                 if(mPointingStickController.getIsLongMouseClick())
                 {
                     mPointingStickController.setIsLongMouseClick(false);
-                }//롱클릭이 우선순위가 기본 클릭보다 높게 둠
-                else*/
+                }//롱클릭이 우선순위가 기본 클릭보다 높게 둠*/
                 if(event.getToolType(0)==event.TOOL_TYPE_MOUSE) {
                         Log.e("Service", "MOUSE_ACTION_UP");
                         mWindowManager.removeViewImmediate(pointingStick);
@@ -136,9 +132,7 @@ public class StickTouchListener implements View.OnTouchListener {
                 if(!mPointingStickController.getIsMouseMove() && !mPointingStickController.getIsMoveMode()&&!mPointingStickController.getTabMode())//mouse left click
                 {
                     if(mPointingStickController.getTabMode())
-                    {
-                        break;
-                    }//tap mode
+                        break;//tap mode
                     Log.e("Service", "LeftMouse");
                     clickLeftMouse();
                 }
@@ -147,7 +141,6 @@ public class StickTouchListener implements View.OnTouchListener {
                     pointingStick.setBackgroundResource(R.drawable.pointing_stick);//Move mode에서 원상태로 복귀
                     mPointingStickController.setMoveMode(false);
                 }//Move one 1take
-
                 mPointingStickController.setIsMouseMove(true);
                 Log.e("Service", "ACTION_UP");
                 if(!mPointingStickController.getIsMoveMode())

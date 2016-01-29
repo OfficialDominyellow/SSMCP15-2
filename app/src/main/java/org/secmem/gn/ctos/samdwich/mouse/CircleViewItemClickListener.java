@@ -26,17 +26,16 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
     private Context mContext;
     private TextView centerPoint;
     private WindowManager.LayoutParams mParamsCenter;
-    public CircleViewItemClickListener(PointingStickController mPointingStickController,WindowManager.LayoutParams mParams,WindowManager mWindowManager,CircleLayout mCircleView,Button pointingStick,Context mContext,
-                                       WindowManager.LayoutParams mParamsCenter,TextView centerPoint)
+    public CircleViewItemClickListener(PointingStickController mPointingStickController)
     {
         this.mPointingStickController=mPointingStickController;
-        this.mParams=mParams;
-        this.mWindowManager=mWindowManager;
-        this.pointingStick=pointingStick;
-        this.mCircleView=mCircleView;
-        this.mContext=mContext;
-        this.mParamsCenter=mParamsCenter;
-        this.centerPoint=centerPoint;
+        this.mParams=mPointingStickController.getmParams();
+        this.mWindowManager=mPointingStickController.getmWindowManager();
+        this.pointingStick=mPointingStickController.getPointingStick();
+        this.mCircleView=mPointingStickController.getmCircleView();
+        this.mContext=mPointingStickController.getmContext();
+        this.mParamsCenter=mPointingStickController.getmParamsCenter();
+        this.centerPoint=mPointingStickController.getCenterPoint();
     }
     @Override
     public void onItemClick(View view, String name) {
