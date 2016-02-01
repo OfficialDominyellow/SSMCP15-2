@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Binder;
@@ -18,6 +20,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +45,8 @@ public class PointingStickService extends Service{
 
     private LayoutInflater mInflater;
     private CircleLayout mCircleView;
+    private ImageView hideImage;
+
     private IntentFilter filter;
     private IntentFilter filter2;
 
@@ -76,8 +81,12 @@ public class PointingStickService extends Service{
         int newSize=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());//dp로 변환
         if(mPointingStickController.getIsLongMouseClick())
                 newSize*=2;
-        mParams.width=newSize;
-        mParams.height=newSize;
+        GlobalVariable.stickWidth =newSize;
+        GlobalVariable.stickHeight = newSize;
+        if(mPointingStickController.isHideMode())
+            return;
+        mParams.width=GlobalVariable.stickWidth;
+        mParams.height=GlobalVariable.stickHeight;
         mParamsCenter.x=mParams.x;
         mParamsCenter.y=mParams.y;//center point x,y
         updateView();
@@ -85,16 +94,20 @@ public class PointingStickService extends Service{
     public void setStickHide()
     {
         if(mPointingStickController.getIsLongMouseClick())
-            mWindowManager.removeView(mCircleView);
+            mWindowManager.removeViewImmediate(mCircleView);
+        else if(mPointingStickController.isHideMode())
+            mWindowManager.removeViewImmediate(hideImage);
         else{
-            mWindowManager.removeView(pointingStick);
-            mWindowManager.removeView(centerPoint);
+            mWindowManager.removeViewImmediate(pointingStick);
+            mWindowManager.removeViewImmediate(centerPoint);
         }
     }
     public void setStickDisplay()
     {
         if (mPointingStickController.getIsLongMouseClick())
             mWindowManager.addView(mCircleView, mParams);
+        else if(mPointingStickController.isHideMode())
+            mWindowManager.addView(hideImage,mParams);
         else {
             mWindowManager.addView(centerPoint, mParamsCenter);
             mWindowManager.addView(pointingStick, mParams);
@@ -105,6 +118,8 @@ public class PointingStickService extends Service{
     {
         if(mPointingStickController.getIsLongMouseClick())
             mWindowManager.updateViewLayout(mCircleView, mParams);
+        else if(mPointingStickController.isHideMode())
+            mWindowManager.updateViewLayout(hideImage,mParams);
         else
             mWindowManager.updateViewLayout(pointingStick, mParams);
     }
@@ -135,6 +150,14 @@ public class PointingStickService extends Service{
         centerPoint=new TextView(this);
         centerPoint.setText("●");
         centerPoint.setTextColor(Color.RED);
+        hideImage = new ImageView(this);
+        Bitmap bm = BitmapFactory.decodeResource(this.getResources(), R.drawable.small_button);
+        bm = Bitmap.createScaledBitmap(bm, bm.getWidth(), bm.getHeight() ,true);
+        int bmWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bm.getWidth(), getResources().getDisplayMetrics());
+        int bmHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bm.getHeight(), getResources().getDisplayMetrics());
+        GlobalVariable.HideImageWidth=bmWidth;
+        GlobalVariable.HideImageheight=bmHeight;
+        hideImage.setImageBitmap(bm);
 
         mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mCircleView = (CircleLayout) mInflater.inflate(R.layout.sample_no_rotation2, null);
@@ -150,6 +173,7 @@ public class PointingStickService extends Service{
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
         //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
+
         mParamsCenter= new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -171,7 +195,8 @@ public class PointingStickService extends Service{
                 mParamsCenter,
                 mCircleView,
                 pointingStick,
-                centerPoint);
+                centerPoint,
+                hideImage);
         initPosition();//순서 변경시 에러 발생 =>null exception
         mWindowManager.addView(centerPoint, mParamsCenter);
         mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
@@ -183,7 +208,8 @@ public class PointingStickService extends Service{
     {
         mCircleView.setOnItemClickListener(new CircleViewItemClickListener(mPointingStickController));
         pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController));
-        pointingStick.setOnTouchListener(new StickTouchListener(mPointingStickController,virtualMouseDriverController));
+        pointingStick.setOnTouchListener(new StickTouchListener(mPointingStickController, virtualMouseDriverController));
+        hideImage.setOnTouchListener(new HideTouchListener(mPointingStickController));
     }
     /**
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다
@@ -192,23 +218,26 @@ public class PointingStickService extends Service{
         DisplayMetrics matrix = new DisplayMetrics();
         int newSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mSize, getResources().getDisplayMetrics());
         mWindowManager.getDefaultDisplay().getMetrics(matrix);        //화면 정보를 가져와서
+        GlobalVariable.displayHeightPx=matrix.heightPixels;
+        GlobalVariable.displayWidthPx=matrix.widthPixels;
 
         mPointingStickController.setPxWidth(matrix.widthPixels);
         mPointingStickController.setPxHeight(matrix.heightPixels);
+        Log.e("Service", "width: " + matrix.widthPixels + " height: " + matrix.heightPixels);
 
         //x 최대값 설정
         mPointingStickController.setMAX_X(mPointingStickController.getPxWidth() - pointingStick.getWidth());
         //y 최대값 설정
         mPointingStickController.setMAX_Y(mPointingStickController.getPxHeight() - pointingStick.getHeight());
 
-        mPointingStickController.setPxWidth(mPointingStickController.getPxWidth() / 5);
-        mPointingStickController.setPxHeight(mPointingStickController.getPxHeight() / 5);//최초 위치 설정
+        mPointingStickController.setCurrntX(mPointingStickController.getPxWidth() / 5);
+        mPointingStickController.setCurrntY(mPointingStickController.getPxHeight() / 5);//최초 위치 설정
 
-        mParams.x = mPointingStickController.getPxWidth();
-        mParams.y = mPointingStickController.getPxHeight();//x,y 위치 초기화
+        mParams.x = mPointingStickController.getCurrntX();
+        mParams.y = mPointingStickController.getCurrntY();//x,y 위치 초기화
         mParamsCenter.x=mParams.x;
         mParamsCenter.y=mParams.y;//center point x,y
-
+        Log.e("Service","x: "+mParams.x+" y: "+mParams.y);
         mParams.width = newSize;
         mParams.height = newSize;
         GlobalVariable.stickWidth = mParams.width;
@@ -234,12 +263,14 @@ public class PointingStickService extends Service{
     public void onDestroy() {
         virtualMouseDriverController.interrupt();
         if(mWindowManager != null) {		//서비스 종료시 뷰 제거. *중요 : 뷰를 꼭 제거 해야함.
-            if(pointingStick != null && !mPointingStickController.getIsLongMouseClick()) {
-                mWindowManager.removeView(pointingStick);
-                mWindowManager.removeView(centerPoint);
+            if(pointingStick != null && !mPointingStickController.getIsLongMouseClick()&& !mPointingStickController.isHideMode()) {
+                mWindowManager.removeViewImmediate(pointingStick);
+                mWindowManager.removeViewImmediate(centerPoint);
             }
+            else if(hideImage!=null && mPointingStickController.isHideMode())
+                mWindowManager.removeViewImmediate(hideImage);
             else if(mCircleView!=null)
-                mWindowManager.removeView(mCircleView);
+                mWindowManager.removeViewImmediate(mCircleView);
         }
         Log.e("service", "onDestroy");
         unregisterReceiver(hideReceiver);

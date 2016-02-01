@@ -35,8 +35,8 @@ public class StickLongClickListener implements View.OnLongClickListener
             Log.e("Service", "LONG CLICK");
             mParams.width=mParams.width*2;
             mParams.height=mParams.height*2;
-            mWindowManager.removeView(pointingStick);
-            mWindowManager.removeView(centerPoint);
+            mWindowManager.removeViewImmediate(pointingStick);
+            mWindowManager.removeViewImmediate(centerPoint);
             mWindowManager.addView(mCircleView, mParams);
             mWindowManager.updateViewLayout(mCircleView, mParams);
             mPointingStickController.setIsLongMouseClick(true);

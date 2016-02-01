@@ -3,6 +3,7 @@ package org.secmem.gn.ctos.samdwich.mouse;
 import android.content.Context;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -14,12 +15,13 @@ public class PointingStickController
     private int PREV_X,PREV_Y;
     private int MAX_X=-1,MAX_Y=-1;
     private int pxWidth=1,pxHeight=-1;
+    private int currntX=-1,currntY;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
     private boolean isMouseMove=false;
     private boolean isLongMouseClick=false;
     private boolean moveMode=false;
-
     private boolean tabMode=false;
+    private boolean hideMode=false;
 
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
@@ -29,12 +31,14 @@ public class PointingStickController
     private Button pointingStick;
     private TextView centerPoint;
 
+    private ImageView hideImage;
+
     private Context mContext;
 
     public PointingStickController(Context mContext, WindowManager mWindowManager, WindowManager.LayoutParams mParams , WindowManager.LayoutParams mParamsCenter,
                                    CircleLayout mCircleView,
                                    Button pointingStick,
-                                   TextView centerPoint)
+                                   TextView centerPoint,ImageView hideImage)
     {
         this.mContext=mContext;
         this.mWindowManager=mWindowManager;
@@ -43,24 +47,31 @@ public class PointingStickController
         this.mCircleView=mCircleView;
         this.pointingStick=pointingStick;
         this.centerPoint=centerPoint;
+        this.hideImage=hideImage;
     }
+    public int getCurrntX() {return currntX;}
+
+    public void setCurrntX(int currntX) {this.currntX = currntX;}
+
+    public int getCurrntY() {return currntY;}
+
+    public void setCurrntY(int currntY) {this.currntY = currntY;}
+
+    public ImageView getHideImage() {return hideImage;}
+
+    public boolean isHideMode() {return hideMode;}
+
+    public void setHideMode(boolean hideMode) {this.hideMode = hideMode;}
+
     public Context getmContext() {return mContext;}
 
-    public Button getPointingStick() {
-        return pointingStick;
-    }
+    public Button getPointingStick() {return pointingStick;}
 
-    public TextView getCenterPoint() {
-        return centerPoint;
-    }
+    public TextView getCenterPoint() {return centerPoint;}
 
-    public WindowManager.LayoutParams getmParams() {
-        return mParams;
-    }
+    public WindowManager.LayoutParams getmParams() {return mParams;}
 
-    public WindowManager.LayoutParams getmParamsCenter() {
-        return mParamsCenter;
-    }
+    public WindowManager.LayoutParams getmParamsCenter() {return mParamsCenter;}
 
     public WindowManager getmWindowManager() {
         return mWindowManager;
@@ -127,21 +138,13 @@ public class PointingStickController
         this.MAX_Y = MAX_Y;
     }
 
-    public int getPxWidth() {
-        return pxWidth;
-    }
+    public int getPxWidth() {return pxWidth;}
 
-    public void setPxWidth(int pxWidth) {
-        this.pxWidth = pxWidth;
-    }
+    public void setPxWidth(int pxWidth) {this.pxWidth = pxWidth;}
 
-    public int getPxHeight() {
-        return pxHeight;
-    }
+    public int getPxHeight() {return pxHeight;}
 
-    public void setPxHeight(int pxHeight) {
-        this.pxHeight = pxHeight;
-    }
+    public void setPxHeight(int pxHeight) {this.pxHeight = pxHeight;}
 
     public boolean getIsMouseMove() {
         return isMouseMove;

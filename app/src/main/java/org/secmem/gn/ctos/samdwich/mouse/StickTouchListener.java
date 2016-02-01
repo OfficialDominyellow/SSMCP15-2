@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.secmem.gn.ctos.samdwich.R;
@@ -24,6 +25,7 @@ public class StickTouchListener implements View.OnTouchListener {
     private WindowManager mWindowManager;
     private Button pointingStick;
     private TextView centerPoint;
+    private ImageView hideImage;
     private Context mContext;
     private GestureDetector mDetector;
     private TabGestureListener mGestureListener;
@@ -39,6 +41,7 @@ public class StickTouchListener implements View.OnTouchListener {
         this.mContext=mPointingStickController.getmContext();
         this.mParamsCenter=mPointingStickController.getmParamsCenter();
         this.centerPoint=mPointingStickController.getCenterPoint();
+        this.hideImage=mPointingStickController.getHideImage();
         this.virtualMouseDriverController=virtualMouseDriverController;
 
         mGestureListener=new TabGestureListener(mPointingStickController);
@@ -70,8 +73,6 @@ public class StickTouchListener implements View.OnTouchListener {
                 xdiff = (int)(event.getRawX() - mPointingStickController.getSTART_X());	//이동한 거리
                 ydiff = (int)(event.getRawY() - mPointingStickController.getSTART_Y());	//이동한 거리
 
-                //Log.e("Service", "originX: "+originX+"  originY:"+originY);
-
                 double distance = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
                 float dpDistance = GlobalVariable.convertPixelsToDp((float) distance, mContext.getApplicationContext());
                 if (dpDistance>MAXdp && !mPointingStickController.getIsMoveMode()) {
@@ -94,14 +95,14 @@ public class StickTouchListener implements View.OnTouchListener {
                     else if(mParams.y>GlobalVariable.displayMaxBottom)
                         mParams.y=GlobalVariable.displayMaxBottom;
 
-                    mPointingStickController.setPxWidth(mParams.x);
-                    mPointingStickController.setPxHeight(mParams.y);
+                    mPointingStickController.setCurrntX(mParams.x);
+                    mPointingStickController.setCurrntY(mParams.y);
                     GlobalVariable.stickWidth = mParams.width;
                     GlobalVariable.stickHeight = mParams.height;
                     mParamsCenter.x=mParams.x;
                     mParamsCenter.y=mParams.y;
+                    Log.e("Service","Move x:"+mParams.x+" y:"+mParams.y);
                 }
-                Log.e("Service"," "+mParams.x+" "+mParams.y);
 
                 mWindowManager.updateViewLayout(pointingStick, mParams);	//뷰 업데이트
                 mWindowManager.updateViewLayout(centerPoint, mParamsCenter);	//뷰 업데이트
@@ -143,12 +144,13 @@ public class StickTouchListener implements View.OnTouchListener {
                 }//Move one 1take
                 mPointingStickController.setIsMouseMove(true);
                 Log.e("Service", "ACTION_UP");
-                if(!mPointingStickController.getIsMoveMode())
+                if(!mPointingStickController.getIsMoveMode()&&!mPointingStickController.isHideMode())
                 {
                     virtualMouseDriverController.onPause();
-                    mParams.x = mPointingStickController.getPxWidth();
-                    mParams.y = mPointingStickController.getPxHeight();//상대적으로 좌표 설정 ,원위치로 변경
+                    mParams.x = mPointingStickController.getCurrntX();
+                    mParams.y = mPointingStickController.getCurrntY();//상대적으로 좌표 설정 ,원위치로 변경
                     mWindowManager.updateViewLayout(pointingStick, mParams);
+                    Log.e("Service", "Use Stick x:" + mParams.x + " y:" + mParams.y);
                 }
                 break;
         }

@@ -3,11 +3,15 @@ package org.secmem.gn.ctos.samdwich.mouse;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.secmem.gn.ctos.samdwich.R;
@@ -25,6 +29,7 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
     private PointingStickController mPointingStickController;
     private Context mContext;
     private TextView centerPoint;
+    private ImageView hideImage;
     private WindowManager.LayoutParams mParamsCenter;
     public CircleViewItemClickListener(PointingStickController mPointingStickController)
     {
@@ -36,6 +41,7 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
         this.mContext=mPointingStickController.getmContext();
         this.mParamsCenter=mPointingStickController.getmParamsCenter();
         this.centerPoint=mPointingStickController.getCenterPoint();
+        this.hideImage=mPointingStickController.getHideImage();
     }
     @Override
     public void onItemClick(View view, String name) {
@@ -56,11 +62,17 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
                 else
                     mPointingStickController.setTabMode(false);
                 break;
-
             case R.id.main_hide_image://Hide Mode
-                Log.e("Circle","3");
-                break;
+                Log.e("Circle", "3");
+                mWindowManager.removeViewImmediate(mCircleView);
+                mParams.width=GlobalVariable.HideImageWidth;
+                mParams.height=GlobalVariable.HideImageheight;
+                mParams.x=GlobalVariable.displayWidthPx;
 
+                mWindowManager.addView(hideImage, mParams);
+                mWindowManager.updateViewLayout(hideImage, mParams);
+                mPointingStickController.setHideMode(true);
+                break;
             case R.id.main_off_image://Service off
                 Log.e("Circle", "4");
                 savePreferencesSwitchFalse();
@@ -73,16 +85,15 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
             case R.id.main_back_image://back
                 Log.e("Circle", "5");
                 break;
-            default:
-                Log.e("Circle", "Back");
-                break;
         }
         finishCircleView();
+        return;
     }
-    public void finishCircleView()
-    {
+    public void finishCircleView() {
         mPointingStickController.setIsLongMouseClick(false);
-        mWindowManager.removeView(mCircleView);
+        if(mPointingStickController.isHideMode())
+            return;
+        mWindowManager.removeViewImmediate(mCircleView);
         mParams.width=mParams.width/2;
         mParams.height = mParams.height/2;
         mWindowManager.addView(centerPoint, mParamsCenter);
