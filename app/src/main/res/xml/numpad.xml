@@ -8,7 +8,8 @@
     <Row>
         <Key android:codes="49" android:keyLabel="1" android:horizontalGap="20%p" android:keyEdgeFlags="left"/>
         <Key android:codes="50" android:keyLabel="2"/>
-        <Key android:codes="51" android:keyLabel="3" android:horizontalGap="20%p" android:keyEdgeFlags="right"/>
+        <Key android:codes="51" android:keyLabel="3" android:keyEdgeFlags="right"/>
+        <key android:horizontalGap="20%p"/>
     </Row>
     <Row>
         <Key android:codes="52" android:keyLabel="4" android:horizontalGap="20%p" android:keyEdgeFlags="left"/>
@@ -21,8 +22,8 @@
         <Key android:codes="57" android:keyLabel="9" android:keyEdgeFlags="right"/>
     </Row>
     <Row android:rowEdgeFlags="bottom">
-        <Key android:codes="-2" android:keyLabel="CHG" android:horizontalGap="20%p" android:keyEdgeFlags="left"/>
+        <Key android:codes="-2" android:keyIcon="@drawable/key_cng_to_kor" android:horizontalGap="20%p" android:keyEdgeFlags="left"/> <!-- change to kor -->
         <Key android:codes="48" android:keyLabel="0"/>
-        <Key android:codes="32" android:keyLabel="SPC" android:keyEdgeFlags="right"/>
+        <Key android:codes="32" android:isRepeatable="true" android:keyEdgeFlags="right"/> <!-- SPACE -->
     </Row>
 </Keyboard>

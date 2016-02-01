@@ -4,6 +4,8 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:keyPreviewLayout="@layout/preview"
     android:id="@+id/keyboard"
-    android:keyBackground="@drawable/test"
+    android:background="@drawable/key_unclick_base"
+    android:keyBackground="@drawable/key_bg_selector"
+    android:keyTextColor="#E0D0B6"
     android:layout_alignParentBottom="true"
     />
