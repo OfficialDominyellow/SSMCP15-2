@@ -32,7 +32,7 @@
     </Row>
 
     <Row>
-        <Key android:codes="-1" android:keyWidth="15%p" android:isModifier="true" android:isSticky="true" android:keyEdgeFlags="left"/> <!-- SHIFT -->
+        <Key android:codes="-1" android:keyWidth="15%p" android:isModifier="true" android:isSticky="true" android:keyEdgeFlags="left" android:keyIcon="@drawable/key_shift"/> <!-- SHIFT -->
         <Key android:codes="122" android:keyLabel="z"/>
         <Key android:codes="120" android:keyLabel="x"/>
         <Key android:codes="99" android:keyLabel="c"/>
@@ -40,7 +40,7 @@
         <Key android:codes="98" android:keyLabel="b"/>
         <Key android:codes="110" android:keyLabel="n"/>
         <Key android:codes="109" android:keyLabel="m"/>
-        <Key android:codes="-5" android:keyWidth="15%p" android:keyEdgeFlags="right" android:isRepeatable="true"/> <!-- DEL -->
+        <Key android:codes="-5" android:keyWidth="15%p" android:keyEdgeFlags="right" android:isRepeatable="true" android:keyIcon="@drawable/key_backspc"/> <!-- DEL -->
     </Row>
 
     <Row android:rowEdgeFlags="bottom">
@@ -51,9 +51,9 @@
             privately defined in com.example.android.softkeyboard.LatinKeyboardView.
         -->
         <Key android:codes="-2" android:keyIcon="@drawable/key_cng_to_num" android:keyWidth="10%p"/><!-- change to num -->
-        <Key android:codes="32" android:keyWidth="60%p" android:isRepeatable="true"/> <!-- SPACE -->
+        <Key android:codes="32" android:keyWidth="60%p" android:isRepeatable="true" android:keyIcon="@drawable/key_space"/> <!-- SPACE -->
         <Key android:codes="46,44" android:keyLabel=". ," android:keyWidth="10%p"/>
-        <Key android:codes="10" android:keyWidth="20%p" android:keyEdgeFlags="right"/> <!-- RET -->
+        <Key android:codes="10" android:keyWidth="20%p" android:keyEdgeFlags="right" android:keyIcon="@drawable/key_ret"/> <!-- RET -->
     </Row>
 
 </Keyboard>

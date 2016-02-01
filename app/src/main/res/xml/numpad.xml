@@ -24,6 +24,6 @@
     <Row android:rowEdgeFlags="bottom">
         <Key android:codes="-2" android:keyIcon="@drawable/key_cng_to_kor" android:horizontalGap="20%p" android:keyEdgeFlags="left"/> <!-- change to kor -->
         <Key android:codes="48" android:keyLabel="0"/>
-        <Key android:codes="32" android:isRepeatable="true" android:keyEdgeFlags="right"/> <!-- SPACE -->
+        <Key android:codes="32" android:isRepeatable="true" android:keyEdgeFlags="right" android:keyIcon="@drawable/key_space"/> <!-- SPACE -->
     </Row>
 </Keyboard>
