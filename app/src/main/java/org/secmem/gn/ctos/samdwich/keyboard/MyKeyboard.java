@@ -3,6 +3,7 @@ package org.secmem.gn.ctos.samdwich.keyboard;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
@@ -885,8 +886,13 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                 this.jungsung = "";
                 lastStr = (char) getUnicode() + "";
                 delete(1);
-                ic.commitText(lastStr, 1);
-                step = INPUT_MODE_CHO;
+                if(!this.chosung.equals("")) {
+                    ic.commitText(lastStr, 1);
+                    step = INPUT_MODE_CHO;
+                }
+                else{
+                    init();
+                }
             }
             else{
                 init();
@@ -972,14 +978,13 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                     yPositionStart = event.getY();
                     //Toast.makeText(getApplicationContext(), "X start : " + xPositionStart + " Y start : " + yPositionStart, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "X start : " + xPositionStart + " Y start : " + yPositionStart);
-                } else if(event.getAction() == MotionEvent.ACTION_UP){
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     xPositionEnd = event.getX();
                     yPositionEnd = event.getY();
                     //Toast.makeText(getApplicationContext(), "X END : " + xPositionEnd + " Y END : " + yPositionEnd, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "X END : " + xPositionEnd + " Y END : " + yPositionEnd);
-                }
-                else if(event.getAction() == MotionEvent.ACTION_MOVE) {
-                    if(currTouchKeyCode == 12641 || currTouchKeyCode == 12643 || currTouchKeyCode == 12685) {
+                } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    if (currTouchKeyCode == 12641 || currTouchKeyCode == 12643 || currTouchKeyCode == 12685) {
                         double xx = event.getX();
                         double yy = event.getY();
                         for (int idx : keyboard.getNearestKeys((int) xx, (int) yy)) {

@@ -43,16 +43,20 @@ public class MyKeyboardView  extends KeyboardView {
         super.onDraw(canvas);
 
         List<Keyboard.Key> keys = getKeyboard().getKeys();
+
+        /*
         for (Keyboard.Key key : keys) {
             if (key.codes[0] == 32) {
                 Log.e("KEY", "Drawing key with code " + key.codes[0]);
                 Drawable dr = (Drawable) context.getResources().getDrawable(R.drawable.key_trans_space);
                 dr.setBounds(key.x, key.y, key.x + key.width, key.y + key.height);
                 dr.draw(canvas);
-            } else if (key.codes[0] == 12609) {
+            }
+            else if (key.codes[0] == 12609) {
                 Drawable dr = (Drawable) context.getResources().getDrawable(R.drawable.key_mieum);
                 dr.setBounds(key.x, key.y, key.x + key.width, key.y + key.height);
                 dr.draw(canvas);
+
             } else if (key.codes[0] == 12596) {
                 Drawable dr = (Drawable) context.getResources().getDrawable(R.drawable.key_nieun);
                 dr.setBounds(key.x, key.y, key.x + key.width, key.y + key.height);
@@ -88,9 +92,9 @@ public class MyKeyboardView  extends KeyboardView {
                 dr.setBounds(key.x, key.y, key.x + key.width, key.y + key.height);
                 dr.draw(canvas);
             }
-            //done
-            else if (key.codes[0] == -4) {
-                Drawable dr = (Drawable) context.getResources().getDrawable(R.drawable.key_done);
+            //shift
+            else if (key.codes[0] == -1) {
+                Drawable dr = (Drawable) context.getResources().getDrawable(R.drawable.key_shift);
                 dr.setBounds(key.x, key.y, key.x + key.width, key.y + key.height);
                 dr.draw(canvas);
             }
@@ -101,5 +105,6 @@ public class MyKeyboardView  extends KeyboardView {
                 dr.draw(canvas);
             }
         }
+        */
     }
 }

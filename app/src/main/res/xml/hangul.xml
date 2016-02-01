@@ -6,23 +6,23 @@
     android:keyHeight="60dp">
 
     <Row>
-        <Key android:codes="12609" android:iconPreview="@drawable/mieum_extend"/> <!-- ㅁ -->
-        <Key android:codes="12596" android:iconPreview="@drawable/nieun_extend"/> <!-- ㄴ -->
-        <Key android:codes="12615" android:iconPreview="@drawable/ieung_extend"/> <!-- ㅇ -->
-        <Key android:codes="12613" android:iconPreview="@drawable/siot_extend"/> <!-- ㅅ -->
-        <Key android:codes="12593" android:iconPreview="@drawable/giyeok_extend"/> <!-- ㄱ -->
+        <Key android:codes="12609" android:keyIcon="@drawable/key_mieum" /> <!-- ㅁ -->
+        <Key android:codes="12596" android:keyIcon="@drawable/key_nieun"/> <!-- ㄴ -->
+        <Key android:codes="12615" android:keyIcon="@drawable/key_ieung"/> <!-- ㅇ -->
+        <Key android:codes="12613" android:keyIcon="@drawable/key_siot"/> <!-- ㅅ -->
+        <Key android:codes="12593" android:keyIcon="@drawable/key_giyeok"/> <!-- ㄱ -->
     </Row>
     <Row>
-        <Key android:codes="12641" android:horizontalGap="30%p"/> <!-- ㅡ -->
-        <Key android:codes="12643" /> <!-- ㅣ -->
+        <Key android:codes="12641" android:horizontalGap="30%p" android:keyIcon="@drawable/key_eu"/> <!-- ㅡ -->
+        <Key android:codes="12643" android:keyIcon="@drawable/key_e"/> <!-- ㅣ -->
     </Row>
     <Row>
-        <Key android:codes="12685" android:horizontalGap="40%p"/> <!-- ㆍ -->
+        <Key android:codes="12685" android:horizontalGap="40%p" android:keyIcon="@drawable/key_araea"/> <!-- ㆍ -->
     </Row>
     <Row>
         <Key android:codes="-2" android:keyWidth="20%p" android:keyIcon="@drawable/key_cng_to_eng"/> <!-- change to eng -->
-        <Key android:codes="32" android:keyWidth="50%p" android:isRepeatable="true"/> <!-- SPACE -->
-        <Key android:codes="-5" android:keyWidth="15%p" android:isRepeatable="true"/> <!-- DEL -->
+        <Key android:codes="32" android:keyWidth="50%p" android:isRepeatable="true" android:keyIcon="@drawable/key_space"/> <!-- SPACE -->
+        <Key android:codes="-5" android:keyWidth="15%p" android:isRepeatable="true" android:keyIcon="@drawable/key_backspc"/> <!-- DEL -->
         <Key android:codes="10" android:keyWidth="15%p"/> <!-- ENTER -->
         <!--<Key android:codes="-4" android:keyWidth="10%p"/> &lt;!&ndash; DONE &ndash;&gt;-->
     </Row>
