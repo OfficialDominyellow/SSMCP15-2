@@ -1232,8 +1232,8 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         break;
                     case Keyboard.KEYCODE_MODE_CHANGE:
                         Log.i(TAG, "Keyboard Change eng -> num");
-                        inputKeyboardMode = NUM_MODE;
-                        changeKeyboardLayout(NUM_MODE);
+                        inputKeyboardMode = HAN_MODE;
+                        changeKeyboardLayout(HAN_MODE);
                         //return;
                         break;
                     case 32:
