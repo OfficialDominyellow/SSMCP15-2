@@ -1035,7 +1035,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     @Override
     public void onPress(int primaryCode) {
-        Log.i(TAG, "onPress start : " + primaryCode + "("+(char)primaryCode+")");
+        Log.i(TAG, "onPress start : " + primaryCode + "(" + (char) primaryCode + ")");
         prevTouchKeyCode = currTouchKeyCode = primaryCode;
 
         switch (inputKeyboardMode) {
@@ -1186,7 +1186,30 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                             Log.i(TAG, "endPC : " + endPrimaryCode);
                             Log.i(TAG, "Ja ("+xPositionStart + ", " + yPositionStart + ") -> (" + xPositionEnd + ", " + yPositionEnd + ")");
                             primaryCode = downKeycode;
-                            hangul.write(endPrimaryCode);
+
+                            if(endPrimaryCode > 0) {
+                                hangul.write(endPrimaryCode);
+                            }
+                            //
+                            else{
+                                hangul.init();
+                                //!
+                                if(endPrimaryCode == -126151){
+                                    ic.commitText("!", 1);
+                                }
+                                //핥
+                                else if(endPrimaryCode == -126153){
+                                    ic.commitText("♥", 1);
+                                }
+                                //?
+                                else if(endPrimaryCode == -126154){
+                                    ic.commitText("?", 1);
+                                }
+                                //ㅋㅋㅋ
+                                else if(endPrimaryCode == -125933){
+                                    ic.commitText("ㅋㅋㅋ", 1);
+                                }
+                            }
                             /*
                             char code = (char) primaryCode;
                             if (Character.isLetter(code) && caps) {
@@ -1397,18 +1420,21 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             if(direction == 0){
 
             }
+            //!
             else if(direction == 1){
-
+                primaryCode = -126151;
             }
             //ㅎ
             else if(direction == 2){
                 primaryCode = 12622;
             }
+            //핥
             else if(direction == 3){
-
+                primaryCode = -126153;
             }
+            //?
             else if(direction == 4){
-
+                primaryCode = -126154;
             }
         }
         //ㅅ
@@ -1445,8 +1471,9 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             else if(direction == 2){
                 primaryCode = 12619;
             }
+            //ㅋㅋㅋ
             else if(direction == 3){
-
+                primaryCode = -125933;
             }
             //ㄲ
             else if(direction == 4){

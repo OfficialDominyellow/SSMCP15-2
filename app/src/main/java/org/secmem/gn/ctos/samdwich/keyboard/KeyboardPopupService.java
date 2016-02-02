@@ -1,6 +1,7 @@
 package org.secmem.gn.ctos.samdwich.keyboard;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,7 +9,9 @@ import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -69,13 +72,14 @@ public class KeyboardPopupService extends Service{
             extendImage = BitmapFactory.decodeResource(getResources(), R.drawable.giyeok_extend);
         }
 
-        extendImage = Bitmap.createScaledBitmap(extendImage, mKeyboardWidth / 3, mKeyboardHeight / 3, true);
+        extendImage = Bitmap.createScaledBitmap(extendImage, mKeyboardHeight / 3, mKeyboardHeight / 3, true);
         mImage.setImageBitmap(extendImage);
 
         /*
         LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         mImage = new ImageView(this);
-        mImage = (ImageView)inflater.inflate(R.id.giyeok_extend_layout, null);
+        mImage = (ImageView)inflater.in
+                WindowManager.LayoutParams.WRAP_CONTENT,flate(R.id.giyeok_extend_layout, null);
         Log.i(TAG, "LAYOUT = " + (LinearLayout.LayoutParams)mImage.getLayoutParams());
         */
         //mPrimaryCode에 따라서 다른 image 나타나도록
@@ -83,14 +87,21 @@ public class KeyboardPopupService extends Service{
         mImage.setMaxHeight(1);
         mImage.setAlpha((float) 0.9999999);
 
-
         mParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                PixelFormat.TRANSLUCENT); // ����
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON  | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                PixelFormat.TRANSLUCENT);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((WindowManager)getApplicationContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
+        //Log.i(TAG, "display size x : " + metrics.widthPixels + ", y : " + metrics.heightPixels); //width가 가로, height가 세로
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
+
+        mParams.x = -screenWidth/2 + mKeyboardHeight/3; //최좌단
+        mParams.y = screenHeight/2 -  mKeyboardHeight/2 ; //최하단
 
         try {
             mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
