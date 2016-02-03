@@ -19,8 +19,10 @@
     } while(0)
 
 static int fd;//uinput fd
+static struct uinput_user_dev uidev;
+static struct input_event ev;
 
-
+void setEventAndWrite(__u16 type, __u16 code, __s32 value);
 void Java_org_secmem_gn_ctos_samdwich_mouse_StickTouchListener_clickLeftMouse(JNIEnv * a,jobject b);
 void Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_removeMouseDriver(JNIEnv* env, jobject thiz);
 void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputBackTabKey(JNIEnv * a,jobject b);
