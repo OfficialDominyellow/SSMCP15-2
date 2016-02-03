@@ -277,6 +277,7 @@ public class PointingStickService extends Service{
         unregisterReceiver(hideReceiver);
         unregisterReceiver(dispReceiver);
         unregisterReceiver(sizeReceiver);
+        unregisterReceiver(progressReceiver);
         removeMouseDriver();
         virtualMouseDriverController=null;
         super.onDestroy();

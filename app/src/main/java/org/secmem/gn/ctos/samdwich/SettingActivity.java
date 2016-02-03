@@ -81,8 +81,8 @@ public class SettingActivity extends Activity
         else
             serviceSwitch.setChecked(false);
     }
-    public void on()
-    {
+
+    public void on() {
         Log.e("service", "startService");
         filter.addAction(GlobalVariable.STOP_SERVICE);
         registerReceiver(switchReceiver, filter);
@@ -90,6 +90,7 @@ public class SettingActivity extends Activity
     }
     public void off() {
         Log.e("service", "endService");
+        unregisterReceiver(switchReceiver);
         stopService(new Intent(this, PointingStickService.class));	//서비스 종료
     }
     private void initActivityOption()
