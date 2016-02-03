@@ -27,14 +27,12 @@ import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.graphics.Region.Op;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RotateDrawable;
 import android.inputmethodservice.Keyboard.Key;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -281,12 +279,15 @@ public class KeyboardView extends View implements View.OnClickListener {
         this(context, attrs, com.android.internal.R.attr.keyboardViewStyle);
     }
 
-    public KeyboardView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public KeyboardView(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs, defStyleAttr, 0);
+    }
 
-        TypedArray a =
-            context.obtainStyledAttributes(
-                attrs, android.R.styleable.KeyboardView, defStyle, 0);
+    public KeyboardView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+
+        TypedArray a = context.obtainStyledAttributes(
+                attrs, android.R.styleable.KeyboardView, defStyleAttr, defStyleRes);
 
         LayoutInflater inflate =
                 (LayoutInflater) context
@@ -636,6 +637,7 @@ public class KeyboardView extends View implements View.OnClickListener {
         }
         canvas.drawBitmap(mBuffer, 0, 0, null);
     }
+
 
     private void onBufferDraw() {
         if (mBuffer == null || mKeyboardChanged) {
