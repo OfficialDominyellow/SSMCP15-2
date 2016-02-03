@@ -17,14 +17,10 @@ package org.secmem.gn.ctos.samdwich;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 import android.os.Bundle;
 import android.view.Display;
@@ -44,15 +40,13 @@ public class SettingActivity extends Activity
 {
     private Switch serviceSwitch;
     private SeekBar mSeekBar;
-    private PointingStickService mPointingStickService;
-    private ServiceConnection srvConn;
     private RadioGroup mGroup;
     private RadioButton size1,size2,size3;
     private boolean switchValue;
     private int mProgress;
     private int mSize;
-    private boolean mBound = false;
-
+    private IntentFilter filter;
+    private Intent intent;
     /** Called when the activity is first created. */
 
     @Override
@@ -61,6 +55,10 @@ public class SettingActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         getPreferencesSwitch();getPreferencesProgress();getPreferencesSize();
+
+        filter = new IntentFilter();
+        filter.addAction(GlobalVariable.STOP_SERVICE);
+        intent =new Intent(this,PointingStickService.class);
 
         mSeekBar=(SeekBar)findViewById(R.id.seekBar);
         serviceSwitch=(Switch)findViewById(R.id.switch1);
@@ -86,11 +84,8 @@ public class SettingActivity extends Activity
     public void on()
     {
         Log.e("service", "startService");
-        Intent intent =new Intent(this,PointingStickService.class);
-        bindService(intent, srvConn, BIND_AUTO_CREATE);
-        IntentFilter filter = new IntentFilter();
         filter.addAction(GlobalVariable.STOP_SERVICE);
-        registerReceiver(receiver, filter);
+        registerReceiver(switchReceiver, filter);
         startService(intent);    //서비스 시작
     }
     public void off() {
@@ -110,9 +105,6 @@ public class SettingActivity extends Activity
                 } else {
                     switchValue = false;
                     savePreferencesSwitch();
-                    if(mBound)
-                        unbindService(srvConn);
-                    mBound=false;
                     setInVisible();
                     off();
                 }
@@ -132,13 +124,12 @@ public class SettingActivity extends Activity
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                try {
-                    mPointingStickService.setProgress(progress);//seekbar변경 정보를 포인팅스틱에 전달
-                    mProgress = progress;
-                    savePreferencesProgress();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent();
+                intent.putExtra("progress", progress);
+                intent.setAction(GlobalVariable.CHANGE_PROG);
+                sendBroadcast(intent);
+                mProgress = progress;
+                savePreferencesProgress();
             }
         });
 
@@ -156,28 +147,14 @@ public class SettingActivity extends Activity
                         mSize = 120;
                         break;
                 }
-                try {
-                    mPointingStickService.setStickSize(mSize);
-                    savePreferencesSize();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent();
+                intent.putExtra("size", mSize);
+                intent.setAction(GlobalVariable.CHANGE_SIZE);
+                sendBroadcast(intent);
+                savePreferencesSize();
             }
         });
         setInVisible();
-
-        srvConn=new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder binder) {
-                mPointingStickService=((PointingStickService.DataBinder)binder).getService();
-                mBound = true;
-            }
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                mBound=false;
-            }
-        };
-
         //디바이스 화면 값
         Display display=((WindowManager)this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int dipWidth=display.getWidth();
@@ -193,11 +170,6 @@ public class SettingActivity extends Activity
     public void onPause()
     {
         super.onPause();
-        if(mBound) {
-            unbindService(srvConn);
-            unregisterReceiver(receiver);
-            mBound=false;
-        }
     }
     public void setVisible()
     {
@@ -242,7 +214,7 @@ public class SettingActivity extends Activity
         editor.commit();
     }
 
-    BroadcastReceiver receiver = new BroadcastReceiver() {
+    BroadcastReceiver switchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             serviceSwitch.performClick();
@@ -252,7 +224,4 @@ public class SettingActivity extends Activity
             off();
         }
     };
-    public void finish() {
-        super.finish();
-    }
 }

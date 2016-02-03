@@ -19,9 +19,11 @@ public class GlobalVariable {
     public static int displayMaxBottom;
     public static int displayWidthPx;
     public static int displayHeightPx;
-    public static String STOP_SERVICE = "SEND_STOP_SERVICE";
-    public static String HIDE_SERVICE = "SEND_HIDE_SERVICE";
-    public static String DISP_SERVICE = "SEND_DISP_SERVICE";
+    public static final String STOP_SERVICE = "SEND_STOP_SERVICE";
+    public static final String HIDE_SERVICE = "SEND_HIDE_SERVICE";
+    public static final String DISP_SERVICE = "SEND_DISP_SERVICE";
+    public static final String CHANGE_SIZE = "SEND_CHANGE_SIZE";
+    public static final String CHANGE_PROG = "SEND_CHANGE_PROG";
 
     public static float convertDpToPixel(float dp, Context context){
         Resources resources = context.getResources();
