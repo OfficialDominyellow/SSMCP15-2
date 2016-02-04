@@ -47,11 +47,14 @@ public class SettingActivity extends Activity
     private int mSize;
     private IntentFilter filter;
     private Intent intent;
+    private Intent receiverIntent;
+    private boolean flag=false;
     /** Called when the activity is first created. */
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        Log.e("service", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         getPreferencesSwitch();getPreferencesProgress();getPreferencesSize();
@@ -59,6 +62,8 @@ public class SettingActivity extends Activity
         filter = new IntentFilter();
         filter.addAction(GlobalVariable.STOP_SERVICE);
         intent =new Intent(this,PointingStickService.class);
+
+        receiverIntent=new Intent();
 
         mSeekBar=(SeekBar)findViewById(R.id.seekBar);
         serviceSwitch=(Switch)findViewById(R.id.switch1);
@@ -85,13 +90,44 @@ public class SettingActivity extends Activity
     public void on() {
         Log.e("service", "startService");
         filter.addAction(GlobalVariable.STOP_SERVICE);
-        registerReceiver(switchReceiver, filter);
+        if(!flag) {
+            Log.e("service", "registerReceiver");
+            registerReceiver(switchReceiver, filter);
+            flag = true;
+        }
         startService(intent);    //서비스 시작
     }
     public void off() {
         Log.e("service", "endService");
-        unregisterReceiver(switchReceiver);
+        if(flag){
+            Log.e("service", "unregisterReceiver");
+            unregisterReceiver(switchReceiver);
+            flag=false;
+        }
         stopService(new Intent(this, PointingStickService.class));	//서비스 종료
+    }
+    public void onPause()
+    {
+        super.onPause();
+        Log.e("service", "onPause");
+    }
+    public void onResume()
+    {
+        super.onResume();
+        if(!flag) {
+            registerReceiver(switchReceiver, filter);
+            flag = true;
+        }
+        Log.e("service", "onResume");
+    }
+    public void onStop()
+    {
+        super.onStop();
+        Log.e("service", "onStop");
+        if(flag){
+            unregisterReceiver(switchReceiver);
+            flag=false;
+        }
     }
     private void initActivityOption()
     {
@@ -103,6 +139,7 @@ public class SettingActivity extends Activity
                     savePreferencesSwitch();
                     setVisible();
                     on();
+                    Log.e("Service", "On");
                 } else {
                     switchValue = false;
                     savePreferencesSwitch();
@@ -111,7 +148,6 @@ public class SettingActivity extends Activity
                 }
             }
         });
-
         mSeekBar.setMax(100);					//맥스 값 설정.
         mSeekBar.setProgress(mProgress);			//현재 투명도 설정. 100:불투명, 0은 완전 투명
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -125,10 +161,9 @@ public class SettingActivity extends Activity
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Intent intent = new Intent();
-                intent.putExtra("progress", progress);
-                intent.setAction(GlobalVariable.CHANGE_PROG);
-                sendBroadcast(intent);
+                receiverIntent.putExtra("progress", progress);
+                receiverIntent.setAction(GlobalVariable.CHANGE_PROG);
+                sendBroadcast(receiverIntent);
                 mProgress = progress;
                 savePreferencesProgress();
             }
@@ -148,10 +183,9 @@ public class SettingActivity extends Activity
                         mSize = 120;
                         break;
                 }
-                Intent intent = new Intent();
-                intent.putExtra("size", mSize);
-                intent.setAction(GlobalVariable.CHANGE_SIZE);
-                sendBroadcast(intent);
+                receiverIntent.putExtra("size", mSize);
+                receiverIntent.setAction(GlobalVariable.CHANGE_SIZE);
+                sendBroadcast(receiverIntent);
                 savePreferencesSize();
             }
         });
@@ -167,10 +201,6 @@ public class SettingActivity extends Activity
 
         Log.e("Move","Size left:"+ GlobalVariable.displayMaxLeft+"  right:"+ GlobalVariable.displayMaxRight);
         Log.e("Move","Size top:"+ GlobalVariable.displayMaxTop+"  bottmom:"+ GlobalVariable.displayMaxBottom);
-    }
-    public void onPause()
-    {
-        super.onPause();
     }
     public void setVisible()
     {
@@ -214,7 +244,6 @@ public class SettingActivity extends Activity
         editor.putInt("size", mSize);
         editor.commit();
     }
-
     BroadcastReceiver switchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
