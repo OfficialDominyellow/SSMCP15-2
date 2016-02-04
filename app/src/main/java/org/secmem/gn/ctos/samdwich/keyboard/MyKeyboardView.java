@@ -41,10 +41,8 @@ public class MyKeyboardView  extends KeyboardView {
 
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        /*List<Keyboard.Key> keys = getKeyboard().getKeys();
 
-        List<Keyboard.Key> keys = getKeyboard().getKeys();
-
-        /*
         for (Keyboard.Key key : keys) {
             if (key.codes[0] == 32) {
                 Log.e("KEY", "Drawing key with code " + key.codes[0]);

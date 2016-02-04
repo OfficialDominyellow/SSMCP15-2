@@ -29,9 +29,9 @@ public class KeyboardPopupService extends Service{
     private int mPrimaryCode;
     private int mKeyboardWidth;
     private int mKeyboardHeight;
+    private Bitmap extendImage;
 
     private final String TAG = "KeyboardPopupService";
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -49,7 +49,7 @@ public class KeyboardPopupService extends Service{
         }
 
         mImage = new ImageView(this);
-        Bitmap extendImage = BitmapFactory.decodeResource(getResources(), R.drawable.popimg);
+        extendImage = BitmapFactory.decodeResource(getResources(), R.drawable.popimg);
 
         //ㅁ
         if(mPrimaryCode == 12609){
@@ -121,7 +121,6 @@ public class KeyboardPopupService extends Service{
         Log.i(TAG, "Service Start");
 
         onDestroy();
-
         /*
         Intent intent = new Intent(this, KeyboardPopupService.class);
 
@@ -131,7 +130,6 @@ public class KeyboardPopupService extends Service{
 
         */
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -143,7 +141,11 @@ public class KeyboardPopupService extends Service{
                 mManager.removeViewImmediate(mImage);
             }catch(Exception e)
             {
-
+                e.printStackTrace();
+            }
+            finally {
+                Log.i(TAG, "Recycle");
+                extendImage.recycle();
             }
         }
         mImage = null;
