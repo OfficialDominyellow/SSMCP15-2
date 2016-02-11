@@ -152,6 +152,7 @@ public class PointingStickService extends Service{
         centerPoint.setTextColor(Color.RED);
         optionImage=new ImageView(this);
         hideImage = new ImageView(this);
+
         Bitmap bm = BitmapFactory.decodeResource(this.getResources(), R.drawable.small_button);
         bm = Bitmap.createScaledBitmap(bm, bm.getWidth(), bm.getHeight() ,true);
         int bmWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bm.getWidth(), getResources().getDisplayMetrics());
@@ -176,7 +177,6 @@ public class PointingStickService extends Service{
                 |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
-        //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
 
         mParamsCenter= new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -191,7 +191,7 @@ public class PointingStickService extends Service{
         mParamsHover= new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_TOAST,
+                WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         |WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT);
@@ -212,10 +212,11 @@ public class PointingStickService extends Service{
                 centerPoint,
                 hideImage);
         initPosition();//순서 변경시 에러 발생 =>null exception
-        mWindowManager.addView(optionImage,mParamsHover);
+        mWindowManager.addView(optionImage, mParamsHover);
         mWindowManager.addView(centerPoint, mParamsCenter);
         mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
         mParams.alpha = mProgress / 100.0f;			//알파값 설정
+        mParamsHover.alpha=0.0f;
         mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
 
         setAllListener();

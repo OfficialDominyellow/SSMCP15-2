@@ -10,7 +10,7 @@ import android.widget.TextView;
 /**
  * Created by SECMEM-DY on 2016-02-11.
  */
-public class HoverGestureListener implements GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
+public class HoverGestureListener implements GestureDetector.OnGestureListener {
     private WindowManager.LayoutParams mParams;
     private WindowManager mWindowManager;
     private PointingStickController mPointingStickController;
@@ -71,20 +71,5 @@ public class HoverGestureListener implements GestureDetector.OnGestureListener,G
             return true;
         }
         return true;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent e) {
-        return false;
     }
 }
