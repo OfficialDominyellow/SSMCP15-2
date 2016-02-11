@@ -45,6 +45,7 @@ public class HideTouchListener implements View.OnTouchListener {
         mWindowManager.updateViewLayout(pointingStick, mParams);
         mWindowManager.updateViewLayout(centerPoint, mParamsCenter);
         mPointingStickController.setHideMode(false);
+        mPointingStickController.setIsOptionMenu(false);
         return true;
     }
 }

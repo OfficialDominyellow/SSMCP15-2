@@ -29,6 +29,9 @@ public class StickTouchListener implements View.OnTouchListener {
     private Context mContext;
     private GestureDetector mDetector;
     private TabGestureListener mGestureListener;
+    private CircleLayout mCircleView;
+
+    long diffTime = 0;
 
     private static VirtualMouseDriverController virtualMouseDriverController;
 
@@ -43,6 +46,7 @@ public class StickTouchListener implements View.OnTouchListener {
         this.centerPoint=mPointingStickController.getCenterPoint();
         this.hideImage=mPointingStickController.getHideImage();
         this.virtualMouseDriverController=virtualMouseDriverController;
+        this.mCircleView=mPointingStickController.getmCircleView();
 
         mGestureListener=new TabGestureListener(mPointingStickController);
         mDetector=new GestureDetector(mContext,mGestureListener);
@@ -60,6 +64,8 @@ public class StickTouchListener implements View.OnTouchListener {
                     Log.e("Service", "MOUSE_ACTION_DOWN");
                     break;
                 }
+                diffTime =  System.currentTimeMillis();
+
                 mPointingStickController.setSTART_X(event.getRawX());//터치 시작 점
                 mPointingStickController.setSTART_Y(event.getRawY());//터치 시작 점
                 mPointingStickController.setPREV_X(mParams.x);//뷰의 시작 점
@@ -121,6 +127,7 @@ public class StickTouchListener implements View.OnTouchListener {
                 {
                     mPointingStickController.setIsLongMouseClick(false);
                 }//롱클릭이 우선순위가 기본 클릭보다 높게 둠*/
+
                 if(event.getToolType(0)==event.TOOL_TYPE_MOUSE) {
                         Log.e("Service", "MOUSE_ACTION_UP");
                         mWindowManager.removeViewImmediate(pointingStick);
@@ -150,7 +157,7 @@ public class StickTouchListener implements View.OnTouchListener {
                     mParams.x = mPointingStickController.getCurrntX();
                     mParams.y = mPointingStickController.getCurrntY();//상대적으로 좌표 설정 ,원위치로 변경
                     mWindowManager.updateViewLayout(pointingStick, mParams);
-                    Log.e("Service", "Use Stick x:" + mParams.x + " y:" + mParams.y);
+                    Log.e("Service", "Use Stick x:" + xdiff + " y:" + ydiff);
                 }
                 break;
         }

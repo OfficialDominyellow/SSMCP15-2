@@ -30,6 +30,7 @@ public class KeyboardPopupService extends Service{
     private int mKeyboardWidth;
     private int mKeyboardHeight;
     private Bitmap extendImage;
+    private Bitmap[] bitmaps;
 
     private final String TAG = "KeyboardPopupService";
 

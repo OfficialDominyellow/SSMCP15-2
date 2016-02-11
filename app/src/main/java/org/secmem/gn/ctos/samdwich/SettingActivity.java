@@ -174,7 +174,7 @@ public class SettingActivity extends Activity
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.option1:
-                        mSize = 70;
+                        mSize = 80;
                         break;
                     case R.id.option2:
                         mSize = 100;

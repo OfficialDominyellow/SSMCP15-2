@@ -56,7 +56,6 @@
             android:exported="false"> <!-- 퍼미션 중요 -->
         </service>
 
-
         <service android:name=".keyboard.KeyboardPopupService"
             android:hardwareAccelerated="true"
             android:enabled="true"

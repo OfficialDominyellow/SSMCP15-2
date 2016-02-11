@@ -13,35 +13,29 @@ import org.w3c.dom.Text;
  */
 public class StickLongClickListener implements View.OnLongClickListener
 {
-    private WindowManager.LayoutParams mParams;
-    private WindowManager mWindowManager;
     private PointingStickController mPointingStickController;
-    private CircleLayout mCircleView;
-    private Button pointingStick;
-    private TextView centerPoint;
-
     public StickLongClickListener(PointingStickController mPointingStickController)
     {
         this.mPointingStickController=mPointingStickController;
-        this.mParams=mPointingStickController.getmParams();
-        this.mWindowManager=mPointingStickController.getmWindowManager();
-        this.mCircleView=mPointingStickController.getmCircleView();
-        this.pointingStick=mPointingStickController.getPointingStick();
-        this.centerPoint=mPointingStickController.getCenterPoint();
     }
     public boolean onLongClick(View v) {
         if(!mPointingStickController.getIsMouseMove()
                 &&!mPointingStickController.getTabMode()){
             Log.e("Service", "LONG CLICK");
-            mParams.width=mParams.width*2;
-            mParams.height=mParams.height*2;
-            mWindowManager.removeViewImmediate(pointingStick);
-            mWindowManager.removeViewImmediate(centerPoint);
-            mWindowManager.addView(mCircleView, mParams);
-            mWindowManager.updateViewLayout(mCircleView, mParams);
-            mPointingStickController.setIsLongMouseClick(true);
+            downLeftMouse();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            upLeftMouse();
             return true;
         }
         return false;
     }
+    static {
+        System.loadLibrary("samdwich_jni");
+    }
+    public native void downLeftMouse();
+    public native void upLeftMouse();
 }

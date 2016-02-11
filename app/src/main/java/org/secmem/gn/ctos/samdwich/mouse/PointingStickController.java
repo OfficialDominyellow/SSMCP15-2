@@ -18,7 +18,8 @@ public class PointingStickController
     private int currntX=-1,currntY;
     /* 포인터가 움직이는 중이면 true, 아니면 false */
     private boolean isMouseMove=false;
-    private boolean isLongMouseClick=false;
+
+    private boolean isOptionMenu=false;
     private boolean moveMode=false;
     private boolean tabMode=false;
     private boolean hideMode=false;
@@ -73,14 +74,9 @@ public class PointingStickController
 
     public WindowManager.LayoutParams getmParamsCenter() {return mParamsCenter;}
 
-    public WindowManager getmWindowManager() {
-        return mWindowManager;
-    }
+    public WindowManager getmWindowManager() {return mWindowManager;}
 
-    public CircleLayout getmCircleView() {
-        return mCircleView;
-    }
-
+    public CircleLayout getmCircleView() {return mCircleView;}
 
     public boolean getTabMode() {
         return tabMode;
@@ -146,27 +142,15 @@ public class PointingStickController
 
     public void setPxHeight(int pxHeight) {this.pxHeight = pxHeight;}
 
-    public boolean getIsMouseMove() {
-        return isMouseMove;
-    }
+    public boolean getIsMouseMove() {return isMouseMove;}
 
-    public void setIsMouseMove(boolean isMouseMove) {
-        this.isMouseMove = isMouseMove;
-    }
+    public void setIsMouseMove(boolean isMouseMove) {this.isMouseMove = isMouseMove;}
 
-    public boolean getIsLongMouseClick() {
-        return isLongMouseClick;
-    }
+    public boolean getIsMoveMode() {return moveMode;}
 
-    public void setIsLongMouseClick(boolean isLongMouseClick) {
-        this.isLongMouseClick = isLongMouseClick;
-    }
+    public void setMoveMode(boolean moveMode) {this.moveMode = moveMode;}
 
-    public boolean getIsMoveMode() {
-        return moveMode;
-    }
+    public boolean getIsOptionMenu() {return isOptionMenu;}
 
-    public void setMoveMode(boolean moveMode) {
-        this.moveMode = moveMode;
-    }
+    public void setIsOptionMenu(boolean isOptionMenu) {this.isOptionMenu = isOptionMenu;}
 }

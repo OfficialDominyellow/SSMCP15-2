@@ -90,7 +90,7 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
         return;
     }
     public void finishCircleView() {
-        mPointingStickController.setIsLongMouseClick(false);
+        mPointingStickController.setIsOptionMenu(false);
         if(mPointingStickController.isHideMode())
             return;
         mWindowManager.removeViewImmediate(mCircleView);

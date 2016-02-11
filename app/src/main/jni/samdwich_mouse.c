@@ -24,6 +24,16 @@ void Java_org_secmem_gn_ctos_samdwich_mouse_StickTouchListener_clickLeftMouse(JN
     setEventAndWrite(EV_KEY,BTN_LEFT,0);
     setEventAndWrite(EV_SYN,0,0);
 }
+void Java_org_secmem_gn_ctos_samdwich_mouse_StickLongClickListener_downLeftMouse(JNIEnv * a,jobject b)
+{
+    setEventAndWrite(EV_KEY,BTN_LEFT,1);
+    setEventAndWrite(EV_SYN,0,0);
+}
+void Java_org_secmem_gn_ctos_samdwich_mouse_StickLongClickListener_upLeftMouse(JNIEnv * a,jobject b)
+{
+    setEventAndWrite(EV_KEY,BTN_LEFT,0);
+    setEventAndWrite(EV_SYN,0,0);
+}
 void Java_org_secmem_gn_ctos_samdwich_global_VirtualMouseDriverController_moveMouse(JNIEnv * a,jobject b,jint x,jint y)
 {
     int dx=x,dy=y;
