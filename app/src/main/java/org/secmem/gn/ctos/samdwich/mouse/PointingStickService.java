@@ -218,6 +218,7 @@ public class PointingStickService extends Service{
         mParams.alpha = mProgress / 100.0f;			//알파값 설정
         mParamsHover.alpha=0.0f;
         mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
+        mParams.windowAnimations=android.R.style.Animation_Dialog;
 
         setAllListener();
     }
@@ -227,7 +228,7 @@ public class PointingStickService extends Service{
         pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController));
         pointingStick.setOnTouchListener(new StickTouchListener(mPointingStickController, virtualMouseDriverController));
         hideImage.setOnTouchListener(new HideTouchListener(mPointingStickController));
-        optionImage.setOnTouchListener(new HoverListener(mPointingStickController));
+        optionImage.setOnTouchListener(new MotionListener(mPointingStickController));
     }
     /**
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다

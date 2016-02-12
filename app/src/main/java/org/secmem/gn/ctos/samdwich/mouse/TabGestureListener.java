@@ -5,6 +5,8 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 import org.secmem.gn.ctos.samdwich.R;
@@ -120,6 +122,11 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
         mCurrType = getTypeOfSixDividedCircle(centerX, centerY, (int)e2.getX(), (int)e2.getY());
         Log.i(TAG, "mPrevType(" + mPrevType + ") -> mCurrType(" + mCurrType + ")");
 
+        Animation animation = AnimationUtils.loadAnimation(mContext,R.anim.rotate);
+        animation.setDuration(100);
+
+        pointingStick.setAnimation(animation);
+
         int dir = getClockDirection();
         if(dir != -1) {
             mPrevType = mCurrType;
@@ -127,6 +134,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
                 Log.i(TAG, "ClockWise");
                 pointingStick.setBackgroundResource(R.drawable.tab_right);
                 inputTabKey();
+                pointingStick.startAnimation(animation);
                 hapticVibe.vibrate(10);
                 try {
                     Thread.sleep(100);
