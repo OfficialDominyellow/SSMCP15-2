@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#263755"
     android:weightSum="1">
 
     <ImageView
-        android:layout_width="fill_parent"
+        android:gravity="center"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/samdwich_logo"/>
 
-</RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome Samdwich"
+        android:id="@+id/textView"
+        android:textSize="25dp"
+        android:textColor="#e0d0b6"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

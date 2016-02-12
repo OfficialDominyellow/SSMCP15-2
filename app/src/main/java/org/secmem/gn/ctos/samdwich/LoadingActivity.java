@@ -16,7 +16,7 @@ public class LoadingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading_activity);
         Handler hd = new Handler();
-        hd.postDelayed(new loadingHandler(), 2000);
+        hd.postDelayed(new loadingHandler(), 1000);
     }
     private class loadingHandler implements Runnable {
         public void run() {
