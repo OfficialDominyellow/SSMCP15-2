@@ -41,7 +41,7 @@ public class KeyboardPopupService extends Service{
         mKeyboardHeight = intent.getIntExtra("keyboardHeight", 150);
         Log.i(TAG, "pc : " + mPrimaryCode);
         if(Build.VERSION.SDK_INT >= 23){
-            Log.i(TAG, "can ?  : " + Settings.canDrawOverlays(this));
+            //Log.i(TAG, "can ?  : " + Settings.canDrawOverlays(this));
         }
 
         if (mImage!=null) {

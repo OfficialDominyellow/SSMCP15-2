@@ -18,16 +18,19 @@ public class ExceptionActivity extends Activity {
     }
     private final static int  ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5959; //아무거나
     public void checkDrawOverlayPermission() {
+        /*
         if (!Settings.canDrawOverlays(getApplicationContext())) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
             finish();
         }
+        */
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /*
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (Settings.canDrawOverlays(this)) {
                 Log.i("service", "Permission ON?");
@@ -35,5 +38,6 @@ public class ExceptionActivity extends Activity {
                 finish();
             }
         }
+        */
     }
 }

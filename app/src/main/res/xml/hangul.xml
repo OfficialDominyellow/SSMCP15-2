@@ -23,7 +23,7 @@
         <Key android:codes="-2" android:keyWidth="20%p" android:keyIcon="@drawable/key_cng_to_eng"/> <!-- change to eng -->
         <Key android:codes="32" android:keyWidth="50%p" android:isRepeatable="true" android:keyIcon="@drawable/key_space"/> <!-- SPACE -->
         <Key android:codes="-5" android:keyWidth="15%p" android:isRepeatable="true" android:keyIcon="@drawable/key_backspc"/> <!-- DEL -->
-        <Key android:codes="10" android:keyWidth="15%p"/> <!-- ENTER -->
+        <Key android:codes="10" android:keyWidth="15%p" android:keyIcon="@drawable/key_ret"/> <!-- ENTER -->
         <!--<Key android:codes="-4" android:keyWidth="10%p"/> &lt;!&ndash; DONE &ndash;&gt;-->
     </Row>
 
