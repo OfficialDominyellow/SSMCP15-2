@@ -915,10 +915,12 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             case HAN_MODE:
                 keyboard = new Keyboard(this, R.xml.hangul);
                 kv.setKeyboard(keyboard);
+                kv.setPreviewEnabled(false);
                 break;
             case ENG_MODE:
                 keyboard = new Keyboard(this, R.xml.english);
                 kv.setKeyboard(keyboard);
+                kv.setPreviewEnabled(true);
                 break;
             case NUM_MODE:
                 keyboard = new Keyboard(this, R.xml.numpad);
@@ -949,7 +951,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         keyboard = new Keyboard(this, R.xml.hangul);
 
         kv.setKeyboard(keyboard);
-        kv.setPopupOffset(250, 150);
 
         kv.setPreviewEnabled(false);
 
@@ -957,13 +958,6 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         kv.setFocusable(true);
         kv.setFocusableInTouchMode(true);
 
-        //delete key repeatable하게 만들기
-        for(Keyboard.Key key : keyboard.getKeys()){
-            if(key.codes[0] == Keyboard.KEYCODE_DELETE) {
-                key.repeatable = true;
-                Log.i(TAG, "key : " + key.label + " code : " + key.codes[0] + " ." + key.codes.length);
-            }
-        }
         mService = new Intent(this, KeyboardPopupService.class);
 
         kv.setOnTouchListener(new View.OnTouchListener() {
