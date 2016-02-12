@@ -1,9 +1,6 @@
 package org.secmem.gn.ctos.samdwich.keyboard;
 
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
@@ -18,7 +15,6 @@ import android.view.inputmethod.InputConnection;
 import org.secmem.gn.ctos.samdwich.R;
 import org.secmem.gn.ctos.samdwich.global.GlobalVariable;
 import org.secmem.gn.ctos.samdwich.global.MyMath;
-import org.secmem.gn.ctos.samdwich.mouse.PointingStickService;
 
 
 /**

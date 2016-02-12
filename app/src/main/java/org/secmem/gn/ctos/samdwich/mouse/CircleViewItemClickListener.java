@@ -3,11 +3,7 @@ package org.secmem.gn.ctos.samdwich.mouse;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -90,7 +86,7 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
         return;
     }
     public void finishCircleView() {
-        mPointingStickController.setIsLongMouseClick(false);
+        mPointingStickController.setIsOptionMenu(false);
         if(mPointingStickController.isHideMode())
             return;
         mWindowManager.removeViewImmediate(mCircleView);

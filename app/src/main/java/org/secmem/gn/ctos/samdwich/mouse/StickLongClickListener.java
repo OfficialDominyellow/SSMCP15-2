@@ -2,46 +2,35 @@ package org.secmem.gn.ctos.samdwich.mouse;
 
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by SECMEM-DY on 2016-01-09.
  */
 public class StickLongClickListener implements View.OnLongClickListener
 {
-    private WindowManager.LayoutParams mParams;
-    private WindowManager mWindowManager;
     private PointingStickController mPointingStickController;
-    private CircleLayout mCircleView;
-    private Button pointingStick;
-    private TextView centerPoint;
-
     public StickLongClickListener(PointingStickController mPointingStickController)
     {
         this.mPointingStickController=mPointingStickController;
-        this.mParams=mPointingStickController.getmParams();
-        this.mWindowManager=mPointingStickController.getmWindowManager();
-        this.mCircleView=mPointingStickController.getmCircleView();
-        this.pointingStick=mPointingStickController.getPointingStick();
-        this.centerPoint=mPointingStickController.getCenterPoint();
     }
     public boolean onLongClick(View v) {
         if(!mPointingStickController.getIsMouseMove()
                 &&!mPointingStickController.getTabMode()){
             Log.e("Service", "LONG CLICK");
-            mParams.width=mParams.width*2;
-            mParams.height=mParams.height*2;
-            mWindowManager.removeViewImmediate(pointingStick);
-            mWindowManager.removeViewImmediate(centerPoint);
-            mWindowManager.addView(mCircleView, mParams);
-            mWindowManager.updateViewLayout(mCircleView, mParams);
-            mPointingStickController.setIsLongMouseClick(true);
+            downLeftMouse();
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            upLeftMouse();
             return true;
         }
         return false;
     }
+    static {
+        System.loadLibrary("samdwich_jni");
+    }
+    public native void downLeftMouse();
+    public native void upLeftMouse();
 }

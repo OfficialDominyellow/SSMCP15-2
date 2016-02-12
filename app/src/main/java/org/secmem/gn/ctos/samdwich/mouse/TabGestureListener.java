@@ -1,5 +1,7 @@
 package org.secmem.gn.ctos.samdwich.mouse;
 
+import android.content.Context;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -18,15 +20,19 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
 
     private PointingStickController mPointingStickController;
     private Button pointingStick;
+    private Context mContext;
     private static String TAG = "TabGestureListener";
 
     private int mPrevType;
     private int mCurrType;
+    private Vibrator hapticVibe;
 
     public TabGestureListener(PointingStickController mPointingStickController)
     {
         this.mPointingStickController=mPointingStickController;
+        this.mContext=mPointingStickController.getmContext();
         this.pointingStick=mPointingStickController.getPointingStick();
+        hapticVibe = (Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE);
     }
     @Override
     public boolean onDown(MotionEvent e) {
@@ -121,6 +127,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
                 Log.i(TAG, "ClockWise");
                 pointingStick.setBackgroundResource(R.drawable.tab_right);
                 inputTabKey();
+                hapticVibe.vibrate(10);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -130,8 +137,8 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
             else{
                 Log.i(TAG, "CounterClickWise");
                 pointingStick.setBackgroundResource(R.drawable.tab_left);
-
                 inputBackTabKey();
+                hapticVibe.vibrate(10);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -175,5 +182,4 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
     public native void inputTabKey();
     public native void inputEnterKey();
     public native  void inputBackTabKey();
-
 }

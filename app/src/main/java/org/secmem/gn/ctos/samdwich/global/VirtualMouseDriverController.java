@@ -1,6 +1,8 @@
 package org.secmem.gn.ctos.samdwich.global;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 /**
@@ -11,30 +13,27 @@ public class VirtualMouseDriverController extends Thread {
     private volatile static VirtualMouseDriverController uniqueInstance;
     private int dx = 0;
     private int dy = 0;
+    private double result=0;
+    private float metrixDensityDpi;
     private Object mPauseLock;
     private boolean mPaused;
     private boolean mFinished;
     private int mMouseSpeed=5;
     private static int MAXMOVE;
     private static int INTERVAL;
-    private int x=0;
-    private int y=0;
     private static Context context;
 
-    private int originX=120;
-    private int originY=120;
-
-    static {
-        System.loadLibrary("samdwich_jni");
-    }
-
-    private native void moveMouse(int x, int y);
+    private Resources resources;
+    private DisplayMetrics metrics;
 
     private VirtualMouseDriverController(Context context) {
         mPauseLock = new Object();
         mPaused = false;
         mFinished = false;
         this.context = context;
+        resources = context.getResources();
+        metrics = resources.getDisplayMetrics();
+        metrixDensityDpi=metrics.densityDpi / 160f;
     }
 
     public static synchronized VirtualMouseDriverController getInstance(Context context) {
@@ -49,6 +48,7 @@ public class VirtualMouseDriverController extends Thread {
     public void setDifference(int dx, int dy) {
         this.dx = dx;
         this.dy = dy;
+        result=Math.sqrt(dx*dx+dy*dy);
     }
 
     public boolean getmPause() {
@@ -77,23 +77,6 @@ public class VirtualMouseDriverController extends Thread {
             mPauseLock.notifyAll();
         }
     }
-
-    public int getMouseX()
-    {
-        return x;
-    }
-    public int getMouseY()
-    {
-        return y;
-    }
-
-    public int getOriginX(){
-        return originX;
-    }
-    public int getOriginY(){
-        return originY;
-    }
-
     @Override
     public void run() {
         int x=0;
@@ -102,33 +85,34 @@ public class VirtualMouseDriverController extends Thread {
         while (!mFinished) {
             while (!mPaused) {
                 try {
-                    if(Math.sqrt(dx*dx+dy*dy)<(int)GlobalVariable.convertDpToPixel(10, this.context.getApplicationContext())) {
+                    if(result<(10 * metrixDensityDpi)) {
                         sleepTime=25;
-                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)GlobalVariable.convertDpToPixel(12, this.context.getApplicationContext())) {
+                    } else if(result<(12 * metrixDensityDpi)) {
                         sleepTime=20;
-                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)GlobalVariable.convertDpToPixel(25, this.context.getApplicationContext())) {
+                    } else if(result<(25 * metrixDensityDpi)) {
                         sleepTime=13;
-                    } else if(Math.sqrt(dx*dx+dy*dy)<(int)GlobalVariable.convertDpToPixel(50, this.context.getApplicationContext())) {
+                    } else if((result<50 * metrixDensityDpi)) {
                         sleepTime=11;
                     } else {
                         sleepTime=8;
                     }
                     Thread.sleep(sleepTime);
+                    int abs=Math.abs(dx);
                     for (int i=0;i<INTERVAL;i++) {
-                        if(Math.abs(dx)<=MAXMOVE/INTERVAL*i) {
+                        if(abs<=MAXMOVE/INTERVAL*i) {
                             //x=(dx<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
                             x=(dx<0)?(int)(0-i):(int)(i);
                             break;
                         }
                     }
+                    abs=Math.abs(dy);
                     for (int i=0;i<INTERVAL;i++) {
-                        if(Math.abs(dy)<=MAXMOVE/INTERVAL*i) {
+                        if(abs<=MAXMOVE/INTERVAL*i) {
                             //y=(dy<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
                             y=(dy<0)?(int)(0-i):(int)(i);
                             break;
                         }
                     }
-
                     Log.e("Service", ""+x+" "+y);
                     if(mPaused)
                         continue;
@@ -138,7 +122,6 @@ public class VirtualMouseDriverController extends Thread {
                     e.printStackTrace();
                 }
             }
-
             synchronized (mPauseLock) {
                 try {
                     mPauseLock.wait();
@@ -148,4 +131,9 @@ public class VirtualMouseDriverController extends Thread {
             }
         }
     }
+    static {
+        System.loadLibrary("samdwich_jni");
+    }
+
+    private native void moveMouse(int x, int y);
 }

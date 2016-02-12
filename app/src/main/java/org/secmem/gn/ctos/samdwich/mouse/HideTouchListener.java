@@ -1,6 +1,5 @@
 package org.secmem.gn.ctos.samdwich.mouse;
 
-import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,14 +19,12 @@ public class HideTouchListener implements View.OnTouchListener {
     private Button pointingStick;
     private TextView centerPoint;
     private ImageView hideImage;
-    private Context mContext;
     public HideTouchListener(PointingStickController mPointingStickController)
     {
         this.mPointingStickController=mPointingStickController;
         this.mParams=mPointingStickController.getmParams();
         this.mWindowManager=mPointingStickController.getmWindowManager();
         this.pointingStick=mPointingStickController.getPointingStick();
-        this.mContext=mPointingStickController.getmContext();
         this.mParamsCenter=mPointingStickController.getmParamsCenter();
         this.centerPoint=mPointingStickController.getCenterPoint();
         this.hideImage=mPointingStickController.getHideImage();
@@ -45,6 +42,7 @@ public class HideTouchListener implements View.OnTouchListener {
         mWindowManager.updateViewLayout(pointingStick, mParams);
         mWindowManager.updateViewLayout(centerPoint, mParamsCenter);
         mPointingStickController.setHideMode(false);
+        mPointingStickController.setIsOptionMenu(false);
         return true;
     }
 }

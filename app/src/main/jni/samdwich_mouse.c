@@ -3,36 +3,12 @@
 //
 
 #include "samdwich_driver.h"
-
-void Java_org_secmem_gn_ctos_samdwich_mouse_StickTouchListener_clickLeftMouse(JNIEnv * a,jobject b)
+void setEventAndWrite(__u16 type, __u16 code, __s32 value)
 {
-    struct input_event evMouseLeftKey;
-    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
-    evMouseLeftKey.type = EV_KEY;
-    evMouseLeftKey.code = BTN_LEFT;
-    evMouseLeftKey.value = 1;//push
-    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
-    evMouseLeftKey.type = EV_SYN;
-    evMouseLeftKey.code = 0;
-    evMouseLeftKey.value = 0;
-    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
-    evMouseLeftKey.type = EV_KEY;
-    evMouseLeftKey.code = BTN_LEFT;
-    evMouseLeftKey.value = 0;//realeased
-    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&evMouseLeftKey, 0, sizeof(struct input_event));
-    evMouseLeftKey.type = EV_SYN;
-    evMouseLeftKey.code = 0;
-    evMouseLeftKey.value = 0;
-    if(write(fd, &evMouseLeftKey, sizeof(struct input_event)) < 0)
+    ev.type=type;
+    ev.code=code;
+    ev.value=value;
+    if(write(fd, &ev, sizeof(struct input_event)) < 0)
         die("error: write");
 }
 void Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_removeMouseDriver(JNIEnv* env, jobject thiz)
@@ -41,40 +17,32 @@ void Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_removeMouseDriv
         die("error: ioctl");
     close(fd);
 }
+void Java_org_secmem_gn_ctos_samdwich_mouse_StickTouchListener_clickLeftMouse(JNIEnv * a,jobject b)
+{
+    setEventAndWrite(EV_KEY,BTN_LEFT,1);
+    setEventAndWrite(EV_SYN,0,0);
+    setEventAndWrite(EV_KEY,BTN_LEFT,0);
+    setEventAndWrite(EV_SYN,0,0);
+}
+void Java_org_secmem_gn_ctos_samdwich_mouse_StickLongClickListener_downLeftMouse(JNIEnv * a,jobject b)
+{
+    setEventAndWrite(EV_KEY,BTN_LEFT,1);
+    setEventAndWrite(EV_SYN,0,0);
+}
+void Java_org_secmem_gn_ctos_samdwich_mouse_StickLongClickListener_upLeftMouse(JNIEnv * a,jobject b)
+{
+    setEventAndWrite(EV_KEY,BTN_LEFT,0);
+    setEventAndWrite(EV_SYN,0,0);
+}
 void Java_org_secmem_gn_ctos_samdwich_global_VirtualMouseDriverController_moveMouse(JNIEnv * a,jobject b,jint x,jint y)
 {
-    struct input_event ev;
-    int dx,dy;
-    int i,j;
-    dx=x,dy=y;
-
-    memset(&ev, 0, sizeof(struct input_event));
-    ev.type = EV_REL;
-    ev.code = REL_X;
-    ev.value = dx;
-    if(write(fd, &ev, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&ev, 0, sizeof(struct input_event));
-    ev.type = EV_REL;
-    ev.code = REL_Y;
-    ev.value = dy;
-    if(write(fd, &ev, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&ev, 0, sizeof(struct input_event));
-    ev.type = EV_SYN;
-    ev.code = 0;
-    ev.value = 0;
-    if(write(fd, &ev, sizeof(struct input_event)) < 0)
-        die("error: write");
-
+    int dx=x,dy=y;
+    setEventAndWrite(EV_REL,REL_X,dx);
+    setEventAndWrite(EV_REL,REL_Y,dy);
+    setEventAndWrite(EV_SYN,0,0);
 }
 jint Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_initMouseDriver(JNIEnv* env, jobject thiz)
 {
-    struct uinput_user_dev uidev;
-    struct input_event ev;
-    int i,j;
     fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if(fd < 0) {
         fd=open("/dev/input/uinput",O_WRONLY|O_NONBLOCK);
@@ -103,7 +71,6 @@ jint Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_initMouseDriver
         die("error: ioctl");
         return -1;
     }
-
     if(ioctl(fd, UI_SET_EVBIT, EV_REL) < 0) {
         die("error: ioctl");
         return -1;
@@ -133,155 +100,43 @@ jint Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_initMouseDriver
         return -1;
     }
 
-    int dx=1,dy=1;
-
     memset(&ev, 0, sizeof(struct input_event));
-    ev.type = EV_REL;
-    ev.code = REL_X;
-    ev.value = dx;
-    if(write(fd, &ev, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&ev, 0, sizeof(struct input_event));
-    ev.type = EV_REL;
-    ev.code = REL_Y;
-    ev.value = dy;
-    if(write(fd, &ev, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&ev, 0, sizeof(struct input_event));
-    ev.type = EV_SYN;
-    ev.code = 0;
-    ev.value = 0;
-    if(write(fd, &ev, sizeof(struct input_event)) < 0)
-        die("error: write");
+    setEventAndWrite(EV_REL,REL_X,1);
+    setEventAndWrite(EV_REL,REL_Y,1);
+    setEventAndWrite(EV_SYN,0,0);
 
     return 1;//success
 }
-
 //KEYBOARD
 void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputTabKey(JNIEnv * a,jobject b)
 {
-    struct input_event tabEV;
+    setEventAndWrite(EV_KEY,KEY_TAB,1);
+    setEventAndWrite(EV_SYN,0,0);
 
-    memset(&tabEV,0,sizeof(struct input_event));
-    tabEV.type = EV_KEY;
-    tabEV.code=KEY_TAB;
-    tabEV.value=1;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&tabEV, 0, sizeof(struct input_event));
-    tabEV.type = EV_SYN;
-    tabEV.code = 0;
-    tabEV.value = 0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&tabEV,0,sizeof(struct input_event));
-    tabEV.type = EV_KEY;
-    tabEV.code=KEY_TAB;
-    tabEV.value=0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&tabEV, 0, sizeof(struct input_event));
-    tabEV.type = EV_SYN;
-    tabEV.code = 0;
-    tabEV.value = 0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
+    setEventAndWrite(EV_KEY,KEY_TAB,0);
+    setEventAndWrite(EV_SYN,0,0);
 }
 
 void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputBackTabKey(JNIEnv * a,jobject b)
 {
-    struct input_event tabEV;
+    setEventAndWrite(EV_KEY,KEY_LEFTSHIFT,1);
+    setEventAndWrite(EV_SYN,0,0);
 
-    memset(&tabEV,0,sizeof(struct input_event));
-    tabEV.type = EV_KEY;
-    tabEV.code=KEY_LEFTSHIFT;
-    tabEV.value=1;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-    memset(&tabEV, 0, sizeof(struct input_event));
-    tabEV.type = EV_SYN;
-    tabEV.code = 0;
-    tabEV.value = 0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
+    setEventAndWrite(EV_KEY,KEY_TAB,1);
+    setEventAndWrite(EV_SYN,0,1);
 
+    setEventAndWrite(EV_KEY,KEY_TAB,0);
+    setEventAndWrite(EV_SYN,0,0);
 
-    memset(&tabEV,0,sizeof(struct input_event));
-    tabEV.type = EV_KEY;
-    tabEV.code=KEY_TAB;
-    tabEV.value=1;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&tabEV, 0, sizeof(struct input_event));
-    tabEV.type = EV_SYN;
-    tabEV.code = 0;
-    tabEV.value = 0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&tabEV,0,sizeof(struct input_event));
-    tabEV.type = EV_KEY;
-    tabEV.code=KEY_TAB;
-    tabEV.value=0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&tabEV, 0, sizeof(struct input_event));
-    tabEV.type = EV_SYN;
-    tabEV.code = 0;
-    tabEV.value = 0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-
-    memset(&tabEV,0,sizeof(struct input_event));
-    tabEV.type = EV_KEY;
-    tabEV.code=KEY_LEFTSHIFT;
-    tabEV.value=0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-    memset(&tabEV, 0, sizeof(struct input_event));
-    tabEV.type = EV_SYN;
-    tabEV.code = 0;
-    tabEV.value = 0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
+    setEventAndWrite(EV_KEY,KEY_LEFTSHIFT,0);
+    setEventAndWrite(EV_SYN,0,0);
 }
 
 void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputEnterKey(JNIEnv * a,jobject b)
 {
-    struct input_event tabEV;
-    memset(&tabEV,0,sizeof(struct input_event));
-    tabEV.type = EV_KEY;
-    tabEV.code=KEY_ENTER;
-    tabEV.value=1;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
+    setEventAndWrite(EV_KEY,KEY_ENTER,1);
+    setEventAndWrite(EV_SYN,0,1);
 
-    memset(&tabEV, 0, sizeof(struct input_event));
-    tabEV.type = EV_SYN;
-    tabEV.code = 0;
-    tabEV.value = 0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&tabEV,0,sizeof(struct input_event));
-    tabEV.type = EV_KEY;
-    tabEV.code=KEY_ENTER;
-    tabEV.value=0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
-
-    memset(&tabEV, 0, sizeof(struct input_event));
-    tabEV.type = EV_SYN;
-    tabEV.code = 0;
-    tabEV.value = 0;
-    if(write(fd, &tabEV, sizeof(struct input_event)) < 0)
-        die("error: write");
+    setEventAndWrite(EV_KEY,KEY_ENTER,0);
+    setEventAndWrite(EV_SYN,0,0);
 }

@@ -11,12 +11,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.os.Binder;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -40,15 +39,19 @@ public class PointingStickService extends Service{
     private TextView centerPoint;
     private WindowManager.LayoutParams mParams; //Layout params객체, 뷰의 위치 크기 지정
     private WindowManager.LayoutParams mParamsCenter; //Layout params객체, 뷰의 위치 크기 지정
+    private WindowManager.LayoutParams mParamsHover;
 
     private WindowManager mWindowManager;
 
     private LayoutInflater mInflater;
     private CircleLayout mCircleView;
     private ImageView hideImage;
+    private ImageView optionImage;
 
     private IntentFilter filter;
     private IntentFilter filter2;
+    private IntentFilter filter3;
+    private IntentFilter filter4;
 
     private VirtualMouseDriverController virtualMouseDriverController;
     private int mProgress;
@@ -60,26 +63,15 @@ public class PointingStickService extends Service{
     이후 click, longclick 이벤트가 계속 수행되길 원하시면 필요한 작업 후
     return false 를 반환
     이벤트 호출 순서 onTouch -> onLongClick -> onClick .*/
-    public class DataBinder extends Binder {
-        public PointingStickService getService(){
-            Log.e("service","getService");
-            return PointingStickService.this;
-        }
-    }
-    DataBinder mBinder=new DataBinder();
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.e("service", "onBind");return mBinder;
-    }
-    public void setProgress(int progress) throws RemoteException
+    public void setProgress(int progress)
     {
         mParams.alpha = progress / 100.0f;			//알파값 설정
         updateView();
     }
-    public void setStickSize(int size) throws RemoteException
+    public void setStickSize(int size)
     {
         int newSize=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());//dp로 변환
-        if(mPointingStickController.getIsLongMouseClick())
+        if(mPointingStickController.getIsOptionMenu())
                 newSize*=2;
         GlobalVariable.stickWidth =newSize;
         GlobalVariable.stickHeight = newSize;
@@ -93,7 +85,7 @@ public class PointingStickService extends Service{
     }
     public void setStickHide()
     {
-        if(mPointingStickController.getIsLongMouseClick())
+        if(mPointingStickController.getIsOptionMenu())
             mWindowManager.removeViewImmediate(mCircleView);
         else if(mPointingStickController.isHideMode())
             mWindowManager.removeViewImmediate(hideImage);
@@ -104,7 +96,7 @@ public class PointingStickService extends Service{
     }
     public void setStickDisplay()
     {
-        if (mPointingStickController.getIsLongMouseClick())
+        if (mPointingStickController.getIsOptionMenu())
             mWindowManager.addView(mCircleView, mParams);
         else if(mPointingStickController.isHideMode())
             mWindowManager.addView(hideImage,mParams);
@@ -116,7 +108,7 @@ public class PointingStickService extends Service{
     }
     public void updateView()
     {
-        if(mPointingStickController.getIsLongMouseClick())
+        if(mPointingStickController.getIsOptionMenu())
             mWindowManager.updateViewLayout(mCircleView, mParams);
         else if(mPointingStickController.isHideMode())
             mWindowManager.updateViewLayout(hideImage,mParams);
@@ -142,6 +134,14 @@ public class PointingStickService extends Service{
         filter2.addAction(GlobalVariable.DISP_SERVICE);
         registerReceiver(dispReceiver, filter2);
 
+        filter3 = new IntentFilter();
+        filter3.addAction(GlobalVariable.CHANGE_SIZE);
+        registerReceiver(sizeReceiver, filter3);
+
+        filter4 = new IntentFilter();
+        filter4.addAction(GlobalVariable.CHANGE_PROG);
+        registerReceiver(progressReceiver, filter4);
+
         pointingStick = new Button(this);
         pointingStick.setBackgroundResource(R.drawable.pointing_stick);
         pointingStick.setText("●");    //텍스트 설정
@@ -150,7 +150,9 @@ public class PointingStickService extends Service{
         centerPoint=new TextView(this);
         centerPoint.setText("●");
         centerPoint.setTextColor(Color.RED);
+        optionImage=new ImageView(this);
         hideImage = new ImageView(this);
+
         Bitmap bm = BitmapFactory.decodeResource(this.getResources(), R.drawable.small_button);
         bm = Bitmap.createScaledBitmap(bm, bm.getWidth(), bm.getHeight() ,true);
         int bmWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bm.getWidth(), getResources().getDisplayMetrics());
@@ -158,6 +160,9 @@ public class PointingStickService extends Service{
         GlobalVariable.HideImageWidth=bmWidth;
         GlobalVariable.HideImageheight=bmHeight;
         hideImage.setImageBitmap(bm);
+
+        Bitmap bmHover = BitmapFactory.decodeResource(this.getResources(), R.drawable.hover);
+        optionImage.setImageBitmap(bmHover);
 
         mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mCircleView = (CircleLayout) mInflater.inflate(R.layout.sample_no_rotation2, null);
@@ -172,7 +177,6 @@ public class PointingStickService extends Service{
                 |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 //포커스를 안줘서 자기 영역 밖터치는 인식 안하고 키이벤트를 사용하지 않게 설정
                 PixelFormat.TRANSLUCENT);										//투명
-        //mParams.gravity = Gravity.LEFT | Gravity.TOP;						//왼쪽 상단에 위치하게 함.
 
         mParamsCenter= new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -183,6 +187,16 @@ public class PointingStickService extends Service{
                 |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT);
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        mParamsHover= new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        |WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                PixelFormat.TRANSLUCENT);
+        mParamsHover.gravity= Gravity.BOTTOM;
+
 
         virtualMouseDriverController = virtualMouseDriverController.getInstance(getApplicationContext());
         if (virtualMouseDriverController.getState()==Thread.State.NEW) {
@@ -198,10 +212,13 @@ public class PointingStickService extends Service{
                 centerPoint,
                 hideImage);
         initPosition();//순서 변경시 에러 발생 =>null exception
+        mWindowManager.addView(optionImage, mParamsHover);
         mWindowManager.addView(centerPoint, mParamsCenter);
         mWindowManager.addView(pointingStick, mParams);		//최상위 윈도우에 뷰 넣기. *중요 : 여기에 permission을 미리 설정해 두어야 한다. 매니페스트에
         mParams.alpha = mProgress / 100.0f;			//알파값 설정
+        mParamsHover.alpha=0.0f;
         mWindowManager.updateViewLayout(pointingStick, mParams);	//팝업 뷰 업데이트
+
         setAllListener();
     }
     public void setAllListener()
@@ -210,6 +227,7 @@ public class PointingStickService extends Service{
         pointingStick.setOnLongClickListener(new StickLongClickListener(mPointingStickController));
         pointingStick.setOnTouchListener(new StickTouchListener(mPointingStickController, virtualMouseDriverController));
         hideImage.setOnTouchListener(new HideTouchListener(mPointingStickController));
+        optionImage.setOnTouchListener(new HoverListener(mPointingStickController));
     }
     /**
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다
@@ -260,10 +278,14 @@ public class PointingStickService extends Service{
     }// 화면 roatate시에 발생
 
     @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+    @Override
     public void onDestroy() {
         virtualMouseDriverController.interrupt();
         if(mWindowManager != null) {		//서비스 종료시 뷰 제거. *중요 : 뷰를 꼭 제거 해야함.
-            if(pointingStick != null && !mPointingStickController.getIsLongMouseClick()&& !mPointingStickController.isHideMode()) {
+            if(pointingStick != null && !mPointingStickController.getIsOptionMenu()&& !mPointingStickController.isHideMode()) {
                 mWindowManager.removeViewImmediate(pointingStick);
                 mWindowManager.removeViewImmediate(centerPoint);
             }
@@ -272,9 +294,12 @@ public class PointingStickService extends Service{
             else if(mCircleView!=null)
                 mWindowManager.removeViewImmediate(mCircleView);
         }
+        mWindowManager.removeViewImmediate(optionImage);
         Log.e("service", "onDestroy");
         unregisterReceiver(hideReceiver);
         unregisterReceiver(dispReceiver);
+        unregisterReceiver(sizeReceiver);
+        unregisterReceiver(progressReceiver);
         removeMouseDriver();
         virtualMouseDriverController=null;
         super.onDestroy();
@@ -300,6 +325,24 @@ public class PointingStickService extends Service{
         public void onReceive(Context context, Intent intent) {
                 Log.e("Service","hide");
                 setStickDisplay();
+        }
+    };
+    BroadcastReceiver sizeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int size;
+            size=intent.getIntExtra("size", 100);
+            Log.e("Service", "setSize:"+size);
+            setStickSize(size);
+        }
+    };
+    BroadcastReceiver progressReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int progress;
+            progress=intent.getIntExtra("progress", 100);
+            Log.e("Service", "setProgress:"+progress);
+            setProgress(progress);
         }
     };
     static {
