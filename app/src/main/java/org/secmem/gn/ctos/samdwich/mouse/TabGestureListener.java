@@ -29,6 +29,8 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
     private int mCurrType;
     private Vibrator hapticVibe;
 
+    private boolean tabCycleFlag = true;
+
     public TabGestureListener(PointingStickController mPointingStickController)
     {
         this.mPointingStickController=mPointingStickController;
@@ -38,7 +40,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
     }
     @Override
     public boolean onDown(MotionEvent e) {
-        Log.e("Ges","onDown");
+        Log.e("Ges", "onDown");
         return false;
     }
 
@@ -130,12 +132,19 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
         int dir = getClockDirection();
         if(dir != -1) {
             mPrevType = mCurrType;
+            hapticVibe.vibrate(10);
+
+            if(tabCycleFlag){
+                pointingStick.setBackgroundResource(R.drawable.pointing_stick_tab_rotate1);
+            }
+            else{
+                pointingStick.setBackgroundResource(R.drawable.pointing_stick_tab_rotate2);
+            }
+            tabCycleFlag = !tabCycleFlag;
+
             if (dir == 1) {
                 Log.i(TAG, "ClockWise");
-                pointingStick.setBackgroundResource(R.drawable.pointing_stick_tab_cw);
                 inputTabKey();
-                pointingStick.startAnimation(animation);
-                hapticVibe.vibrate(10);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -144,9 +153,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
             }
             else{
                 Log.i(TAG, "CounterClickWise");
-                pointingStick.setBackgroundResource(R.drawable.pointing_stick_tab_ccw);
                 inputBackTabKey();
-                hapticVibe.vibrate(10);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
