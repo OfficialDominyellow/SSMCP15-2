@@ -132,7 +132,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
             mPrevType = mCurrType;
             if (dir == 1) {
                 Log.i(TAG, "ClockWise");
-                pointingStick.setBackgroundResource(R.drawable.tab_right);
+                pointingStick.setBackgroundResource(R.drawable.pointing_stick_tab_cw);
                 inputTabKey();
                 pointingStick.startAnimation(animation);
                 hapticVibe.vibrate(10);
@@ -144,7 +144,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
             }
             else{
                 Log.i(TAG, "CounterClickWise");
-                pointingStick.setBackgroundResource(R.drawable.tab_left);
+                pointingStick.setBackgroundResource(R.drawable.pointing_stick_tab_ccw);
                 inputBackTabKey();
                 hapticVibe.vibrate(10);
                 try {

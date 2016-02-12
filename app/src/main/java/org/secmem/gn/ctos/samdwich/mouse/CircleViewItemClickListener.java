@@ -46,14 +46,14 @@ public class CircleViewItemClickListener implements CircleLayout.OnItemClickList
                 Log.e("Circle","1");
                 if(mPointingStickController.getIsMoveMode()==false) {
                     mPointingStickController.setMoveMode(true);
-                    pointingStick.setBackgroundResource(R.drawable.move_mode);
+                    pointingStick.setBackgroundResource(R.drawable.pointing_stick_move);
                 }
                 break;
             case R.id.main_tab_image://Tab Mode
                 Log.e("Circle", "2");
                 if(!mPointingStickController.getTabMode()) {
                     mPointingStickController.setTabMode(true);
-                    pointingStick.setBackgroundResource(R.drawable.tab_mode);
+                    pointingStick.setBackgroundResource(R.drawable.pointing_stick_tab);
                 }
                 else
                     mPointingStickController.setTabMode(false);

@@ -13,35 +13,35 @@
         android:id="@+id/main_move_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/movemode"
+        android:src="@drawable/icon_move"
         circle:name="move" />
 
     <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_tab_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/tabmode"
+        android:src="@drawable/icon_focus"
         circle:name="tab" />
 
     <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_hide_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/hidemode"
+        android:src="@drawable/icon_hide"
         circle:name="hide" />
 
     <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_off_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/serviceoff"
+        android:src="@drawable/icon_off"
         circle:name="off" />
 
     <org.secmem.gn.ctos.samdwich.mouse.CircleImageView
         android:id="@+id/main_back_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/bg"
+        android:src="@drawable/icon_done"
         circle:name="back" />
 
 </org.secmem.gn.ctos.samdwich.mouse.CircleLayout>
