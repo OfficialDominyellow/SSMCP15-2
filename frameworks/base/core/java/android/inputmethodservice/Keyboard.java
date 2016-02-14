@@ -629,9 +629,9 @@ public class Keyboard {
                 ccw(crdX[2],crdY[2],crdX[1],crdY[1],x,y) <0 ==
                 ccw(crdX[0],crdY[0],crdX[2],crdY[2],x,y) <0) {
                     return true;
-                } else if (ccw(crdX[2],crdY[2],crdX[1],crdY[1],x,y) <0 ==
+                } else if (ccw(crdX[1],crdY[1],crdX[3],crdY[3],x,y) <0 ==
                 ccw(crdX[3],crdY[3],crdX[2],crdY[2],x,y) <0 ==
-                ccw(crdX[3],crdY[3],crdX[1],crdY[1],x,y) <0) {
+                ccw(crdX[2],crdY[2],crdX[1],crdY[1],x,y) <0) {
                     return true;
                 } else {
                     return false;
