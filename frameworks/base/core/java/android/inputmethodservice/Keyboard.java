@@ -575,10 +575,10 @@ public class Keyboard {
         }
 
         private int convertCoordinateX(int crdX, int crdY, int pivotX, int pivotY){
-            return pivotX+(int)((crdX-pivotX)*Math.cos(this.rotate)-(crdY-pivotY)*Math.sin(this.rotate));
+            return pivotX+(int)((crdX-pivotX)*Math.cos(this.rotate-Math.PI/2)-(crdY-pivotY)*Math.sin(this.rotate-Math.PI/2));
         }
         private int convertCoordinateY(int crdX, int crdY, int pivotX, int pivotY){
-            return pivotY+(int)((crdX-pivotX)*Math.sin(this.rotate)+(crdY-pivotY)*Math.cos(this.rotate));
+            return pivotY+(int)((crdX-pivotX)*Math.sin(this.rotate-Math.PI/2)+(crdY-pivotY)*Math.cos(this.rotate-Math.PI/2));
         }
         private int ccw(int x1, int y1, int x2, int y2, int x3, int y3) {
             int temp = x1*y2+x2*y3+x3*y1;
