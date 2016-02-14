@@ -581,8 +581,8 @@ public class Keyboard {
             return pivotY+(int)((crdX-pivotX)*Math.sin(this.rotate)+(crdY-pivotY)*Math.cos(this.rotate));
         }
         private int ccw(int x1, int y1, int x2, int y2, int x3, int y3) {
-            int temp = (x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
-
+            int temp = x1*y2+x2*y3+x3*y1;
+            temp = temp - y1*x2-y2*x3-y3*x1;
             if (temp > 0) {
                 return 1;
             } else if (temp < 0) {
@@ -603,18 +603,19 @@ public class Keyboard {
             if(this.rotate != Math.PI/2 ) {
                 int[] crdX= new int[4];
                 int[] crdY= new int[4];
-                /*
-                crdX[0]=convertCoordinateX(this.x,this.y, this.width/2, this.height/2);
-                crdX[1]=convertCoordinateX(this.x+this.width,this.y, this.width/2, this.height/2);
-                crdX[2]=convertCoordinateX(this.x,this.y+this.height, this.width/2, this.height/2);
-                crdX[3]=convertCoordinateX(this.x+this.width,this.y+this.height, this.width/2, this.height/2);
+                
+                
+                crdX[0]=convertCoordinateX(this.x,this.y, this.x+this.width/2, this.y+this.height/2);
+                crdX[1]=convertCoordinateX(this.x+this.width,this.y, this.x+this.width/2, this.y+this.height/2);
+                crdX[2]=convertCoordinateX(this.x,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
+                crdX[3]=convertCoordinateX(this.x+this.width,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
 
-                crdY[0]=convertCoordinateY(this.x,this.y, this.width/2, this.height/2);
-                crdY[1]=convertCoordinateY(this.x+this.width,this.y, this.width/2, this.height/2);
-                crdY[2]=convertCoordinateY(this.x,this.y+this.height, this.width/2, this.height/2);
-                crdY[3]=convertCoordinateY(this.x+this.width,this.y+this.height, this.width/2, this.height/2);
-                */
-
+                crdY[0]=convertCoordinateY(this.x,this.y, this.x+this.width/2, this.y+this.height/2);
+                crdY[1]=convertCoordinateY(this.x+this.width,this.y, this.x+this.width/2, this.y+this.height/2);
+                crdY[2]=convertCoordinateY(this.x,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
+                crdY[3]=convertCoordinateY(this.x+this.width,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
+                
+		/*
                 crdX[0]=this.x;
                 crdX[1]=this.x+this.width;
                 crdX[2]=this.x;
@@ -624,7 +625,7 @@ public class Keyboard {
                 crdY[1]=this.y;
                 crdY[2]=this.y+this.height;
                 crdY[3]=this.y+this.height;
-
+		*/
                 if (ccw(crdX[1],crdY[1],crdX[0],crdY[0],x,y) <0 ==
                 ccw(crdX[2],crdY[2],crdX[1],crdY[1],x,y) <0 ==
                 ccw(crdX[0],crdY[0],crdX[2],crdY[2],x,y) <0) {
