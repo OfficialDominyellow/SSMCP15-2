@@ -29,7 +29,6 @@ public class GlobalVariable {
     public static final int size2=100;
     public static final int size3=120;
 
-
     public static float convertDpToPixel(float dp, Context context){
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();

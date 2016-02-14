@@ -52,13 +52,6 @@ public class MotionGestureListener implements GestureDetector.OnGestureListener 
 
     @Override
     public void onLongPress(MotionEvent e) {
-        downLeftMouse();
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }
-        upLeftMouse();
     }
 
     @Override
@@ -86,9 +79,4 @@ public class MotionGestureListener implements GestureDetector.OnGestureListener 
         }
         return true;
     }
-    static {
-        System.loadLibrary("samdwich_jni");
-    }
-    public native void downLeftMouse();
-    public native void upLeftMouse();
 }

@@ -21,7 +21,7 @@ public class VirtualMouseDriverController extends Thread {
     private int mMouseSpeed=5;
     private static int MAXMOVE;
     private static int INTERVAL;
-    private static Context context;
+    private static int DIVIDEDMAXMOVE;
 
     private Resources resources;
     private DisplayMetrics metrics;
@@ -30,7 +30,6 @@ public class VirtualMouseDriverController extends Thread {
         mPauseLock = new Object();
         mPaused = false;
         mFinished = false;
-        this.context = context;
         resources = context.getResources();
         metrics = resources.getDisplayMetrics();
         metrixDensityDpi=metrics.densityDpi / 160f;
@@ -41,6 +40,7 @@ public class VirtualMouseDriverController extends Thread {
             uniqueInstance = new VirtualMouseDriverController(context);
             MAXMOVE=(int) GlobalVariable.convertDpToPixel(63, context.getApplicationContext());
             INTERVAL=(int)GlobalVariable.convertDpToPixel(5,context.getApplicationContext());
+            DIVIDEDMAXMOVE=MAXMOVE/INTERVAL;
         }
         return uniqueInstance;
     }
@@ -67,7 +67,6 @@ public class VirtualMouseDriverController extends Thread {
             mPaused = true;
         }
     }
-
     /**
      * Call this on resume.
      */
@@ -77,6 +76,13 @@ public class VirtualMouseDriverController extends Thread {
             mPauseLock.notifyAll();
         }
     }
+    public void onDestroy()
+    {
+        synchronized (mPauseLock) {
+            mFinished = true;
+        }
+    }
+
     @Override
     public void run() {
         int x=0;
@@ -99,7 +105,7 @@ public class VirtualMouseDriverController extends Thread {
                     Thread.sleep(sleepTime);
                     int abs=Math.abs(dx);
                     for (int i=0;i<INTERVAL;i++) {
-                        if(abs<=MAXMOVE/INTERVAL*i) {
+                        if(abs<=DIVIDEDMAXMOVE*i) {
                             //x=(dx<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
                             x=(dx<0)?(int)(0-i):(int)(i);
                             break;
@@ -107,7 +113,7 @@ public class VirtualMouseDriverController extends Thread {
                     }
                     abs=Math.abs(dy);
                     for (int i=0;i<INTERVAL;i++) {
-                        if(abs<=MAXMOVE/INTERVAL*i) {
+                        if(abs<=DIVIDEDMAXMOVE*i) {
                             //y=(dy<0)?(int)(0-Math.sqrt((double)i)):(int)(Math.sqrt((double)i));
                             y=(dy<0)?(int)(0-i):(int)(i);
                             break;
@@ -134,6 +140,5 @@ public class VirtualMouseDriverController extends Thread {
     static {
         System.loadLibrary("samdwich_jni");
     }
-
     private native void moveMouse(int x, int y);
 }
