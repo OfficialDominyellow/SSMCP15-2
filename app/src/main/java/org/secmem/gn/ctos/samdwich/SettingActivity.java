@@ -72,9 +72,9 @@ public class SettingActivity extends Activity
         size2=(RadioButton)findViewById(R.id.option2);
         size3=(RadioButton)findViewById(R.id.option3);
 
-        if(mSize==70)
+        if(mSize==GlobalVariable.size1)
             size1.setChecked(true);
-        else if(mSize==100)
+        else if(mSize==GlobalVariable.size2)
             size2.setChecked(true);
         else
             size3.setChecked(true);
@@ -174,13 +174,13 @@ public class SettingActivity extends Activity
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.option1:
-                        mSize = 80;
+                        mSize = GlobalVariable.size1;
                         break;
                     case R.id.option2:
-                        mSize = 100;
+                        mSize = GlobalVariable.size2;
                         break;
                     case R.id.option3:
-                        mSize = 120;
+                        mSize = GlobalVariable.size3;
                         break;
                 }
                 receiverIntent.putExtra("size", mSize);

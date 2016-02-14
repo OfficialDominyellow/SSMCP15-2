@@ -13,7 +13,8 @@ public class StickLongClickListener implements View.OnLongClickListener
     {
         this.mPointingStickController=mPointingStickController;
     }
-    public boolean onLongClick(View v) {
+    public boolean onLongClick(View v)
+    {
         if(!mPointingStickController.getIsMouseMove()
                 &&!mPointingStickController.getTabMode()){
             Log.e("Service", "LONG CLICK");

@@ -131,12 +131,21 @@ void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputBackTabKey(J
     setEventAndWrite(EV_KEY,KEY_LEFTSHIFT,0);
     setEventAndWrite(EV_SYN,0,0);
 }
-
 void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputEnterKey(JNIEnv * a,jobject b)
 {
     setEventAndWrite(EV_KEY,KEY_ENTER,1);
     setEventAndWrite(EV_SYN,0,1);
 
+    setEventAndWrite(EV_KEY,KEY_ENTER,0);
+    setEventAndWrite(EV_SYN,0,0);
+}
+void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_downEnterKey(JNIEnv * a,jobject b)
+{
+    setEventAndWrite(EV_KEY,KEY_ENTER,1);
+    setEventAndWrite(EV_SYN,0,0);
+}
+void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_upEnterKey(JNIEnv * a,jobject b)
+{
     setEventAndWrite(EV_KEY,KEY_ENTER,0);
     setEventAndWrite(EV_SYN,0,0);
 }

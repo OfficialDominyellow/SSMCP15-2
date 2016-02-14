@@ -32,6 +32,7 @@ jint Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_initMouseDriver
 //KEYBOARD
 void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputTabKey(JNIEnv * a,jobject b);
 void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_inputEnterKey(JNIEnv * a,jobject b);
-
+void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_downEnterKey(JNIEnv * a,jobject b);
+void Java_org_secmem_gn_ctos_samdwich_mouse_TabGestureListener_upEnterKey(JNIEnv * a,jobject b);
 
 #endif //SSMCP15_2_SAMDWICH_DRIVER_H

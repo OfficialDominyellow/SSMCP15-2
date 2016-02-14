@@ -7,6 +7,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.secmem.gn.ctos.samdwich.R;
+
 /**
  * Created by SECMEM-DY on 2016-02-11.
  */
@@ -50,7 +52,13 @@ public class MotionGestureListener implements GestureDetector.OnGestureListener 
 
     @Override
     public void onLongPress(MotionEvent e) {
-        Log.e("Hover", "scroll2");
+        downLeftMouse();
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        upLeftMouse();
     }
 
     @Override
@@ -58,7 +66,8 @@ public class MotionGestureListener implements GestureDetector.OnGestureListener 
         Log.e("Hover","mouseMove:"+mPointingStickController.getIsMoveMode()+"   tabMode:"+mPointingStickController.getTabMode()+"   LongMouse:"+mPointingStickController.getIsOptionMenu());
         if(!mPointingStickController.getIsMoveMode()
                 &&!mPointingStickController.getTabMode()
-                &&!mPointingStickController.getIsOptionMenu())
+                &&!mPointingStickController.getIsOptionMenu()
+                &&!mPointingStickController.isHideMode())
         {
             Log.e("Hover", "scroll2");
             mPointingStickController.setIsOptionMenu(true);
@@ -70,6 +79,16 @@ public class MotionGestureListener implements GestureDetector.OnGestureListener 
             mWindowManager.updateViewLayout(mCircleView, mParams);
             return true;
         }
+        else if(mPointingStickController.getTabMode())
+        {
+            pointingStick.setBackgroundResource(R.drawable.pointing_stick);
+            mPointingStickController.setTabMode(false);//tab모드 해제
+        }
         return true;
     }
+    static {
+        System.loadLibrary("samdwich_jni");
+    }
+    public native void downLeftMouse();
+    public native void upLeftMouse();
 }

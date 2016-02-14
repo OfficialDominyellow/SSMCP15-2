@@ -124,11 +124,11 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
         mCurrType = getTypeOfSixDividedCircle(centerX, centerY, (int)e2.getX(), (int)e2.getY());
         Log.i(TAG, "mPrevType(" + mPrevType + ") -> mCurrType(" + mCurrType + ")");
 
-        Animation animation = AnimationUtils.loadAnimation(mContext,R.anim.rotate);
+        /*Animation animation = AnimationUtils.loadAnimation(mContext,R.anim.rotate);
         animation.setDuration(100);
 
         pointingStick.setAnimation(animation);
-
+        */
         int dir = getClockDirection();
         if(dir != -1) {
             mPrevType = mCurrType;
@@ -167,8 +167,16 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
     public void onLongPress(MotionEvent e)
     {
         Log.e("Ges","onLongPress");
-        pointingStick.setBackgroundResource(R.drawable.pointing_stick);
+        /*pointingStick.setBackgroundResource(R.drawable.pointing_stick);
         mPointingStickController.setTabMode(false);//tab모드 해제
+        */
+        downEnterKey();
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        upEnterKey();
     }
 
     @Override
@@ -197,4 +205,6 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
     public native void inputTabKey();
     public native void inputEnterKey();
     public native  void inputBackTabKey();
+    public native void downEnterKey();
+    public native void upEnterKey();
 }
