@@ -835,7 +835,7 @@ public class Keyboard {
         for (int arcIndex = 0; arcIndex < numArcs; ++arcIndex) {
             Arc arc = arcs.get(arcIndex);
             int numKeys = arc.mKeys.size();
-            int totalRadius = (int)dm.xdpi*1.5
+            int totalRadius = (int)(dm.xdpi*1.5);
 	    
 	    int x = 0;
 	    if (arc.parent.handedness==0) {
