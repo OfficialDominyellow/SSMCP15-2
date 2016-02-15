@@ -26,6 +26,8 @@ public class VirtualMouseDriverController extends Thread {
     private Resources resources;
     private DisplayMetrics metrics;
 
+    final private String TAG = "VMDriverCont";
+
     private VirtualMouseDriverController(Context context) {
         mPauseLock = new Object();
         mPaused = false;
@@ -76,6 +78,13 @@ public class VirtualMouseDriverController extends Thread {
             mPauseLock.notifyAll();
         }
     }
+
+    public void onRestart(){
+        synchronized (mPauseLock) {
+            mFinished = false;
+            mPauseLock.notifyAll();
+        }
+    }
     public void onDestroy()
     {
         synchronized (mPauseLock) {
@@ -88,7 +97,10 @@ public class VirtualMouseDriverController extends Thread {
         int x=0;
         int y=0;
         int sleepTime=10;
-        while (!mFinished) {
+        Log.i(TAG, "is run ??");
+        //while (!mFinished) {
+        while (true) {
+            if(mFinished) continue;
             while (!mPaused) {
                 try {
                     if(result<(10 * metrixDensityDpi)) {
@@ -128,13 +140,13 @@ public class VirtualMouseDriverController extends Thread {
                     e.printStackTrace();
                 }
             }
-            synchronized (mPauseLock) {
-                try {
-                    mPauseLock.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            synchronized (mPauseLock) {
+//                try {
+//                    mPauseLock.wait();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
         }
     }
     static {

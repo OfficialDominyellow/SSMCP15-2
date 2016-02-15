@@ -1,5 +1,6 @@
 package org.secmem.gn.ctos.samdwich.mouse;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -119,10 +120,12 @@ public class PointingStickService extends Service{
         mWindowManager.updateViewLayout(motionImage,mParamsHover);
     }
 
+
     @Override
     public void onCreate() {
         super.onCreate();
         Log.e("service", "onCreate");
+        this.startForeground(1, new Notification());
         if(initMouseDriver()==-1) {
             Toast.makeText(getApplicationContext(), "Fail to load Vmouse.", Toast.LENGTH_LONG).show();
             return;
@@ -204,6 +207,10 @@ public class PointingStickService extends Service{
         if (virtualMouseDriverController.getState()==Thread.State.NEW) {
             virtualMouseDriverController.start();
             virtualMouseDriverController.onPause();
+        }
+        else{
+            Log.i("PSService", "is on restart?");
+            virtualMouseDriverController.onRestart();
         }
         mPointingStickController=new PointingStickController(this,
                 mWindowManager,
