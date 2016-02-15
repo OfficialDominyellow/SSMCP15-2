@@ -863,7 +863,15 @@ public class Keyboard {
             }
 
             //int radius = (numArcs + 1 - arcIndex) * height / (numArcs + 1) + mDefaultWidth;
-            int radius = mDisplayWidth - x;
+            int radius = 0;
+	    if (arc.parent.handedness==0) {
+                radius = mDisplayWidth - x;
+	    } else if (arc.parent.handedness==1) {
+	    	radius = x;
+	    } else {
+	    	// WRONG VALUE!
+	    }
+
             Log.e(TAG, "numkeys: "+numKeys+", xdpi: "+dm.xdpi+", y.dpi: "+dm.ydpi+" radius: "+radius);
             if (totalWidth/radius > Math.toRadians(90)) {
                 double scaleFactor = 1;
@@ -903,12 +911,19 @@ public class Keyboard {
 	    	// WRONG VALUE!
 	    }
 
-                x += addX;
                 y += addY;
 
                 currentKey.x = x;
                 currentKey.y = y;
+	    if (arc.parent.handedness==0) {
                 currentKey.rotate = (float)currentRadians;
+	    } else if (arc.parent.handedness==1) {
+                currentKey.rotate = 0-(float)currentRadians;
+	    } else {
+	    	// WRONG VALUE!
+	    }
+
+
                 Log.e(TAG, "key.x: "+currentKey.x+", key.y: "+currentKey.y+", gap: "+currentKey.gap+", key.width: "+currentKey.width);
 
             }
