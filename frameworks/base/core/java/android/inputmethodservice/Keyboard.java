@@ -137,7 +137,7 @@ public class Keyboard {
     private int mKeyboardMode;
 
     /** Handness type. While using Arckeyboard */
-    public int handedness;
+    public int handedness=0;
 
     // Variables for pre-computing nearest keys.
     
@@ -835,10 +835,18 @@ public class Keyboard {
         for (int arcIndex = 0; arcIndex < numArcs; ++arcIndex) {
             Arc arc = arcs.get(arcIndex);
             int numKeys = arc.mKeys.size();
-
-            int x = mDisplayWidth - (int)dm.xdpi*2 - mDefaultWidth + arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
+            int totalRadius = (int)dm.xdpi*1.5
+	    
+	    int x = 0;
+	    if (arc.parent.handedness==0) {
+                x = mDisplayWidth - totalRadius - mDefaultWidth + arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
+	    } else if (arc.parent.handedness==1) {
+	    	x = totalRadius + mDefaultWidth - arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
+	    } else {
+	    	// WRONG VALUE!
+	    }
             //int x = arcIndex*(this.mDefaultHeight+this.mDefaultVerticalGap);
-            int height = (int)dm.xdpi*2 + mDefaultWidth;
+            int height = totalRadius + mDefaultWidth;
             mTotalHeight = height + mDefaultHeight;
             /*
             if (mTotalHeight < x || height < x) {
@@ -886,6 +894,14 @@ public class Keyboard {
                 int addX = (int) (radius * (Math.cos(beforeRadians) - Math.cos(currentRadians)));
                 Log.e(TAG, "1:" + Math.cos(beforeRadians) + ", 2:" + Math.cos(currentRadians));
                 int addY = (int) (radius * (Math.sin(beforeRadians) - Math.sin(currentRadians)));
+
+	    if (arc.parent.handedness==0) {
+                x += addX;
+	    } else if (arc.parent.handedness==1) {
+	    	x -= addX;
+	    } else {
+	    	// WRONG VALUE!
+	    }
 
                 x += addX;
                 y += addY;
@@ -1191,7 +1207,7 @@ public class Keyboard {
 
         handedness = getDimensionOrFraction(a,
                 com.android.internal.R.styleable.Keyboard_arckeyboardHandedness,
-                0, 0);
+                0, 1);
         Log.e(TAG, "!!!!!HANDEDNESS:"+handedness);
 
         mProximityThreshold = (int) (mDefaultWidth * SEARCH_DISTANCE);
