@@ -40,11 +40,15 @@ public class SettingActivity extends Activity
 {
     private Switch serviceSwitch;
     private SeekBar mSeekBar;
-    private RadioGroup mGroup;
+    private RadioGroup mGroupSize;
     private RadioButton size1,size2,size3;
+    private RadioGroup mGrouphand;
+    private RadioButton leftHand,rightHand;
+
     private boolean switchValue;
     private int mProgress;
     private int mSize;
+    private int handValue;
     private IntentFilter filter;
     private Intent intent;
     private Intent receiverIntent;
@@ -57,7 +61,7 @@ public class SettingActivity extends Activity
         Log.e("service", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        getPreferencesSwitch();getPreferencesProgress();getPreferencesSize();
+        getPreferencesSwitch();getPreferencesProgress();getPreferencesSize();getPreferenceshandedness();
 
         filter = new IntentFilter();
         filter.addAction(GlobalVariable.STOP_SERVICE);
@@ -67,10 +71,13 @@ public class SettingActivity extends Activity
 
         mSeekBar=(SeekBar)findViewById(R.id.seekBar);
         serviceSwitch=(Switch)findViewById(R.id.switch1);
-        mGroup=(RadioGroup)findViewById(R.id.sizeGroup);
+        mGroupSize=(RadioGroup)findViewById(R.id.sizeGroup);
         size1=(RadioButton)findViewById(R.id.option1);
         size2=(RadioButton)findViewById(R.id.option2);
         size3=(RadioButton)findViewById(R.id.option3);
+        mGrouphand=(RadioGroup)findViewById(R.id.handednessGroup);
+        leftHand=(RadioButton)findViewById(R.id.left);
+        rightHand=(RadioButton)findViewById(R.id.right);
 
         if(mSize==GlobalVariable.size1)
             size1.setChecked(true);
@@ -85,6 +92,11 @@ public class SettingActivity extends Activity
             serviceSwitch.setChecked(true);
         else
             serviceSwitch.setChecked(false);
+
+        if(handValue==0)
+            rightHand.setChecked(true);
+        else
+            leftHand.setChecked(true);
     }
 
     public void on() {
@@ -154,11 +166,9 @@ public class SettingActivity extends Activity
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
-
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 receiverIntent.putExtra("progress", progress);
@@ -169,7 +179,7 @@ public class SettingActivity extends Activity
             }
         });
 
-        mGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        mGroupSize.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
@@ -189,6 +199,23 @@ public class SettingActivity extends Activity
                 savePreferencesSize();
             }
         });
+        mGrouphand.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.left:
+                        //to do
+                        handValue=1;
+                        break;
+                    case R.id.right:
+                        //to do
+                        handValue=0;
+                        break;
+                }
+                savePreferenceshandedness();
+            }
+        });
+
         setInVisible();
         //디바이스 화면 값
         Display display=((WindowManager)this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -205,12 +232,12 @@ public class SettingActivity extends Activity
     public void setVisible()
     {
         mSeekBar.setVisibility(View.VISIBLE);
-        mGroup.setVisibility(View.VISIBLE);
+        mGroupSize.setVisibility(View.VISIBLE);
     }
     public void setInVisible()
     {
         mSeekBar.setVisibility(View.INVISIBLE);
-        mGroup.setVisibility(View.INVISIBLE);
+        mGroupSize.setVisibility(View.INVISIBLE);
     }
     // 값 불러오기
     private void getPreferencesSwitch(){
@@ -242,6 +269,16 @@ public class SettingActivity extends Activity
         SharedPreferences pref = getSharedPreferences("forSize", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt("size", mSize);
+        editor.commit();
+    }
+    private void getPreferenceshandedness(){
+        SharedPreferences pref = getSharedPreferences("forHandedness", MODE_PRIVATE);
+        handValue = pref.getInt("hand", 0);//default right
+    }
+    private void savePreferenceshandedness(){
+        SharedPreferences pref = getSharedPreferences("forHandedness", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("hand", handValue);
         editor.commit();
     }
     BroadcastReceiver switchReceiver = new BroadcastReceiver() {

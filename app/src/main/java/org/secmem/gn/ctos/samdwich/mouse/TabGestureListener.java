@@ -50,6 +50,7 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
+        hapticVibe.vibrate(10);
         inputEnterKey();
         Log.e("Ges","SingleTap");
         return false;
@@ -122,11 +123,6 @@ public class TabGestureListener implements GestureDetector.OnGestureListener,Ges
         mCurrType = getTypeOfSixDividedCircle(centerX, centerY, (int)e2.getX(), (int)e2.getY());
         Log.i(TAG, "mPrevType(" + mPrevType + ") -> mCurrType(" + mCurrType + ")");
 
-        /*Animation animation = AnimationUtils.loadAnimation(mContext,R.anim.rotate);
-        animation.setDuration(100);
-
-        pointingStick.setAnimation(animation);
-        */
         int dir = getClockDirection();
         if(dir != -1) {
             mPrevType = mCurrType;

@@ -18,7 +18,7 @@
         android:id="@+id/logotxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome Samdwich"
+        android:text="Welcome\nSamdwich"
         android:textSize="25dp"
         android:textColor="#e0d0b6"
         android:layout_gravity="center_horizontal" />

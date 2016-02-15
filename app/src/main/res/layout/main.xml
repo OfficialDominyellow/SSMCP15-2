@@ -4,8 +4,16 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:weightSum="1">
+    >
 
+    <LinearLayout
+        android:id="@+id/set1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_weight="0.3"
+        android:orientation="vertical"
+        >
     <Switch
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +26,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/seekBar"
         android:layout_weight="0.11" />
-
     <RadioGroup
         android:id="@+id/sizeGroup"
         android:layout_width="fill_parent"
@@ -43,5 +50,56 @@
             android:layout_height="wrap_content"
             android:text="Size 3" />
     </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/handednessGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <RadioButton
+            android:id="@+id/left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Left" />
+        <RadioButton
+            android:id="@+id/right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Right" />
+
+    </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_weight="0.5"
+        >
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        >
+
+        <Button android:id="@+id/questionBTN"
+            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:background="@drawable/icon_question">
+        </Button>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        <Button android:id="@+id/infoBTN"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/icon_information"
+            />
+    </LinearLayout>
 
 </LinearLayout>

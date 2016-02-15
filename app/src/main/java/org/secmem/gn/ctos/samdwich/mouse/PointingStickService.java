@@ -151,10 +151,11 @@ public class PointingStickService extends Service{
         pointingStick = new Button(this);
         pointingStick.setBackgroundResource(R.drawable.pointing_stick);
         pointingStick.setText("●");    //텍스트 설정
-        pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);                                //텍스트 크기 18sp
+        pointingStick.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);                                //텍스트 크기 18sp
         pointingStick.setTextColor(Color.BLUE);
         centerPoint=new TextView(this);
         centerPoint.setText("●");
+        centerPoint.setTextSize(TypedValue.COMPLEX_UNIT_DIP,16);
         centerPoint.setTextColor(Color.RED);
         hideImage = new ImageView(this);
         motionImage=new ImageView(this);
@@ -192,7 +193,6 @@ public class PointingStickService extends Service{
                 |WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT);
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         mParamsHover= new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -202,6 +202,8 @@ public class PointingStickService extends Service{
                         |WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT);
         mParamsHover.gravity= Gravity.BOTTOM;
+
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         virtualMouseDriverController = virtualMouseDriverController.getInstance(getApplicationContext());
         if (virtualMouseDriverController.getState()==Thread.State.NEW) {
