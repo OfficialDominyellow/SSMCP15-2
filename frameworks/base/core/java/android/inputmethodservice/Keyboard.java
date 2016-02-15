@@ -603,7 +603,7 @@ public class Keyboard {
             if(this.rotate != Math.PI/2 ) {
                 int[] crdX= new int[4];
                 int[] crdY= new int[4];
-                /*
+                
                 crdX[0]=convertCoordinateX(this.x,this.y, this.x+this.width/2, this.y+this.height/2);
                 crdX[1]=convertCoordinateX(this.x+this.width,this.y, this.x+this.width/2, this.y+this.height/2);
                 crdX[2]=convertCoordinateX(this.x,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
@@ -613,8 +613,8 @@ public class Keyboard {
                 crdY[1]=convertCoordinateY(this.x+this.width,this.y, this.x+this.width/2, this.y+this.height/2);
                 crdY[2]=convertCoordinateY(this.x,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
                 crdY[3]=convertCoordinateY(this.x+this.width,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
-                */
-		
+                
+		/*
                 crdX[0]=this.x;
                 crdX[1]=this.x+this.width;
                 crdX[2]=this.x;
@@ -624,14 +624,9 @@ public class Keyboard {
                 crdY[1]=this.y;
                 crdY[2]=this.y+this.height;
                 crdY[3]=this.y+this.height;
+		*/
 		
-                if (ccw(crdX[1],crdY[1],crdX[0],crdY[0],x,y) <0 ==
-                ccw(crdX[2],crdY[2],crdX[1],crdY[1],x,y) <0 ==
-                ccw(crdX[0],crdY[0],crdX[2],crdY[2],x,y) <0) {
-                    return true;
-                } else if (ccw(crdX[2],crdY[2],crdX[1],crdY[1],x,y) <0 ==
-                ccw(crdX[3],crdY[3],crdX[2],crdY[2],x,y) <0 ==
-                ccw(crdX[1],crdY[1],crdX[3],crdY[3],x,y) <0) {
+                if (ccw(crdX[0],crdY[0],crdX[1],crdY[1],x,y) >= 0 && ccw(crdX[1],crdY[1],crdX[2],crdY[2],x,y) >=0 && ccw(crdX[2],crdY[2],crdX[0],crdY[0],x,y) >= 0 || ccw(crdX[1],crdY[1],crdX[2],crdY[2],x,y) <= 0 && ccw(crdX[2],crdY[2],crdX[3],crdY[3],x,y) <= 0 && ccw(crdX[3],crdY[3],crdX[1],crdY[1],x,y) <= 0) {
                     return true;
                 } else {
                     return false;
