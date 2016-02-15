@@ -98,9 +98,7 @@ public class VirtualMouseDriverController extends Thread {
         int y=0;
         int sleepTime=10;
         Log.i(TAG, "is run ??");
-        //while (!mFinished) {
-        while (true) {
-            if(mFinished) continue;
+        while (!mFinished) {
             while (!mPaused) {
                 try {
                     if(result<(10 * metrixDensityDpi)) {
@@ -140,13 +138,13 @@ public class VirtualMouseDriverController extends Thread {
                     e.printStackTrace();
                 }
             }
-//            synchronized (mPauseLock) {
-//                try {
-//                    mPauseLock.wait();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+            synchronized (mPauseLock) {
+                try {
+                    mPauseLock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
     static {
