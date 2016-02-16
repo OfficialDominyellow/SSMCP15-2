@@ -137,7 +137,7 @@ public class Keyboard {
     private int mKeyboardMode;
 
     /** Handness type. While using Arckeyboard */
-    public int handedness=0;
+    public int handedness;
 
     // Variables for pre-computing nearest keys.
     
@@ -603,7 +603,7 @@ public class Keyboard {
             if(this.rotate != Math.PI/2 ) {
                 int[] crdX= new int[4];
                 int[] crdY= new int[4];
-                
+                /*
                 crdX[0]=convertCoordinateX(this.x,this.y, this.x+this.width/2, this.y+this.height/2);
                 crdX[1]=convertCoordinateX(this.x+this.width,this.y, this.x+this.width/2, this.y+this.height/2);
                 crdX[2]=convertCoordinateX(this.x,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
@@ -613,8 +613,8 @@ public class Keyboard {
                 crdY[1]=convertCoordinateY(this.x+this.width,this.y, this.x+this.width/2, this.y+this.height/2);
                 crdY[2]=convertCoordinateY(this.x,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
                 crdY[3]=convertCoordinateY(this.x+this.width,this.y+this.height, this.x+this.width/2, this.y+this.height/2);
-                
-		/*
+                */
+		
                 crdX[0]=this.x;
                 crdX[1]=this.x+this.width;
                 crdX[2]=this.x;
@@ -624,9 +624,14 @@ public class Keyboard {
                 crdY[1]=this.y;
                 crdY[2]=this.y+this.height;
                 crdY[3]=this.y+this.height;
-		*/
 		
-                if (ccw(crdX[0],crdY[0],crdX[1],crdY[1],x,y) >= 0 && ccw(crdX[1],crdY[1],crdX[2],crdY[2],x,y) >=0 && ccw(crdX[2],crdY[2],crdX[0],crdY[0],x,y) >= 0 || ccw(crdX[1],crdY[1],crdX[2],crdY[2],x,y) <= 0 && ccw(crdX[2],crdY[2],crdX[3],crdY[3],x,y) <= 0 && ccw(crdX[3],crdY[3],crdX[1],crdY[1],x,y) <= 0) {
+                if (ccw(crdX[1],crdY[1],crdX[0],crdY[0],x,y) <0 ==
+                ccw(crdX[2],crdY[2],crdX[1],crdY[1],x,y) <0 ==
+                ccw(crdX[0],crdY[0],crdX[2],crdY[2],x,y) <0) {
+                    return true;
+                } else if (ccw(crdX[2],crdY[2],crdX[1],crdY[1],x,y) <0 ==
+                ccw(crdX[3],crdY[3],crdX[2],crdY[2],x,y) <0 ==
+                ccw(crdX[1],crdY[1],crdX[3],crdY[3],x,y) <0) {
                     return true;
                 } else {
                     return false;
@@ -835,22 +840,11 @@ public class Keyboard {
         for (int arcIndex = 0; arcIndex < numArcs; ++arcIndex) {
             Arc arc = arcs.get(arcIndex);
             int numKeys = arc.mKeys.size();
-            int totalRadius = (int)(dm.xdpi*1.5);
-	    
-	    int x = 0;
-	    if (arc.parent.handedness==0) {
-                //x = mDisplayWidth - totalRadius - mDefaultWidth + arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
-		x = mDisplayWidth - totalRadius + arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
-	    } else if (arc.parent.handedness==1) {
-	    	x = totalRadius - mDefaultWidth - arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
-	    } else {
-	    	// WRONG VALUE!
-	    }
+
+            int x = mDisplayWidth - (int)dm.xdpi*2 - mDefaultWidth + arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
             //int x = arcIndex*(this.mDefaultHeight+this.mDefaultVerticalGap);
-            //int height = totalRadius + mDefaultWidth;
-            //mTotalHeight = height + mDefaultHeight;
-	    int height = totalRadius;
-	    mTotalHeight = height + mDefaultHeight;
+            int height = (int)dm.xdpi*2 + mDefaultWidth;
+            mTotalHeight = height + mDefaultHeight;
             /*
             if (mTotalHeight < x || height < x) {
                 mTotalHeight =x;
@@ -866,15 +860,7 @@ public class Keyboard {
             }
 
             //int radius = (numArcs + 1 - arcIndex) * height / (numArcs + 1) + mDefaultWidth;
-            int radius = 0;
-	    if (arc.parent.handedness==0) {
-                radius = mDisplayWidth - x;
-	    } else if (arc.parent.handedness==1) {
-	    	radius = x;
-	    } else {
-	    	// WRONG VALUE!
-	    }
-
+            int radius = mDisplayWidth - x;
             Log.e(TAG, "numkeys: "+numKeys+", xdpi: "+dm.xdpi+", y.dpi: "+dm.ydpi+" radius: "+radius);
             if (totalWidth/radius > Math.toRadians(90)) {
                 double scaleFactor = 1;
@@ -883,7 +869,6 @@ public class Keyboard {
                     Key key = arc.mKeys.get(keyIndex);
                     key.width *= scaleFactor;
                 }
-		//mTotalHeight=(int)((mTotalHeight*scaleFactor);
             }
 
             for (int keyIndex = 0; keyIndex < numKeys; ++keyIndex) {
@@ -907,27 +892,12 @@ public class Keyboard {
                 Log.e(TAG, "1:" + Math.cos(beforeRadians) + ", 2:" + Math.cos(currentRadians));
                 int addY = (int) (radius * (Math.sin(beforeRadians) - Math.sin(currentRadians)));
 
-	    if (arc.parent.handedness==0) {
                 x += addX;
-	    } else if (arc.parent.handedness==1) {
-	    	x -= addX;
-	    } else {
-	    	// WRONG VALUE!
-	    }
-
                 y += addY;
 
                 currentKey.x = x;
                 currentKey.y = y;
-	    if (arc.parent.handedness==0) {
                 currentKey.rotate = (float)currentRadians;
-	    } else if (arc.parent.handedness==1) {
-                currentKey.rotate = (float)Math.PI-(float)currentRadians;
-	    } else {
-	    	// WRONG VALUE!
-	    }
-
-
                 Log.e(TAG, "key.x: "+currentKey.x+", key.y: "+currentKey.y+", gap: "+currentKey.gap+", key.width: "+currentKey.width);
 
             }

@@ -1,6 +1,7 @@
 package org.secmem.gn.ctos.samdwich.keyboard;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
@@ -47,6 +48,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     private int prevTouchKeyCode;
     private int currTouchKeyCode;
     private static Intent mService;
+    private int handValue;
 
     private class Hangul {
         private static final int INPUT_MODE_CHO = 0;
@@ -910,9 +912,15 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     }
     private Hangul hangul = new Hangul();
 
+    private void getPreferenceshandedness(){
+        SharedPreferences pref = getSharedPreferences("forHandedness", MODE_PRIVATE);
+        handValue = pref.getInt("hand", 0);//default right
+    }
+
     private void changeKeyboardLayout(int ikMode){
         switch(ikMode){
             case HAN_MODE:
+                //setKeyboardHand();
                 keyboard = new Keyboard(this, R.xml.hangul);
                 kv.setKeyboard(keyboard);
                 kv.setPreviewEnabled(false);
@@ -932,6 +940,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     public void onStartInputView(EditorInfo info, boolean restarting) {
         super.onStartInput(info, restarting);
+        setKeyboardHand();
         Log.e("Keyboard", "keyboard up");//키보드 업 부분
         Intent intent=new Intent();
         intent.setAction(GlobalVariable.HIDE_SERVICE);
@@ -944,15 +953,25 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         intent.setAction(GlobalVariable.DISP_SERVICE);
         this.sendBroadcast(intent);
     }
+    public void setKeyboardHand()//비효율적인가?
+    {
+        getPreferenceshandedness();
+        if(handValue==0)
+            keyboard = new Keyboard(this, R.xml.hangul);//right
+        else;
+        //keyboard=new Keyboard(this,R.xml.haguleRight);//left
+        //키보드 세팅시만 불러오기때문에 항상 키보드를 다시 사용할 때 계속해서 확인해줘야함
+        kv.setKeyboard(keyboard);
+        kv.setPreviewEnabled(false);
+    }
     public void onCreate() {
         super.onCreate();
         Log.e("Keyboard", "onCreate");//키보드
         kv=(MyKeyboardView)getLayoutInflater().inflate(R.layout.customkeyboard, null);
         keyboard = new Keyboard(this, R.xml.hangul);
-
-        kv.setKeyboard(keyboard);
-
-        kv.setPreviewEnabled(false);
+        setKeyboardHand();
+        //kv.setKeyboard(keyboard);
+        //kv.setPreviewEnabled(false);
 
         kv.setOnKeyboardActionListener(this);
         kv.setFocusable(true);
