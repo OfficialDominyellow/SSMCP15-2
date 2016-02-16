@@ -29,7 +29,7 @@ public class KeyboardPopupService extends Service{
     private int mPrimaryCode;
     private int mKeyboardWidth;
     private int mKeyboardHeight;
-    private float mDownKeyRodate;
+    private float mDownKeyRotate;
     private Bitmap extendImage;
     private Bitmap[] bitmaps;
 
@@ -41,7 +41,7 @@ public class KeyboardPopupService extends Service{
         mPrimaryCode = Integer.parseInt(intent.getStringExtra("primaryCode").trim());
         mKeyboardWidth = intent.getIntExtra("keyboardWidth", 150);
         mKeyboardHeight = intent.getIntExtra("keyboardHeight", 150);
-        mDownKeyRodate = intent.getFloatExtra("downKeyRotate", 0);
+        mDownKeyRotate = intent.getFloatExtra("downKeyRotate", 0);
         Log.i(TAG, "pc : " + mPrimaryCode);
         if(Build.VERSION.SDK_INT >= 23){
             //Log.i(TAG, "can ?  : " + Settings.canDrawOverlays(this));

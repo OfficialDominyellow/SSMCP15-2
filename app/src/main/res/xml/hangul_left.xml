@@ -4,7 +4,7 @@
     android:horizontalGap="0px"
     android:verticalGap="0px"
     android:keyHeight="60dp"
-    android:arckeyboardHandedness="0">
+    android:arckeyboardHandedness="1">
 
     <Arc>
         <Key android:codes="12609" android:keyIcon="@drawable/key_mieum" /> <!-- ㅁ -->
