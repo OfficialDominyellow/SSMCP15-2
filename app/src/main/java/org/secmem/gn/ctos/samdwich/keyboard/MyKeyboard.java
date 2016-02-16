@@ -35,6 +35,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     private MyKeyboardView kv;
 
     private Keyboard keyboard;
+    private Keyboard keyboardLeft;
     private boolean caps = false;
 
     private double xPositionStart;
@@ -920,10 +921,10 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     private void changeKeyboardLayout(int ikMode){
         switch(ikMode){
             case HAN_MODE:
-                //setKeyboardHand();
-                keyboard = new Keyboard(this, R.xml.hangul);
+                setKeyboardHand();
+                /*keyboard = new Keyboard(this, R.xml.hangul);
                 kv.setKeyboard(keyboard);
-                kv.setPreviewEnabled(false);
+                kv.setPreviewEnabled(false);*/
                 break;
             case ENG_MODE:
                 keyboard = new Keyboard(this, R.xml.english);
@@ -957,18 +958,21 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     {
         getPreferenceshandedness();
         if(handValue==0)
-            keyboard = new Keyboard(this, R.xml.hangul);//right
-        else;
+            kv.setKeyboard(keyboard);//right
+        else
+            kv.setKeyboard(keyboardLeft);
         //keyboard=new Keyboard(this,R.xml.haguleRight);//left
         //키보드 세팅시만 불러오기때문에 항상 키보드를 다시 사용할 때 계속해서 확인해줘야함
-        kv.setKeyboard(keyboard);
+        //kv.setKeyboard(keyboard);
         kv.setPreviewEnabled(false);
     }
     public void onCreate() {
         super.onCreate();
         Log.e("Keyboard", "onCreate");//키보드
-        kv=(MyKeyboardView)getLayoutInflater().inflate(R.layout.customkeyboard, null);
+        kv = (MyKeyboardView)getLayoutInflater().inflate(R.layout.customkeyboard, null);
         keyboard = new Keyboard(this, R.xml.hangul);
+        keyboardLeft=new Keyboard(this,R.xml.hangul);
+
         setKeyboardHand();
         //kv.setKeyboard(keyboard);
         //kv.setPreviewEnabled(false);
