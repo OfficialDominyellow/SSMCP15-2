@@ -1194,10 +1194,8 @@ public class Keyboard {
                 com.android.internal.R.styleable.Keyboard_verticalGap,
                 mDisplayHeight, 0);
 
-        handedness = getDimensionOrFraction(a,
-                com.android.internal.R.styleable.Keyboard_arckeyboardHandedness,
-                0, 0);
-        Log.e(TAG, "!!!!!HANDEDNESS:"+handedness);
+        handedness =  a.getInt(com.android.internal.R.styleable.Keyboard_arckeyboardHandedness, 0);
+       
 
         mProximityThreshold = (int) (mDefaultWidth * SEARCH_DISTANCE);
         mProximityThreshold = mProximityThreshold * mProximityThreshold; // Square it for comparison
