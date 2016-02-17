@@ -1086,7 +1086,15 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                     //자음 다섯개
                     else if(primaryCode == 12593 || primaryCode == 12596 || primaryCode == 12609 || primaryCode == 12613 || primaryCode == 12615) {
                         Log.i(TAG, "POPUP");
-                        popupStart(primaryCode);
+                        //popupStart(primaryCode);
+
+                        float downKeyRotate = 0;
+                        for(Keyboard.Key k : keyboard.getKeys()){
+                            if(k.codes[0] == downKeycode){
+                                downKeyRotate = k.rotate;
+                            }
+                        }
+                        popupArcStart(primaryCode, downKeyRotate);
                     }
                     else{
 
@@ -1343,9 +1351,17 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         mService.putExtra("keyboardWidth", kv.getWidth());
         mService.putExtra("keyboardHeight", kv.getHeight());
 
+        startService(mService);
+    }
+    public void popupArcStart(int primaryCode, float rotate){
+        //Intent service = new Intent(this, KeyboardPopupService.class);
+
+        mService.putExtra("primaryCode", primaryCode + "");
+        mService.putExtra("keyboardWidth", kv.getWidth());
+        mService.putExtra("keyboardHeight", kv.getHeight());
+        mService.putExtra("downKeyRotate", rotate);
 
         startService(mService);
-
     }
 
     public void popupEnd(){
