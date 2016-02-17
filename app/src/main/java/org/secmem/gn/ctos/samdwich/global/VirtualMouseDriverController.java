@@ -109,8 +109,13 @@ public class VirtualMouseDriverController extends Thread {
                         sleepTime=16;
                     } else if((result<50 * metrixDensityDpi)) {
                         sleepTime=13;
-                    } else {
-                        sleepTime=12;
+                    } else if((result<60 * metrixDensityDpi)) {
+                        sleepTime=10;
+                    } else if((result<70 * metrixDensityDpi)) {
+                        sleepTime=8;
+                    }
+                    else {
+                        sleepTime=5;
                     }
                     Thread.sleep(sleepTime);
                     int abs=Math.abs(dx);

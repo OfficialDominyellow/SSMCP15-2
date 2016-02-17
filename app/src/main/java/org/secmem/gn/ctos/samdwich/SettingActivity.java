@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -44,6 +45,7 @@ public class SettingActivity extends Activity
     private RadioButton size1,size2,size3;
     private RadioGroup mGrouphand;
     private RadioButton leftHand,rightHand;
+    private Button questionBTN,infoBTN;
 
     private boolean switchValue;
     private int mProgress;
@@ -78,6 +80,8 @@ public class SettingActivity extends Activity
         mGrouphand=(RadioGroup)findViewById(R.id.handednessGroup);
         leftHand=(RadioButton)findViewById(R.id.left);
         rightHand=(RadioButton)findViewById(R.id.right);
+        questionBTN=(Button)findViewById(R.id.questionBTN);
+        infoBTN=(Button)findViewById(R.id.infoBTN);
 
         if(mSize==GlobalVariable.size1)
             size1.setChecked(true);
@@ -143,6 +147,19 @@ public class SettingActivity extends Activity
     }
     private void initActivityOption()
     {
+        questionBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SettingActivity.this,QuestionActivity.class));
+            }
+        });
+        infoBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SettingActivity.this,InfoActivity.class));
+            }
+        });
+
         serviceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
