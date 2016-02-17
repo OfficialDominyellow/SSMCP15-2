@@ -14,7 +14,7 @@
         <Key android:codes="12609" android:keyIcon="@drawable/key_mieum" /> <!-- ㅁ -->
     </Arc>
     <Arc>
-        <Key android:codes="12643" android:keyIcon="@drawable/key_e"/> <!-- ㅣ -->
+        <Key android:codes="12643" android:horizontalGap="15%p" android:keyIcon="@drawable/key_e"/> <!-- ㅣ -->
         <Key android:codes="12641" android:keyIcon="@drawable/key_eu"/> <!-- ㅡ -->
         <Key android:codes="-5" android:keyWidth="20%p" android:isRepeatable="true" android:keyIcon="@drawable/key_backspc"/> <!-- DEL -->
     </Arc>
