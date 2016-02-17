@@ -36,6 +36,10 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     private Keyboard keyboard;
     private Keyboard keyboardLeft;
+    private Keyboard keyboardRight;
+    private Keyboard keyboardEng;
+    private Keyboard keyboardNum;
+
     private boolean caps = false;
 
     private double xPositionStart;
@@ -922,18 +926,14 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         switch(ikMode){
             case HAN_MODE:
                 setKeyboardHand();
-                /*keyboard = new Keyboard(this, R.xml.hangul);
-                kv.setKeyboard(keyboard);
-                kv.setPreviewEnabled(false);*/
                 break;
             case ENG_MODE:
-                keyboard = new Keyboard(this, R.xml.english);
-                kv.setKeyboard(keyboard);
+                kv.setKeyboard(keyboardEng);
                 kv.setPreviewEnabled(true);
                 break;
             case NUM_MODE:
-                keyboard = new Keyboard(this, R.xml.numpad);
-                kv.setKeyboard(keyboard);
+                kv.setKeyboard(keyboardNum);
+                kv.setPreviewEnabled(true);
                 break;
             default:
         }
@@ -954,24 +954,26 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         intent.setAction(GlobalVariable.DISP_SERVICE);
         this.sendBroadcast(intent);
     }
-    public void setKeyboardHand()//비효율적인가?
+    public void setKeyboardHand()//Left인지 Rifht인지 검사
     {
         getPreferenceshandedness();
+        Log.e("Keyboard","value:"+handValue);
         if(handValue==0)
-            kv.setKeyboard(keyboard);//right
+            kv.setKeyboard(keyboardRight);//right
         else
-            kv.setKeyboard(keyboardLeft);
+            kv.setKeyboard(keyboardLeft);//left
         //keyboard=new Keyboard(this,R.xml.haguleRight);//left
         //키보드 세팅시만 불러오기때문에 항상 키보드를 다시 사용할 때 계속해서 확인해줘야함
-        //kv.setKeyboard(keyboard);
         kv.setPreviewEnabled(false);
     }
     public void onCreate() {
         super.onCreate();
         Log.e("Keyboard", "onCreate");//키보드
         kv = (MyKeyboardView)getLayoutInflater().inflate(R.layout.customkeyboard, null);
-        keyboard = new Keyboard(this, R.xml.hangul);
-        keyboardLeft=new Keyboard(this,R.xml.hangul);
+        keyboardRight = new Keyboard(this, R.xml.hangul);
+        keyboardLeft=new Keyboard(this,R.xml.hangul_left);
+        keyboardEng=new Keyboard(this,R.xml.english);
+        keyboardNum=new Keyboard(this,R.xml.numpad);
 
         setKeyboardHand();
         //kv.setKeyboard(keyboard);
