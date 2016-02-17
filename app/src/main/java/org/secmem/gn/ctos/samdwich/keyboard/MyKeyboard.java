@@ -54,6 +54,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     private int currTouchKeyCode;
     private static Intent mService;
     private int handValue;
+    private boolean handFlag=true;
 
     private class Hangul {
         private static final int INPUT_MODE_CHO = 0;
@@ -926,14 +927,19 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         switch(ikMode){
             case HAN_MODE:
                 setKeyboardHand();
+                handFlag=true;
                 break;
             case ENG_MODE:
                 kv.setKeyboard(keyboardEng);
                 kv.setPreviewEnabled(true);
+                setCurrntKeyboard(keyboardEng);
+                handFlag=false;
                 break;
             case NUM_MODE:
                 kv.setKeyboard(keyboardNum);
                 kv.setPreviewEnabled(true);
+                setCurrntKeyboard(keyboardNum);
+                handFlag=false;
                 break;
             default:
         }
@@ -941,7 +947,8 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     public void onStartInputView(EditorInfo info, boolean restarting) {
         super.onStartInput(info, restarting);
-        setKeyboardHand();
+        if(handFlag)
+            setKeyboardHand();
         Log.e("Keyboard", "keyboard up");//키보드 업 부분
         Intent intent=new Intent();
         intent.setAction(GlobalVariable.HIDE_SERVICE);
@@ -958,13 +965,20 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     {
         getPreferenceshandedness();
         Log.e("Keyboard","value:"+handValue);
-        if(handValue==0)
+        if(handValue==0) {
             kv.setKeyboard(keyboardRight);//right
-        else
+            setCurrntKeyboard(keyboardRight);
+        }
+        else {
             kv.setKeyboard(keyboardLeft);//left
-        //keyboard=new Keyboard(this,R.xml.haguleRight);//left
+            setCurrntKeyboard(keyboardLeft);
+        }
         //키보드 세팅시만 불러오기때문에 항상 키보드를 다시 사용할 때 계속해서 확인해줘야함
         kv.setPreviewEnabled(false);
+    }
+    public void setCurrntKeyboard(Keyboard currntKeyboard)
+    {
+        keyboard=currntKeyboard;
     }
     public void onCreate() {
         super.onCreate();
