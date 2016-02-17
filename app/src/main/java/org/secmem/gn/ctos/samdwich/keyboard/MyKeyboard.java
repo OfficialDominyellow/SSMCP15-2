@@ -49,6 +49,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     private double yPositionEnd;
 
     private int downKeycode;
+    private float mDownKeyRotate = 0; //누른 키 라디안 값
 
     private int prevTouchKeyCode;
     private int currTouchKeyCode;
@@ -1066,6 +1067,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
     public void onPress(int primaryCode) {
         Log.i(TAG, "onPress start : " + primaryCode + "(" + (char) primaryCode + ")");
         prevTouchKeyCode = currTouchKeyCode = primaryCode;
+        mDownKeyRotate = 0; // 키 누를 때 마다 초기화;
 
         switch (inputKeyboardMode) {
             case HAN_MODE:
@@ -1088,13 +1090,12 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         Log.i(TAG, "POPUP");
                         //popupStart(primaryCode);
 
-                        float downKeyRotate = 0;
                         for(Keyboard.Key k : keyboard.getKeys()){
                             if(k.codes[0] == downKeycode){
-                                downKeyRotate = k.rotate;
+                                mDownKeyRotate = k.rotate;
                             }
                         }
-                        popupArcStart(primaryCode, downKeyRotate);
+                        popupArcStart(primaryCode, mDownKeyRotate);
                     }
                     else{
 
@@ -1219,6 +1220,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         //자음 눌렀겠지 자음은 올라올 때 눌려
                         else {
                             //primaryCode + 시작좌표 마지막좌표 판단해서 left right up down cen 판단해서 알맞는 키 입력되도록
+                            //mDownKeyRotate 이용해서 정확한 방향 구할꺼야;
                             int endPrimaryCode = getPrimaryCodeByDirection((int)xPositionStart, (int)yPositionStart, (int)xPositionEnd, (int)yPositionEnd, downKeycode);
                             Log.i(TAG, "endPC : " + endPrimaryCode);
                             Log.i(TAG, "Ja ("+xPositionStart + ", " + yPositionStart + ") -> (" + xPositionEnd + ", " + yPositionEnd + ")");
@@ -1360,6 +1362,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         mService.putExtra("keyboardWidth", kv.getWidth());
         mService.putExtra("keyboardHeight", kv.getHeight());
         mService.putExtra("downKeyRotate", rotate);
+        mService.putExtra("handedness", handValue);
 
         startService(mService);
     }
@@ -1376,16 +1379,33 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
         //제자리 = 0, 동 서 남 북 = 1, 2, 3, 4
         threshold = threshold * threshold;
         int dist = MyMath.getDist(fx, fy, tx, ty);
-        double tan = MyMath.getTangent(fx, fy, tx, ty);
 
-        Log.i(TAG, "Dist : " + dist + " tangent : " + tan);
+        double touchTan = MyMath.getTangent(fx, fy, tx, ty);
 
+        double downKeyDegree = Math.toDegrees(mDownKeyRotate);
+        //mDownKeyRotate = (float) Math.tan(downKeyDegree);
+        double vx = (double)(tx-fx);
+        double vy = (double)(ty-fy);
+        Log.i(TAG, "Dist : " + dist + " tangent : " + touchTan + ", keytangent : " + mDownKeyRotate);
+        Log.i(TAG, "(" + fx+ ", " + fy + ") -> (" + tx + ", " + ty + ") // vec(" + vx + ", " + vy + ")");
+        Log.i(TAG, "TouchDeg : " + Math.toDegrees(touchTan) + ", KeyDeg : " + downKeyDegree);
+        Log.i(TAG, "be Rotated Deg : " + (90-downKeyDegree));
+        double rotatedDegRad = Math.toRadians(90-downKeyDegree);
+        double nvx = vx*Math.cos(rotatedDegRad) - vy*Math.sin(rotatedDegRad);
+        double nvy = vx*Math.sin(rotatedDegRad) + vy*Math.cos(rotatedDegRad);
+
+        Log.i(TAG, "Normalized pos : (" + nvx + ", " + nvy + ")");
+
+        //double tan = (touchTan + mDownKeyRotate) / (1.0 - touchTan*mDownKeyRotate);
+        double tan = nvy/nvx;
+        Log.i(TAG, "Normalized Tangent : " + tan);
         //일정 범위 이상 벗어나야 움직인거야
+        //동서남북 1234
         if(dist > threshold){
             if(-1 < tan && tan < 1){
                 Log.i(TAG, "LEFT or RIGHT");
                 //서
-                if(tx < fx){
+                if(nvx < 0){
                     Log.i(TAG, "WEST");
                     return 2;
                 }
@@ -1398,7 +1418,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
             else{
                 Log.i(TAG, "UP or DOWN");
                 //북
-                if(ty < fy){
+                if(nvy < 0){
                     Log.i(TAG, "NORTH");
                     return 4;
                 }

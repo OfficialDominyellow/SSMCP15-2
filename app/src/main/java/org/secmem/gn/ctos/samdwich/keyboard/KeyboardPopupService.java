@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
@@ -30,6 +32,7 @@ public class KeyboardPopupService extends Service{
     private int mKeyboardWidth;
     private int mKeyboardHeight;
     private float mDownKeyRotate;
+    private int mHandedness;
     private Bitmap extendImage;
     private Bitmap[] bitmaps;
 
@@ -42,7 +45,9 @@ public class KeyboardPopupService extends Service{
         mKeyboardWidth = intent.getIntExtra("keyboardWidth", 150);
         mKeyboardHeight = intent.getIntExtra("keyboardHeight", 150);
         mDownKeyRotate = intent.getFloatExtra("downKeyRotate", 0);
-        Log.i(TAG, "pc : " + mPrimaryCode);
+        mHandedness = intent.getIntExtra("handedness", 0); //0 : right, 1 : left;
+
+        Log.i(TAG, "pc : " + mPrimaryCode + ", rot float : " + Math.toDegrees(mDownKeyRotate)+"DO");
         if(Build.VERSION.SDK_INT >= 23){
             //Log.i(TAG, "can ?  : " + Settings.canDrawOverlays(this));
         }
@@ -75,7 +80,12 @@ public class KeyboardPopupService extends Service{
             extendImage = BitmapFactory.decodeResource(getResources(), R.drawable.giyeok_extend);
         }
 
+        Matrix mat = new Matrix();
+        mat.postRotate((float) (270+Math.toDegrees(mDownKeyRotate)));
+        //mat.postScale((float) 0.6, (float) 0.6);
+
         extendImage = Bitmap.createScaledBitmap(extendImage, mKeyboardHeight / 3, mKeyboardHeight / 3, true);
+        extendImage = Bitmap.createBitmap(extendImage, 0, 0, extendImage.getWidth(), extendImage.getHeight(), mat, true);
         mImage.setImageBitmap(extendImage);
 
         /*
@@ -103,8 +113,15 @@ public class KeyboardPopupService extends Service{
         int screenWidth = metrics.widthPixels;
         int screenHeight = metrics.heightPixels;
 
-        mParams.x = -screenWidth/2 + mKeyboardHeight/3; //최좌단
-        mParams.y = screenHeight/2 -  mKeyboardHeight/2 ; //최하단
+        //right
+        if(mHandedness == 0) {
+            mParams.x = -screenWidth / 2 + mKeyboardHeight / 3; //최좌단
+            mParams.y = screenHeight / 2 - mKeyboardHeight / 2; //최하단
+        }
+        else{
+            mParams.x = +screenWidth / 2 - mKeyboardHeight / 3; //최좌단
+            mParams.y = screenHeight / 2 - mKeyboardHeight / 2; //최하단
+        }
 
         try {
             mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
