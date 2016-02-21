@@ -842,7 +842,7 @@ public class Keyboard {
                 //x = mDisplayWidth - totalRadius - mDefaultWidth + arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
 		x = mDisplayWidth - totalRadius + arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
 	    } else if (arc.parent.handedness==1) {
-	    	x = totalRadius - mDefaultWidth - arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
+	    	x = totalRadius - mDefaultHeight - arcIndex*(this.mDefaultHeight+this.mDefaultHorizontalGap);
 	    } else {
 	    	// WRONG VALUE!
 	    }
@@ -870,7 +870,7 @@ public class Keyboard {
 	    if (arc.parent.handedness==0) {
                 radius = mDisplayWidth - x;
 	    } else if (arc.parent.handedness==1) {
-	    	radius = x;
+	    	radius = x + mDefaultHeight;
 	    } else {
 	    	// WRONG VALUE!
 	    }
