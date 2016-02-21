@@ -43,6 +43,7 @@ public class PointingStickService extends Service{
     private WindowManager.LayoutParams mParamsHover;
 
     private WindowManager mWindowManager;
+    private DisplayMetrics matrix;
 
     private LayoutInflater mInflater;
     private CircleLayout mCircleView;
@@ -131,6 +132,7 @@ public class PointingStickService extends Service{
             return;
         }
         getPreferencesProgress();getPreferencesSize();//설정값 불러오기
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         filter = new IntentFilter();
         filter.addAction(GlobalVariable.HIDE_SERVICE);
@@ -166,11 +168,6 @@ public class PointingStickService extends Service{
         GlobalVariable.HideImageheight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bm.getHeight(), getResources().getDisplayMetrics());
         hideImage.setImageBitmap(bm);
 
-        //hideImage.setBackgroundResource(R.drawable.small_button);
-        Bitmap bmHover = BitmapFactory.decodeResource(this.getResources(), R.drawable.hover);
-        motionImage.setImageBitmap(bmHover);
-        //motionImage.setBackgroundResource(R.drawable.hover);
-
         mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mCircleView = (CircleLayout) mInflater.inflate(R.layout.sample_no_rotation2, null);
 
@@ -194,6 +191,14 @@ public class PointingStickService extends Service{
                 |WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT);
 
+
+        matrix = new DisplayMetrics();
+        mWindowManager.getDefaultDisplay().getMetrics(matrix);        //화면 정보를 가져와서
+        Bitmap bmHover = BitmapFactory.decodeResource(this.getResources(), R.drawable.hover);
+        bmHover=Bitmap.createScaledBitmap(bmHover,matrix.widthPixels,30,true);
+        motionImage.setImageBitmap(bmHover);
+        motionImage.setImageAlpha(0);
+
         mParamsHover= new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -202,8 +207,6 @@ public class PointingStickService extends Service{
                         |WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT);
         mParamsHover.gravity= Gravity.BOTTOM;
-
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         virtualMouseDriverController = virtualMouseDriverController.getInstance(getApplicationContext());
         if (virtualMouseDriverController.getState()==Thread.State.NEW) {
@@ -245,7 +248,6 @@ public class PointingStickService extends Service{
      * 뷰의 위치가 화면 안에 있게 최대값을 설정한다
      */
     private void initPosition() {
-        DisplayMetrics matrix = new DisplayMetrics();
         int newSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mSize, getResources().getDisplayMetrics());
         mWindowManager.getDefaultDisplay().getMetrics(matrix);        //화면 정보를 가져와서
         GlobalVariable.displayHeightPx=matrix.heightPixels;
@@ -279,7 +281,7 @@ public class PointingStickService extends Service{
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        initPosition();
+        //initPosition();
         int tmp;
         tmp=GlobalVariable.displayMaxLeft;
         GlobalVariable.displayMaxLeft=GlobalVariable.displayMaxRight;
