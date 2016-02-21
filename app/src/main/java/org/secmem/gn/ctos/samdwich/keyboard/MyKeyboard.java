@@ -24,6 +24,10 @@ import org.secmem.gn.ctos.samdwich.global.MyMath;
 public class MyKeyboard extends InputMethodService implements KeyboardView.OnKeyboardActionListener{
 
     private final String TAG = "MyKeyboard";
+    private final String COUNT_TAG = "SamdwichCount";
+
+    private int mTouchCount = 0;
+    private int mDeleteCount = 0;
 
     private static final int HAN_MODE = 0;
     private static final int ENG_MODE = 1;
@@ -693,6 +697,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                             step = INPUT_MODE_JUNG;
                         }
                         else {
+                            this.dotUsedFlag = this.doubledFlag = false;
                             //받침이 복자음이면 나눠야해
                             if (isDoubleJa(this.jongsung)) {
                                 mDelCount = 1;
@@ -948,6 +953,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
 
     public void onStartInputView(EditorInfo info, boolean restarting) {
         super.onStartInput(info, restarting);
+        mTouchCount = mDeleteCount = 0;
         if(handFlag)
             setKeyboardHand();
         Log.e("Keyboard", "keyboard up");//키보드 업 부분
@@ -1191,6 +1197,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         //hangul.init();
                         hangul.deleteLastInst();
                         //ic.deleteSurroundingText(1, 0);
+                        mDeleteCount += 1;
                         break;
                     case Keyboard.KEYCODE_MODE_CHANGE:
                         Log.i(TAG, "Keyboard Change han -> Eng");
@@ -1256,8 +1263,13 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                             }
                             ic.commitText(String.valueOf(code), 1);
                             */
+
+
                         }
+
                 }
+                mTouchCount += 1;
+                Log.i(COUNT_TAG, "Touch Count : " + mTouchCount + ", Delete Count : " + mDeleteCount);
                 break;
             case ENG_MODE :
                 switch(primaryCode){
