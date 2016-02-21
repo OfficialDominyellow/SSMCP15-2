@@ -47,6 +47,7 @@ jint Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_initMouseDriver
     system("su -c \"chmod 777 /dev/uinput\"");
     fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if(fd < 0) {
+        system("su -c \"chmod 777 /dev/input/uinput\"");
         fd=open("/dev/input/uinput",O_WRONLY|O_NONBLOCK);
         if(fd<0){
             die("error: open");
