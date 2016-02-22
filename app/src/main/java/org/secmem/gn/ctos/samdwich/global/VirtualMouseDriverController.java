@@ -101,22 +101,27 @@ public class VirtualMouseDriverController extends Thread {
         while (!mFinished) {
             while (!mPaused) {
                 try {
-                    if(result<(10 * metrixDensityDpi)) {
-                        sleepTime=27;
-                    } else if(result<(12 * metrixDensityDpi)) {
-                        sleepTime=21;
+                    if(result<(13 * metrixDensityDpi)) {
+                        sleepTime=30;
                     } else if(result<(25 * metrixDensityDpi)) {
-                        sleepTime=16;
-                    } else if((result<50 * metrixDensityDpi)) {
-                        sleepTime=13;
-                    } else if((result<60 * metrixDensityDpi)) {
-                        sleepTime=10;
-                    } else if((result<70 * metrixDensityDpi)) {
-                        sleepTime=8;
+                        sleepTime=(int)(1/(result*result)/0.00002);
+                        sleepTime=(sleepTime<30)?30:sleepTime;
+                    } else {
+                        sleepTime=(int)(Math.sqrt(result)*1.5);
                     }
-                    else {
+                    /*
+                    if(result<(10 * metrixDensityDpi)) {
+                        sleepTime=40;
+                    } else if(result<(12 * metrixDensityDpi)) {
+                        sleepTime=30;
+                    } else if(result<(25 * metrixDensityDpi)) {
                         sleepTime=5;
+                    } else if((result<50 * metrixDensityDpi)) {
+                        sleepTime=10;
+                    } else {
+                        sleepTime=15;
                     }
+                    */
                     Thread.sleep(sleepTime);
                     int abs=Math.abs(dx);
                     for (int i=0;i<INTERVAL;i++) {

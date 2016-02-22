@@ -140,11 +140,14 @@ public class SettingActivity extends Activity
     {
         super.onStop();
         Log.e("service", "onStop");
-        if(flag){
-            unregisterReceiver(switchReceiver);
-            flag=false;
-        }
     }
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Log.e("service", "onDestroy");
+        unregisterReceiver(switchReceiver);
+    }
+
     private void initActivityOption()
     {
         questionBTN.setOnClickListener(new View.OnClickListener() {

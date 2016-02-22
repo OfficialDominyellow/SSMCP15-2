@@ -43,8 +43,11 @@ void Java_org_secmem_gn_ctos_samdwich_global_VirtualMouseDriverController_moveMo
 }
 jint Java_org_secmem_gn_ctos_samdwich_mouse_PointingStickService_initMouseDriver(JNIEnv* env, jobject thiz)
 {
+    system("su -c \"setenforce 0\"");
+    system("su -c \"chmod 777 /dev/uinput\"");
     fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if(fd < 0) {
+        system("su -c \"chmod 777 /dev/input/uinput\"");
         fd=open("/dev/input/uinput",O_WRONLY|O_NONBLOCK);
         if(fd<0){
             die("error: open");
