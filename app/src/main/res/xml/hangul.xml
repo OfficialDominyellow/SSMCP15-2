@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
-    android:keyWidth="20%p"
-    android:horizontalGap="0px"
-    android:verticalGap="0px"
+    android:keyWidth="60dp"
+    android:horizontalGap="10px"
+    android:verticalGap="15px"
     android:keyHeight="60dp"
     android:arckeyboardHandedness="0">
 
@@ -14,14 +14,14 @@
         <Key android:codes="12593" android:keyIcon="@drawable/key_giyeok"/> <!-- ㄱ -->
     </Arc>
     <Arc>
-        <Key android:codes="12641" android:horizontalGap="15%p" android:keyIcon="@drawable/key_eu"/> <!-- ㅡ -->
-        <Key android:codes="12643" android:keyIcon="@drawable/key_e"/> <!-- ㅣ -->
-        <Key android:codes="-5" android:keyWidth="20%p" android:isRepeatable="true" android:keyIcon="@drawable/key_backspc"/> <!-- DEL -->
+        <Key android:codes="12641" android:keyWidth="40dp" android:keyHeight="50dp" android:horizontalGap="15%p" android:keyIcon="@drawable/key_eu"/> <!-- ㅡ -->
+        <Key android:codes="12643" android:keyWidth="40dp" android:keyHeight="50dp" android:horizontalGap="30dp" android:keyIcon="@drawable/key_e"/> <!-- ㅣ -->
+        <Key android:codes="-5" android:keyWidth="17%p" android:isRepeatable="true" android:keyIcon="@drawable/key_backspc"/> <!-- DEL -->
     </Arc>
     <Arc>
-        <Key android:codes="-2" android:keyWidth="15%p" android:keyIcon="@drawable/key_cng_to_eng"/> <!-- change to eng -->
-        <Key android:codes="12685" android:keyWidth="15%p"  android:keyIcon="@drawable/key_araea"/> <!-- ㆍ -->
-        <Key android:codes="10" android:keyWidth="15%p" android:keyIcon="@drawable/key_ret"/> <!-- ENTER -->
+        <Key android:codes="-2" android:keyWidth="5%p" android:keyIcon="@drawable/key_cng_to_eng"/> <!-- change to eng -->
+        <Key android:codes="12685" android:horizontalGap="15dp" android:keyWidth="10%p"  android:keyIcon="@drawable/key_araea"/> <!-- ㆍ -->
+        <Key android:codes="10"  android:horizontalGap="10%p" android:keyWidth="5%p" android:keyIcon="@drawable/key_ret"/> <!-- ENTER -->
     </Arc>
     <Arc>
         <Key android:codes="32" android:keyWidth="50%p" android:isRepeatable="true" android:keyIcon="@drawable/key_space"/> <!-- SPACE -->
