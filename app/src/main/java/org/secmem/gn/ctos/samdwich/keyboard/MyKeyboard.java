@@ -1213,6 +1213,7 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         break;
                     case 10:
                         ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+                        Log.i(TAG, "HAN ENTER ");
                         break;
                     case Keyboard.KEYCODE_DONE:
                         //kv.setVisibility(View.INVISIBLE);
@@ -1291,7 +1292,8 @@ public class MyKeyboard extends InputMethodService implements KeyboardView.OnKey
                         //space
                         ic.commitText(" ", 1);
                         break;
-                    case Keyboard.KEYCODE_DONE:
+                    case 10:
+                        Log.i(TAG, "ENG ENTER ");
                         ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
                         break;
                     default:
