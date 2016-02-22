@@ -195,7 +195,7 @@ public class PointingStickService extends Service{
         matrix = new DisplayMetrics();
         mWindowManager.getDefaultDisplay().getMetrics(matrix);        //화면 정보를 가져와서
         Bitmap bmHover = BitmapFactory.decodeResource(this.getResources(), R.drawable.hover);
-        bmHover=Bitmap.createScaledBitmap(bmHover,matrix.widthPixels,30,true);
+        bmHover=Bitmap.createScaledBitmap(bmHover,matrix.widthPixels,(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 22, getResources().getDisplayMetrics()),true);//hover막대기 DP로
         motionImage.setImageBitmap(bmHover);
         motionImage.setImageAlpha(0);
 
