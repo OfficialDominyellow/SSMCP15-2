@@ -1,5 +1,3 @@
-#Samsung Software Membership
-
-Creative Project 2015-2
+#2016 OSS Project
 
 Sandwich UI
